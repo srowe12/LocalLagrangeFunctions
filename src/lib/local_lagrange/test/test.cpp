@@ -59,7 +59,10 @@ TEST(MyTest, NearestNeighborTest){
    llc.setCenters(centers_x,centers_y);
    llc.assembleTree();
    std::vector<unsigned> indices = llc.getNearestNeighbors(0);
-
+   EXPECT_EQ(2, indices.size());
+   for (auto it = indices.begin(); it != indices.end(); ++it){
+      std::cout << *it << std::endl;
+   }
 }
 
 int main(int argc, char** argv) {

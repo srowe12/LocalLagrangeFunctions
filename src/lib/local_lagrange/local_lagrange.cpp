@@ -41,20 +41,14 @@ void LocalLagrangeConstructor::assembleTree(){
 }
 std::vector<unsigned>  LocalLagrangeConstructor::getNearestNeighbors(unsigned int index){
      //Wrap values into a single point, then value pair. Pass into rt for querying.
-     std::cout << "The index is" << index << " and the centers are " << centers_x_[index] << " and " << centers_y_[index] << std::endl;
      point center(centers_x_[index],centers_y_[index]);
      value center_value(center,index);
-
-     //TODO: Update the number 5 to actually be representative.
      std::vector<value> neighbors;
+     //TODO: Update the number 2 to actually be representative.
      rt_.query(bgi::nearest(center,2), std::back_inserter(neighbors));
-     //Should this just return the indices of them rather than their point values?
-     //Yes probably.
-     //
-     std::cout << "The size of the neighbors is" << neighbors.size() << std::endl;
-     std::vector<unsigned> indices(neighbors.size());
-     for (auto it = neighbors.begin(); it!= neighbors.end(); ++it){
-         std::cout << std::get<1>(*it) << std::endl; 
+     
+    std::vector<unsigned> indices; 
+    for (auto it = neighbors.begin(); it!= neighbors.end(); ++it){
          indices.push_back(std::get<1>(*it));
      }
     return indices; 
