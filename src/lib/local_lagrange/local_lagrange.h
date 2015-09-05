@@ -3,7 +3,24 @@
 #include <vector>
 #include <armadillo>
 
+#include <boost/geometry.hpp>
+#include <boost/geometry/geometries/point.hpp>
+#include <boost/geometry/geometries/box.hpp>
+
+#include <boost/geometry/index/rtree.hpp>
+
+//Namespace aliases for Boost
+namespace bg = boost::geometry;
+namespace bgi = boost::geometry::index;
+
+
 namespace local_lagrange {
+
+
+typedef bg::model::point<double, 2, bg::cs::cartesian> point;
+typedef std::pair<point, unsigned> value;
+
+
 class LocalLagrange{
 public:
 
@@ -25,14 +42,20 @@ public:
 LocalLagrangeConstructor() : num_centers_(0), scale_factor_(1), mesh_norm_(0) {updateBallRadius();}
 
 LocalLagrange generateLocalLagrangeFunction(unsigned int index);
+
+
 unsigned int num_centers() const {return num_centers_;}
+double scale_factor() const {return scale_factor_;}
+double mesh_norm() const {return mesh_norm_;}
+double ball_radius() const {return ball_radius_;}
+
 std::vector<double> centers_x() const {return centers_x_;}
 std::vector<double> centers_y() const {return centers_y_;}
 
 
 void assembleTree();
 
-void getNearestNeighbors(unsigned int index);
+std::vector<unsigned> getNearestNeighbors(unsigned int index);
 
 void setScale_factor(double scale_factor) {scale_factor_= scale_factor; updateBallRadius();}
 void setMesh_norm(double mesh_norm) {mesh_norm_ = mesh_norm; updateBallRadius();}
@@ -50,6 +73,7 @@ unsigned int num_centers_;
 double scale_factor_;  //We use ball_radius = scale_factor*mesh_norm*abs(log(mesh_norm));
 double mesh_norm_;
 double ball_radius_;
+bgi::rtree<value, bgi::quadratic<16> > rt_; //R-tree for indexing points.
 
 std::vector<double> centers_x_;
 std::vector<double> centers_y_; //Assumes 2D structure.
