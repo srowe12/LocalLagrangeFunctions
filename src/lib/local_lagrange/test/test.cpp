@@ -50,6 +50,18 @@ TEST(MyTest, TreeTest){
    EXPECT_EQ(0, second_point.get<1>());
 
 }
+
+TEST(MyTest, NearestNeighborTest){
+
+   local_lagrange::LocalLagrangeConstructor llc;
+   std::vector<double> centers_x{1,2,3};
+   std::vector<double> centers_y{0,1,2};
+   llc.setCenters(centers_x,centers_y);
+   llc.assembleTree();
+   std::vector<unsigned> indices = llc.getNearestNeighbors(0);
+
+}
+
 int main(int argc, char** argv) {
    ::testing::InitGoogleTest(&argc, argv);
 
