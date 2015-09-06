@@ -29,7 +29,7 @@ TEST(MyTest, TreeTest){
 
    bgi::rtree<value, bgi::quadratic<16> > rt;
    std::vector<value> points;
-   for (int iter =0; iter<centers_x_.size(); iter++) {
+   for (size_t iter =0; iter<centers_x_.size(); iter++) {
        point mypoint(centers_x_[iter],centers_y_[iter]);
        value myvalue(mypoint,iter);
        points.push_back(myvalue);
@@ -65,10 +65,36 @@ TEST(MyTest, NearestNeighborTest){
    }
 }
 
+TEST(MyTest,AssembleInterpolationMatrix){
+   std::vector<double> centers_x{1,2,3};
+   std::vector<double> centers_y{0,1,2};
+   local_lagrange::LocalLagrange llf(0); //Index 0.
+   arma::mat interp_matrix = llf.assembleInterpolationMatrix(centers_x,centers_y);
+   interp_matrix.print("Interp Matrix:");
+}
+
+TEST(MyTest,SolveForCoefficients){
+   std::vector<double> centers_x{1,2,3};
+   std::vector<double> centers_y{0,1,2};
+   unsigned int local_index = 0;
+   local_lagrange::LocalLagrange llf(0); //Index 0.
+   llf.buildCoefficients(centers_x,centers_y,0);
+   arma::vec coefs = llf.coefficients();
+   coefs.print("The coefs are:");
+
+   arma::mat interp_matrix = llf.assembleInterpolationMatrix(centers_x,centers_y);
+   arma::vec rhs = interp_matrix*coefs;
+   EXPECT_NEAR(1,rhs(local_index),1e-15);
+   rhs(local_index)=0;
+   for (auto it = rhs.begin(); it != rhs.end(); ++it){
+       EXPECT_NEAR(0,*it,1e-15);
+   }
+
+}
 int main(int argc, char** argv) {
    ::testing::InitGoogleTest(&argc, argv);
 
-   double x = 1;
+   
    int return_value = RUN_ALL_TESTS();
 
    return return_value; 

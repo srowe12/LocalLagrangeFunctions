@@ -28,12 +28,19 @@ explicit LocalLagrange(unsigned int index) : index_(index) {}
 LocalLagrange(unsigned int index, std::vector<double> coefs, std::vector<double> indices) :index_(index), indices_(indices), coefficients_(coefs) {}
 
 
-arma::mat assemble_interpolation_matrix();
+arma::mat assembleInterpolationMatrix(std::vector<double> local_centers_x, std::vector<double> local_centers_y);
+
+void buildCoefficients(std::vector<double> local_centers_x, std::vector<double> local_centers_y, unsigned int local_index);
+
+unsigned int index() const {return index_;}
+std::vector<double> indices() const {return indices_;}
+arma::vec coefficients() const {return coefficients_;}
+
 
 private:
 unsigned int index_;
 std::vector<double> indices_;
-std::vector<double> coefficients_;
+arma::vec coefficients_;
 };
 
 class LocalLagrangeConstructor{
