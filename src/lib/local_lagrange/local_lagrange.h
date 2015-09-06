@@ -1,6 +1,9 @@
+#ifndef LOCAL_LAGRANGE_HDR
+#define LOCAL_LAGRANGE_HDR
 #include <stdio.h>
 #include <math.h>
 #include <vector>
+#include <array>
 #include <armadillo>
 
 #include <boost/geometry.hpp>
@@ -19,7 +22,7 @@ typedef bg::model::point<double, 2, bg::cs::cartesian> point;
 typedef std::pair<point, unsigned> value;
 
 class LocalLagrange {
- public:
+public:
   explicit LocalLagrange(unsigned int index) : index_(index) {}
   LocalLagrange(unsigned int index, std::vector<double> coefs,
                 std::vector<double> indices)
@@ -36,19 +39,22 @@ class LocalLagrange {
   std::vector<double> indices() const { return indices_; }
   arma::vec coefficients() const { return coefficients_; }
 
- private:
+private:
   unsigned int index_;
   std::vector<double> indices_;
   arma::vec coefficients_;
 };
 
 class LocalLagrangeConstructor {
- public:
+public:
   LocalLagrangeConstructor()
       : num_centers_(0), scale_factor_(1), mesh_norm_(0) {
     updateBallRadius();
   }
 
+  std::array<std::vector<double>, 2> findLocalCenters(unsigned int index);
+  unsigned int findLocalIndex(std::array<std::vector<double>, 2> local_centers,
+                              unsigned int index);
   LocalLagrange generateLocalLagrangeFunction(unsigned int index);
 
   unsigned int num_centers() const { return num_centers_; }
@@ -79,20 +85,21 @@ class LocalLagrangeConstructor {
     num_centers_ = centers_x_.size();
   }
 
- private:
+private:
   void updateBallRadius() {
     ball_radius_ = scale_factor_ * mesh_norm_ * abs(log(mesh_norm_));
   }
 
   unsigned int num_centers_;
-  double scale_factor_;  // We use ball_radius =
-                         // scale_factor*mesh_norm*abs(log(mesh_norm));
+  double scale_factor_; // We use ball_radius =
+                        // scale_factor*mesh_norm*abs(log(mesh_norm));
   double mesh_norm_;
   double ball_radius_;
-  bgi::rtree<value, bgi::quadratic<16> > rt_;  // R-tree for indexing points.
+  bgi::rtree<value, bgi::quadratic<16> > rt_; // R-tree for indexing points.
 
   std::vector<double> centers_x_;
-  std::vector<double> centers_y_;  // Assumes 2D structure.
+  std::vector<double> centers_y_; // Assumes 2D structure.
 };
 
-}  // namespace local_lagrange
+} // namespace local_lagrange
+#endif // LOCAL_LAGRANGE_HDR

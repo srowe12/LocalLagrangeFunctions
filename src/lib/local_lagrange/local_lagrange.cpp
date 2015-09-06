@@ -1,14 +1,13 @@
 #include "local_lagrange.h"
 #include <math.h>
 #include <armadillo>
-
 #include <boost/geometry.hpp>
 #include <boost/geometry/geometries/point.hpp>
 #include <boost/geometry/geometries/box.hpp>
 
 #include <boost/geometry/index/rtree.hpp>
 
-#include <stdio.h>  //Debugging purposes, don't judge me.
+#include <stdio.h> //Debugging purposes, don't judge me.
 
 namespace bg = boost::geometry;
 namespace bgi = boost::geometry::index;
@@ -17,12 +16,6 @@ namespace local_lagrange {
 
 typedef bg::model::point<double, 2, bg::cs::cartesian> point;
 typedef std::pair<point, unsigned> value;
-
-LocalLagrange generateLocalLagrangeFunction(unsigned int index) {
-  // Should the Local Lagrange do this?
-
-  LocalLagrange llf(index);
-}
 
 void LocalLagrangeConstructor::assembleTree() {
   std::vector<value> points;
@@ -59,7 +52,6 @@ arma::mat LocalLagrange::assembleInterpolationMatrix(
     interp_matrix(num_centers + 2, row) = interp_matrix(row, num_centers + 2) =
         local_centers_y[row];
   }
-  // Attach P and P^T here...
 
   // Move semantics maybe?
   return interp_matrix;
@@ -75,8 +67,50 @@ void LocalLagrange::buildCoefficients(std::vector<double> local_centers_x,
   coefficients_ = arma::solve(interp_matrix, rhs);
 }
 
-std::vector<unsigned> LocalLagrangeConstructor::getNearestNeighbors(
-    unsigned int index) {
+std::array<std::vector<double>, 2>
+LocalLagrangeConstructor::findLocalCenters(unsigned int index) {
+  std::vector<unsigned int> local_indices = getNearestNeighbors(index);
+  size_t num_local_centers = local_indices.size();
+  std::vector<double> local_x(num_local_centers);
+  std::vector<double> local_y(num_local_centers);
+  for (size_t i = 0; i < num_local_centers; i++) {
+    local_x[i] = centers_x_[local_indices[i]];
+    local_y[i] = centers_y_[local_indices[i]];
+  }
+  std::array<std::vector<double>, 2> local_centers{ local_x, local_y };
+  return local_centers;
+}
+LocalLagrange
+LocalLagrangeConstructor::generateLocalLagrangeFunction(unsigned int index) {
+
+  LocalLagrange llf(index);
+
+  std::array<std::vector<double>, 2> local_centers = findLocalCenters(index);
+  unsigned int local_index = findLocalIndex(local_centers, index);
+  llf.buildCoefficients(local_centers[0], local_centers[1], local_index);
+
+  return llf;
+}
+
+unsigned int LocalLagrangeConstructor::findLocalIndex(
+    std::array<std::vector<double>, 2> local_centers, unsigned int index) {
+  double center_x = centers_x_[index];
+  double center_y = centers_y_[index];
+  // Implement naive algorithm here. Upgrade later.
+  // Machine precision equality errors possible.
+  unsigned int local_index = 0;
+  for (size_t i = 0; i < local_centers[0].size(); i++) {
+    if (center_x == local_centers[0][i] && center_y == local_centers[1][i]) {
+      local_index = i;
+      break;
+    }
+  }
+
+  return local_index;
+}
+
+std::vector<unsigned>
+LocalLagrangeConstructor::getNearestNeighbors(unsigned int index) {
   // Wrap values into a single point, then value pair. Pass into rt for
   // querying.
   point center(centers_x_[index], centers_y_[index]);
@@ -91,4 +125,4 @@ std::vector<unsigned> LocalLagrangeConstructor::getNearestNeighbors(
   }
   return indices;
 }
-}  // namespace local_lagrange
+} // namespace local_lagrange
