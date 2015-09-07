@@ -89,6 +89,46 @@ TEST(MyTest, SolveForCoefficients) {
     EXPECT_NEAR(0, *it, 1e-15);
   }
 }
+
+TEST(MyTest, FindLocalIndexTest){
+
+  std::vector<double> centers_x{1, 2, 3};
+  std::vector<double> centers_y{0, 1, 2};
+
+  local_lagrange::LocalLagrangeConstructor llc;
+  llc.setCenters(centers_x,centers_y);
+  std::vector<double> local_centers_x{2,3};
+  std::vector<double> local_centers_y{1,2};
+  unsigned int index = 2;
+  std::array<std::vector<double>,2> local_centers{local_centers_x,local_centers_y};
+  unsigned int local_index = llc.findLocalIndex(local_centers, index);
+  EXPECT_EQ(1,local_index); 
+}
+
+TEST(MyTest, FindLocalCentersTest){
+  size_t num_centers = 30;
+  std::vector<double> centers_x(num_centers);
+  std::vector<double> centers_y(num_centers);
+  for (size_t i =0; i<num_centers; i++){
+       centers_x[i] = i;
+       centers_y[i] = i+1;
+
+  }
+  local_lagrange::LocalLagrangeConstructor llc;
+  llc.setCenters(centers_x,centers_y);
+  llc.assembleTree();
+  
+  unsigned int index = 5;
+  std::array<std::vector<double>,2> local_centers = llc.findLocalCenters(index);
+  double center_x = centers_x[index];
+  double center_y = centers_y[index];
+  double dist;
+  for (size_t i=0; i<local_centers[0].size(); i++){
+     dist = (local_centers[0][i]-center_x)*(local_centers[0][i]-center_x)+(local_centers[1][i]-center_y)*(local_centers[1][i]-center_y);
+     EXPECT_GT(2.0000001,dist);
+  }
+  
+}
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
 

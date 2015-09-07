@@ -70,7 +70,8 @@ void LocalLagrange::buildCoefficients(std::vector<double> local_centers_x,
 std::array<std::vector<double>, 2>
 LocalLagrangeConstructor::findLocalCenters(unsigned int index) {
   std::vector<unsigned int> local_indices = getNearestNeighbors(index);
-  size_t num_local_centers = local_indices.size();
+
+ size_t num_local_centers = local_indices.size();
   std::vector<double> local_x(num_local_centers);
   std::vector<double> local_y(num_local_centers);
   for (size_t i = 0; i < num_local_centers; i++) {
