@@ -1,0 +1,6 @@
+set(math_lib math_lib)
+set(math_src math_tools.cpp)
+set(math_hdr math_tools.h)
+add_library(${math_lib} ${math_src} ${math_hdr})
+#target_link_libraries( lagrange ${ARMADILLO_LIBRARIES})
+subdirs(test)
