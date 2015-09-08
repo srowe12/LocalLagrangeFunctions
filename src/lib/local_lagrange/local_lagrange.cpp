@@ -68,8 +68,7 @@ void LocalLagrange::buildCoefficients(std::vector<double> local_centers_x,
 }
 
 std::array<std::vector<double>, 2>
-LocalLagrangeConstructor::findLocalCenters(unsigned int index) {
-  std::vector<unsigned int> local_indices = getNearestNeighbors(index);
+LocalLagrangeConstructor::findLocalCenters(std::vector<unsigned int> local_indices) {
 
  size_t num_local_centers = local_indices.size();
   std::vector<double> local_x(num_local_centers);
@@ -78,16 +77,20 @@ LocalLagrangeConstructor::findLocalCenters(unsigned int index) {
     local_x[i] = centers_x_[local_indices[i]];
     local_y[i] = centers_y_[local_indices[i]];
   }
-  std::array<std::vector<double>, 2> local_centers{ local_x, local_y };
+  std::array<std::vector<double>, 2> local_centers{ local_x, local_y};
   return local_centers;
 }
+
 LocalLagrange
 LocalLagrangeConstructor::generateLocalLagrangeFunction(unsigned int index) {
 
   LocalLagrange llf(index);
 
-  std::array<std::vector<double>, 2> local_centers = findLocalCenters(index);
+  std::vector<unsigned int> local_indices = getNearestNeighbors(index);
+  std::array<std::vector<double>, 2> local_centers = findLocalCenters(local_indices);
   unsigned int local_index = findLocalIndex(local_centers, index);
+
+  llf.setIndices(local_indices);
   llf.buildCoefficients(local_centers[0], local_centers[1], local_index);
 
   return llf;
@@ -118,7 +121,7 @@ LocalLagrangeConstructor::getNearestNeighbors(unsigned int index) {
   value center_value(center, index);
   std::vector<value> neighbors;
   // TODO: Update the number 2 to actually be representative.
-  rt_.query(bgi::nearest(center, 2), std::back_inserter(neighbors));
+  rt_.query(bgi::nearest(center, num_local_centers_), std::back_inserter(neighbors));
 
   std::vector<unsigned> indices;
   for (auto it = neighbors.begin(); it != neighbors.end(); ++it) {
