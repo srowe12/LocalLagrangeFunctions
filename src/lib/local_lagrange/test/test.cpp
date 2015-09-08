@@ -60,9 +60,8 @@ TEST(MyTest, NearestNeighborTest) {
   llc.setNum_local_centers(2);
   std::vector<unsigned> indices = llc.getNearestNeighbors(0);
   EXPECT_EQ(2, indices.size());
-  for (auto it = indices.begin(); it != indices.end(); ++it) {
-    std::cout << *it << std::endl;
-  }
+  EXPECT_EQ(1, indices[0]);
+  EXPECT_EQ(0, indices[1]);
 }
 
 TEST(MyTest, AssembleInterpolationMatrix) {
@@ -71,7 +70,6 @@ TEST(MyTest, AssembleInterpolationMatrix) {
   local_lagrange::LocalLagrange llf(0);  // Index 0.
   arma::mat interp_matrix =
       llf.assembleInterpolationMatrix(centers_x, centers_y);
-  interp_matrix.print("Interp Matrix:");
   for (size_t i = 0; i < 6; i++) {
       EXPECT_EQ(0.0,interp_matrix(i,i));
   }
@@ -90,7 +88,6 @@ TEST(MyTest, SolveForCoefficients) {
   local_lagrange::LocalLagrange llf(0);  // Index 0.
   llf.buildCoefficients(centers_x, centers_y, 0);
   arma::vec coefs = llf.coefficients();
-  coefs.print("The coefs are:");
 
   arma::mat interp_matrix =
       llf.assembleInterpolationMatrix(centers_x, centers_y);
