@@ -3,6 +3,9 @@
 #include <math.h>
 #include <vector>
 #include <array>
+#include <fstream>
+#include <iterator>
+#include <string>
 
 namespace mathtools {
 
@@ -38,6 +41,14 @@ std::array<std::vector<T>,2> meshgrid(std::vector<T> xpoints, std::vector<T> ypo
    }
    std::array<std::vector<T>,2> return_points{X,Y};
   return return_points;
+}
+
+
+template <typename T>
+void write_vector(std::vector<T> &vec, std::string file_name){
+    std::ofstream output_file(file_name);
+    std::ostream_iterator<T> output_iterator(output_file, "\n");
+    std::copy(vec.begin(),vec.end(), output_iterator);   
 }
 } //namespace mathtools
 #endif //MATH_UTILS_HDR

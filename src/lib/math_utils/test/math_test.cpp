@@ -49,6 +49,41 @@ TEST(MathTest, MeshgridTest){
    EXPECT_DOUBLE_EQ(yvals[num_vals-4],2);
 }
 
+TEST(MathTest, WriteVectorTest){
+  std::vector<double> double_vec{3,4,5};
+  mathtools::write_vector<double>(double_vec,"./double_vec.dat");
+  std::ifstream infile("./double_vec.dat");
+  std::vector<double> read_double_vec;
+  double read_value;
+  while (infile  >> read_value){
+     read_double_vec.push_back(read_value);
+  }
+  ASSERT_EQ(double_vec.size(),read_double_vec.size());
+  for (size_t iter = 0; iter < double_vec.size(); iter++){
+      EXPECT_EQ(double_vec[iter],read_double_vec[iter]);
+  }
+  for (auto i = read_double_vec.begin(); i != read_double_vec.end(); ++i){
+     std::cout << *i << " " << std::endl;
+  }
+
+  std::vector<std::string> string_vec{"The lol","Line 2", "This is line 3"};
+
+  mathtools::write_vector<std::string>(string_vec,"./string_vec.dat");
+  std::ifstream infile_string("./string_vec.dat");
+  std::vector<std::string> read_string_vec;
+  std::string read_string;
+  while (std::getline(infile_string,read_string)){
+     read_string_vec.push_back(read_string);
+  }
+  ASSERT_EQ(string_vec.size(),read_string_vec.size());
+  for (size_t iter = 0; iter < string_vec.size(); iter++){
+      EXPECT_EQ(string_vec[iter],read_string_vec[iter]);
+  }
+  for (auto i = read_string_vec.begin(); i != read_string_vec.end(); ++i){
+     std::cout << *i << " " << std::endl;
+  }
+}
+
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
 
