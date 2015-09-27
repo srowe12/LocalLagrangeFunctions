@@ -5,6 +5,7 @@ class LLFTest:
     def __init__(self,num):
         self.location_str = self.GetLocationStr()
         self.ReadData(num)
+        
         self.num_centers = np.shape(self.centers)[0]
         self.iter_num = num
 
@@ -45,12 +46,13 @@ class LLFTest:
          centers_y_str = self.location_str + "centers_y.txt"
          centers_x = np.loadtxt(centers_x_str)
          centers_y = np.loadtxt(centers_y_str)
-         self.centers = np.transpose(np.concatenate(([centers_x],[centers_y]),axis=0))
+         self.full_centers = np.transpose(np.concatenate(([centers_x],[centers_y]),axis=0))
          indices_str = self.location_str + "indices_" + str(iter_num) + ".txt"
          coefs_str = self.location_str + "coefs_" + str(iter_num) + ".txt"
          self.indices = np.loadtxt(indices_str,dtype="int")
          self.coefs = np.loadtxt(coefs_str)
-    
+         self.centers = self.full_centers[self.indices,:]
+ 
     def GetLocationStr(self):
         return "/home/srowe/repos/LocalLagrangeFunctions/build/"
 
