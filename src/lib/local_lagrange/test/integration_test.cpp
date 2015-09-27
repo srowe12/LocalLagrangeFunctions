@@ -19,8 +19,8 @@ TEST(IntegrationTest,BuildAnLLF){
   std::array<std::vector<double>, 2> centers =
       mathtools::meshgrid<double>(xmesh, xmesh);
 
-  mathtools::write_vector(centers[0],"./centers_x.dat");
-  mathtools::write_vector(centers[1],"./centers_y.dat");
+  mathtools::write_vector(centers[0],"centers_x.txt");
+  mathtools::write_vector(centers[1],"centers_y.txt");
   local_lagrange::LocalLagrangeConstructor llc;
   llc.setCenters(centers[0], centers[1]);
   llc.assembleTree();
@@ -38,8 +38,8 @@ TEST(IntegrationTest,BuildAnLLF){
     double y_eval = 0;
     arma::vec coef_tps = coefs.subvec(0, 199);
     std::vector<unsigned int> local_indices = llf.indices();
-    std::string index_file = "indicies_" + std::to_string(iter);
-    std::string coefs_file = "coefs_" + std::to_string(iter);
+    std::string index_file = "indicies_" + std::to_string(iter)+".txt";
+    std::string coefs_file = "coefs_" + std::to_string(iter)+".txt";
     mathtools::write_vector(local_indices,index_file);
     bool save_status = coefs.save(coefs_file,arma::raw_ascii);
     EXPECT_TRUE(save_status);
