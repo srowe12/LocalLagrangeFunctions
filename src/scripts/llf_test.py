@@ -5,6 +5,7 @@ class LLFTest:
     def __init__(self,num):
         self.location_str = self.GetLocationStr()
         self.ReadData(num)
+        self.num_centers = np.shape(self.centers)[0]
         self.iter_num = num
 
     def BuildRHS(self):
@@ -17,26 +18,29 @@ class LLFTest:
         num_rows = np.shape(self.centers)[0]
         P = np.concatenate((np.ones((num_rows,1)),self.centers),axis=1)
         return P
-    
+
+    def BuildDistanceMatrix(self):
+        norms = np.transpose([np.sum(self.centers*self.centers,axis=1)])
+        DM = norms+np.transpose(norms)-2*np.dot(self.centers,np.transpose(self.centers))
+        return DM
+ 
     def BuildInterpolationMatrix(self):
         distance_matrix = self.BuildDistanceMatrix()
         interp_matrix = .5*distance_matrix*np.log(distance_matrix)
-        for row in range(interp_matrix.shape()): #Change
-            interp_matrix[row,row] = 0
+        np.fill_diagonal(interp_matrix,0)
         poly_matrix = self.BuildPolyMatrix()
         full_matrix = np.concatenate((interp_matrix, poly_matrix),axis=1)
         num_cols = np.shape(poly_matrix)[1]
-        lower_poly_matrix = np.concatenate(np.transpose(poly_matrix), np.zeros(p,p),axis=0)
+        lower_poly_matrix = np.concatenate((np.transpose(poly_matrix), np.zeros((num_cols,num_cols))),axis=1)
         return np.concatenate( (full_matrix,lower_poly_matrix),axis=0)
     
     def BuildLocalLagrange(self):
         interp_matrix = self.BuildInterpolationMatrix()
         rhs = self.BuildRHS()
-        solution = np.solve(interp_matrix,rhs)
+        solution = np.linalg.solve(interp_matrix,rhs)
         return solution
     
     def ReadData(self,iter_num):
-    
          centers_x_str = self.location_str  + "centers_x.txt"
          centers_y_str = self.location_str + "centers_y.txt"
          centers_x = np.loadtxt(centers_x_str)
@@ -49,3 +53,4 @@ class LLFTest:
     
     def GetLocationStr(self):
         return "/home/srowe/repos/LocalLagrangeFunctions/build/"
+
