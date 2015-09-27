@@ -38,7 +38,7 @@ TEST(IntegrationTest,BuildAnLLF){
     double y_eval = 0;
     arma::vec coef_tps = coefs.subvec(0, 199);
     std::vector<unsigned int> local_indices = llf.indices();
-    std::string index_file = "indicies_" + std::to_string(iter)+".txt";
+    std::string index_file = "indices_" + std::to_string(iter)+".txt";
     std::string coefs_file = "coefs_" + std::to_string(iter)+".txt";
     mathtools::write_vector(local_indices,index_file);
     bool save_status = coefs.save(coefs_file,arma::raw_ascii);
