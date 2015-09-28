@@ -6,13 +6,13 @@ class LLFTest:
         self.location_str = self.GetLocationStr()
         self.ReadData(num)
         
+        self.local_index = np.where(self.indices==self.iter_num)
         self.num_centers = np.shape(self.centers)[0]
         self.iter_num = num
 
     def BuildRHS(self):
         rhs = np.zeros((self.num_centers+3,1))
-        local_index = np.where(self.indices==self.iter_num)
-        rhs[local_index] =1
+        rhs[self.local_index] =1
         return rhs 
 
     def BuildPolyMatrix(self):
@@ -23,6 +23,7 @@ class LLFTest:
     def BuildDistanceMatrix(self):
         norms = np.transpose([np.sum(self.centers*self.centers,axis=1)])
         DM = norms+np.transpose(norms)-2*np.dot(self.centers,np.transpose(self.centers))
+        self.dist = DM[self.local_index,:] 
         return DM
  
     def BuildInterpolationMatrix(self):
@@ -38,8 +39,7 @@ class LLFTest:
     def BuildLocalLagrange(self):
         interp_matrix = self.BuildInterpolationMatrix()
         rhs = self.BuildRHS()
-        solution = np.linalg.solve(interp_matrix,rhs)
-        return solution
+        self.solution = np.linalg.solve(interp_matrix,rhs)
     
     def ReadData(self,iter_num):
          centers_x_str = self.location_str  + "centers_x.txt"
@@ -50,9 +50,11 @@ class LLFTest:
          indices_str = self.location_str + "indices_" + str(iter_num) + ".txt"
          coefs_str = self.location_str + "coefs_" + str(iter_num) + ".txt"
          self.indices = np.loadtxt(indices_str,dtype="int")
-         self.coefs = np.loadtxt(coefs_str)
+         self.coefs = np.transpose([np.loadtxt(coefs_str)])
          self.centers = self.full_centers[self.indices,:]
  
     def GetLocationStr(self):
         return "/home/srowe/repos/LocalLagrangeFunctions/build/"
 
+    def CheckDifference(self):
+        print("The difference between the C++ code and the python code is", np.max(self.coefs-self.solution))
