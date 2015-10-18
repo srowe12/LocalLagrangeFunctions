@@ -4,11 +4,11 @@ import scipy as sp
 class LLFTest:
     def __init__(self,num):
         self.location_str = self.GetLocationStr()
-        self.ReadData(num)
-        
+        self.ReadData(num) 
+        self.iter_num = num
         self.local_index = np.where(self.indices==self.iter_num)
         self.num_centers = np.shape(self.centers)[0]
-        self.iter_num = num
+        
 
     def BuildRHS(self):
         rhs = np.zeros((self.num_centers+3,1))
