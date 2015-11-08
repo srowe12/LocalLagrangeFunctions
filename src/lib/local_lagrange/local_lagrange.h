@@ -25,14 +25,14 @@ class LocalLagrange {
 public:
   explicit LocalLagrange(unsigned int index) : index_(index) {}
   LocalLagrange(unsigned int index, std::vector<unsigned int> indices,
-                std::vector<double> coefs)
+                std::vector<double>& coefs)
       : index_(index), indices_(indices), coefficients_(coefs) {}
 
-  arma::mat assembleInterpolationMatrix(std::vector<double> local_centers_x,
-                                        std::vector<double> local_centers_y);
+  arma::mat assembleInterpolationMatrix(const std::vector<double>& local_centers_x,
+                                        const std::vector<double>& local_centers_y);
 
-  void buildCoefficients(std::vector<double> local_centers_x,
-                         std::vector<double> local_centers_y,
+  void buildCoefficients(const std::vector<double>& local_centers_x,
+                         const std::vector<double>& local_centers_y,
                          unsigned int local_index);
 
   unsigned int index() const { return index_; }
@@ -54,10 +54,10 @@ public:
     updateBallRadius();
   }
 
-  std::array<std::vector<double>, 2> findLocalCenters(std::vector<unsigned int> local_indices);
-  unsigned int findLocalIndex(std::array<std::vector<double>, 2> local_centers,
+  std::array<std::vector<double>, 2> findLocalCenters(const std::vector<unsigned int>& local_indices);
+  unsigned int findLocalIndex(const std::array<std::vector<double>, 2>& local_centers,
                               unsigned int index);
-  LocalLagrange generateLocalLagrangeFunction(unsigned int index);
+  LocalLagrange generateLocalLagrangeFunction(const unsigned int index);
 
   unsigned int num_centers() const { return num_centers_; }
   double scale_factor() const { return scale_factor_; }
@@ -69,7 +69,7 @@ public:
 
   void assembleTree();
 
-  std::vector<unsigned> getNearestNeighbors(unsigned int index);
+  std::vector<unsigned> getNearestNeighbors(const unsigned int index);
 
   void setScale_factor(double scale_factor) {
     scale_factor_ = scale_factor;
@@ -87,7 +87,7 @@ public:
     num_centers_ = centers_x_.size();
   }
 
-  void setNum_local_centers(unsigned int num_local_centers) {num_local_centers_ = num_local_centers;}
+  void setNum_local_centers(const unsigned int num_local_centers) {num_local_centers_ = num_local_centers;}
 
 private:
   void updateBallRadius() {
