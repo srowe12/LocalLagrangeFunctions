@@ -19,8 +19,6 @@ TEST(IntegrationTest,BuildAnLLF){
   std::array<std::vector<double>, 2> centers =
       mathtools::meshgrid<double>(xmesh, xmesh);
 
-  mathtools::write_vector(centers[0],"centers_x.txt");
-  mathtools::write_vector(centers[1],"centers_y.txt");
   local_lagrange::LocalLagrangeConstructor llc;
   llc.setCenters(centers[0], centers[1]);
   llc.assembleTree();
@@ -47,6 +45,8 @@ TEST(IntegrationTest,BuildAnLLF){
       x_eval += coef_tps(eval_iter) * centers[0][local_indices[eval_iter]];
       y_eval += coef_tps(eval_iter) * centers[1][local_indices[eval_iter]];
     }
+    EXPECT_LT(x_eval,1e-8);
+    EXPECT_LT(y_eval,1e-8);
 
 }
 
