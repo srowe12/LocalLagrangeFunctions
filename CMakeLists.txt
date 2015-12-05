@@ -3,6 +3,9 @@ project (locallagrange)
 subdirs(src)
 enable_testing()
 find_package(GTest REQUIRED)
+#May need to export GTEST_ROOT=googletest/build
+#and put the include directory in the build also. This is a hack.
+#For Armadillo, you may need to export CMAKE_PREFIX_PATH=$YOUR_ARMADILLO_ROOT
 find_package(Threads)
 find_package(OpenMP)
 include_directories(${GTEST_INCLUDE_DIRS})

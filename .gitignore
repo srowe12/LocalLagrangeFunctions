@@ -3,3 +3,5 @@
 *.pyc
 build
 *.kdev4
+*.slrm
+*.err
