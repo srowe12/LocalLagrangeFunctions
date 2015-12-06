@@ -32,14 +32,12 @@ public:
   assembleInterpolationMatrix(const std::array<double, n> &local_centers_x,
                               const std::array<double, n> &local_centers_y) {
 
-    arma::mat interp_matrix(local_centers_x.size() + 3,
-                            local_centers_x.size() + 3, arma::fill::zeros);
+    arma::mat::fixed<n+3,n+3> interp_matrix(arma::fill::zeros);
     double distx = 0;
     double disty = 0;
     double dist = 0;
-    size_t num_centers = local_centers_x.size();
-    for (size_t row = 0; row < num_centers; row++) {
-      for (size_t col = row + 1; col < num_centers; col++) {
+    for (size_t row = 0; row < n; row++) {
+      for (size_t col = row + 1; col < n; col++) {
         distx = local_centers_x[row] - local_centers_x[col];
         disty = local_centers_y[row] - local_centers_y[col];
         dist = distx * distx + disty * disty;
@@ -48,16 +46,16 @@ public:
       }
     }
 
-    for (size_t row = 0; row < num_centers; row++) {
-      interp_matrix(num_centers, row) = interp_matrix(row, num_centers) = 1;
-      interp_matrix(num_centers + 1, row) =
-          interp_matrix(row, num_centers + 1) = local_centers_x[row];
-      interp_matrix(num_centers + 2, row) =
-          interp_matrix(row, num_centers + 2) = local_centers_y[row];
+    for (size_t row = 0; row < n; row++) {
+      interp_matrix(n, row) = interp_matrix(row, n) = 1;
+      interp_matrix(n + 1, row) =
+          interp_matrix(row, n + 1) = local_centers_x[row];
+      interp_matrix(n + 2, row) =
+          interp_matrix(row, n + 2) = local_centers_y[row];
     }
 
     // Move semantics maybe?
-    return interp_matrix;
+  return interp_matrix;
   }
 
   void buildCoefficients(const std::array<double, n> &local_centers_x,
@@ -73,14 +71,14 @@ public:
 
   unsigned int index() const { return index_; }
   std::array<unsigned int, n> indices() const { return indices_; }
-  arma::vec coefficients() const { return coefficients_; }
+  arma::vec::fixed<n+3> coefficients() const { return coefficients_; }
 
   void setIndices(std::array<unsigned int, n> indices) { indices_ = indices; }
 
 private:
   unsigned int index_;
   std::array<unsigned int, n> indices_;
-  arma::vec coefficients_;
+  arma::vec::fixed<n+3> coefficients_;
 };
 
 template <size_t n> class LocalLagrangeAssembler {
