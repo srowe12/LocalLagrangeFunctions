@@ -92,10 +92,10 @@ TEST(MyTest, SolveForCoefficients) {
   arma::mat interp_matrix =
       llf.assembleInterpolationMatrix(centers_x, centers_y);
   arma::vec rhs = interp_matrix * coefs;
-  EXPECT_NEAR(1, rhs(local_index), 1e-15);
+  EXPECT_NEAR(1, rhs(local_index), 1e-13);
   rhs(local_index) = 0;
   for (auto it = rhs.begin(); it != rhs.end(); ++it) {
-    EXPECT_NEAR(0, *it, 1e-15);
+    EXPECT_NEAR(0, *it, 1e-13);
   }
 }
 
@@ -156,7 +156,7 @@ TEST(MyTest, BuildLocalLagrangeFunction) {
   unsigned int index = 5;
   local_lagrange::LocalLagrange llf = llc.generateLocalLagrangeFunction(index);
   arma::vec coefs = llf.coefficients();
-  EXPECT_NEAR(0, accu(coefs.subvec(0, 199)), 1e-12);
+  EXPECT_NEAR(0, accu(coefs.subvec(0, 199)), 1e-10);
   double x_eval = 0;
   double y_eval = 0;
   arma::vec coef_tps = coefs.subvec(0, 199);
