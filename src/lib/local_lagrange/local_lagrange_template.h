@@ -130,9 +130,11 @@ public:
     std::vector<value> neighbors;
     rt_.query(bgi::nearest(center, n), std::back_inserter(neighbors));
 
-    std::vector<unsigned> indices;
+    std::array<unsigned,n> indices;
+    size_t counter = 0;
     for (auto it = neighbors.begin(); it != neighbors.end(); ++it) {
-      indices.push_back(std::get<1>(*it));
+      indices[counter] = std::get<1>(*it);
+      counter += 1;
     }
     return indices;
   }
