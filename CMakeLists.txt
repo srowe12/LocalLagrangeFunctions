@@ -8,6 +8,8 @@ find_package(GTest REQUIRED)
 #For Armadillo, you may need to export CMAKE_PREFIX_PATH=$YOUR_ARMADILLO_ROOT
 find_package(Threads)
 find_package(OpenMP)
+find_package(LAPACK)
+
 include_directories(${GTEST_INCLUDE_DIRS})
 SET(CMAKE_CXX_FLAGS "-std=c++11 -Wall -O3")
 if (OPENMP_FOUND)

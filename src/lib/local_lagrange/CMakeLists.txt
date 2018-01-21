@@ -4,6 +4,6 @@ add_library(${lagrange_lib} local_lagrange.cpp local_lagrange_template.cpp ${lag
 FIND_PACKAGE(Boost)
 FIND_PACKAGE(Armadillo)
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR} ${ARMADILLO_INCLUDE_DIRS})
-target_link_libraries( lagrange ${ARMADILLO_LIBRARIES})
+target_link_libraries( lagrange ${ARMADILLO_LIBRARIES} ${LAPACK_LIBRARIES})
 ADD_DEFINITIONS("-DHAS_BOOST")
 subdirs(test)

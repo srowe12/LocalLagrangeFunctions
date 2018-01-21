@@ -22,7 +22,7 @@ std::vector<T> linspace(T a, T b, unsigned int num_points){
 }
 
 template <typename T>
-std::array<std::vector<T>,2> meshgrid(std::vector<T> xpoints, std::vector<T> ypoints){
+std::array<std::vector<T>,2> meshgrid(const std::vector<T>& xpoints, const std::vector<T>& ypoints){
 
    size_t num_points_x = xpoints.size();
    size_t num_points_y = ypoints.size();
@@ -31,12 +31,12 @@ std::array<std::vector<T>,2> meshgrid(std::vector<T> xpoints, std::vector<T> ypo
    std::vector<T> Y(num_points);
    T xval;
    T yval;
-   for (size_t row = 0; row < num_points_x; row++){
+   for (size_t row = 0; row < num_points_x; ++row){
        xval = xpoints[row];
-        for (size_t col = 0; col < num_points_y; col++) {
+        for (size_t col = 0; col < num_points_y; ++col) {
            yval = ypoints[col];
            X[row*num_points_y + col] = xval;
-           Y[row*num_points_y+col] = yval;
+           Y[row*num_points_y + col] = yval;
        }
    }
    std::array<std::vector<T>,2> return_points{X,Y};
