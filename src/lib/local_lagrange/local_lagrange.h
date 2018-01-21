@@ -60,8 +60,8 @@ public:
   	assembleTree(); // Build up R Tree of nearest neighbor points so we can find local indices  
   }
 
-  std::array<std::vector<double>, 2> findLocalCenters(const std::vector<unsigned int>& local_indices);
-  unsigned int findLocalIndex(const std::array<std::vector<double>, 2>& local_centers,
+  std::tuple<std::vector<double>, std::vector<double>> findLocalCenters(const std::vector<unsigned int>& local_indices);
+  unsigned int findLocalIndex(const std::tuple<std::vector<double>, std::vector<double>>& local_centers,
                               unsigned int index);
   LocalLagrange generateLocalLagrangeFunction(const unsigned int index);
 

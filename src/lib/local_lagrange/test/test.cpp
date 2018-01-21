@@ -109,8 +109,7 @@ TEST(MyTest, FindLocalIndexTest) {
   std::vector<double> local_centers_x{ 2, 3 };
   std::vector<double> local_centers_y{ 1, 2 };
   unsigned int index = 2;
-  std::array<std::vector<double>, 2> local_centers{ local_centers_x,
-                                                    local_centers_y };
+  auto local_centers = std::make_tuple(local_centers_x, local_centers_y);
   unsigned int local_index = llc.findLocalIndex(local_centers, index);
   EXPECT_EQ(1, local_index);
 }
@@ -129,14 +128,19 @@ TEST(MyTest, FindLocalCentersTest) {
   llc.setNum_local_centers(2);
   unsigned int index = 5;
   std::vector<unsigned int> local_indices = llc.getNearestNeighbors(index);
-  std::array<std::vector<double>, 2> local_centers =
-      llc.findLocalCenters(local_indices);
+  auto local_centers = llc.findLocalCenters(local_indices);
+
+  auto& local_centers_x = std::get<0>(local_centers);
+  auto& local_centers_y = std::get<1>(local_centers);
+
   double center_x = centers_x[index];
   double center_y = centers_y[index];
   double dist;
-  for (size_t i = 0; i < local_centers[0].size(); i++) {
-    dist = (local_centers[0][i] - center_x) * (local_centers[0][i] - center_x) +
-           (local_centers[1][i] - center_y) * (local_centers[1][i] - center_y);
+
+
+  for (size_t i = 0; i < local_centers_x.size(); i++) {
+    dist = (local_centers_x[i] - center_x) * (local_centers_x[i] - center_x) +
+           (local_centers_y[i] - center_y) * (local_centers_y[i] - center_y);
     EXPECT_GT(2.0000001, dist);
   }
 }
