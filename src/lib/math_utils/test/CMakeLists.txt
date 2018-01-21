@@ -4,4 +4,4 @@ include_directories(${math_tools_hdr})
 target_link_libraries(math_test ${math_tools_lib} ${GTEST_BOTH_LIBRARIES})
 
 #Test name then test exectuables. 
-add_test(math_tests math_test)
+add_test(NAME math_tests COMMAND math_test)

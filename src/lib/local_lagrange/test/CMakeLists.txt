@@ -4,12 +4,14 @@ add_executable(lagrange_test ${lagrange_test_src})
 include_directories( ${CMAKE_LIB_DIR}/math_utils/ ${math_hdr} ${ARMADILLO_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
 target_link_libraries(lagrange_test ${math_lib} ${lagrange_lib} ${ARMADILLO_LIBRARIES} ${GTEST_BOTH_LIBRARIES})
 
-add_test(llf_test lagrange_test)
+add_test(NAME lagrange_test COMMAND lagrange_test)
 
 set(lagrange_int_test_src integration_test.cpp)
-add_executable(lagrange_integration_test ${lagrange_int_test_src})
+add_executable(lagrange_int_test ${lagrange_int_test_src})
 include_directories( ${CMAKE_LIB_DIR}/math_utils/ ${math_hdr} ${ARMADILLO_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
-target_link_libraries(lagrange_integration_test ${math_lib} ${lagrange_lib} ${ARMADILLO_LIBRARIES} ${GTEST_BOTH_LIBRARIES})
+target_link_libraries(lagrange_int_test ${math_lib} ${lagrange_lib} ${ARMADILLO_LIBRARIES} ${GTEST_BOTH_LIBRARIES})
+
+add_test(NAME lagrange_int_test COMMAND lagrange_int_test)
 
 set(lagrange_speed_test_src speed_test.cpp)
 set(lagrange_speed_test_hdr speed_test.h)
@@ -23,7 +25,7 @@ add_executable(lagrange_template_test ${lagrange_template_test_src})
 include_directories( ${CMAKE_LIB_DIR}/math_utils/ ${math_hdr} ${ARMADILLO_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
 target_link_libraries(lagrange_template_test ${math_lib} ${lagrange_lib} ${ARMADILLO_LIBRARIES} ${GTEST_BOTH_LIBRARIES})
 
-add_test(llf_test lagrange_template_test)
+add_test(NAME llf_test COMMAND lagrange_template_test)
 
 set(lagrange_template_speed_test_src speed_test.cpp)
 set(lagrange_template_speed_test_hdr speed_test.h)
