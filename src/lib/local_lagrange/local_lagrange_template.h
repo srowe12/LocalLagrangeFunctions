@@ -1,14 +1,14 @@
 #ifndef LOCAL_LAGRANGE_TEMPLATE_HDR
 #define LOCAL_LAGRANGE_TEMPLATE_HDR
-#include <stdio.h>
-#include <math.h>
-#include <vector>
-#include <array>
 #include <armadillo>
+#include <array>
+#include <math.h>
+#include <stdio.h>
+#include <vector>
 
 #include <boost/geometry.hpp>
-#include <boost/geometry/geometries/point.hpp>
 #include <boost/geometry/geometries/box.hpp>
+#include <boost/geometry/geometries/point.hpp>
 
 #include <boost/geometry/index/rtree.hpp>
 
@@ -32,7 +32,7 @@ public:
   assembleInterpolationMatrix(const std::array<double, n> &local_centers_x,
                               const std::array<double, n> &local_centers_y) {
 
-    arma::mat::fixed<n+3,n+3> interp_matrix(arma::fill::zeros);
+    arma::mat::fixed<n + 3, n + 3> interp_matrix(arma::fill::zeros);
     double distx = 0;
     double disty = 0;
     double dist = 0;
@@ -48,14 +48,14 @@ public:
 
     for (size_t row = 0; row < n; row++) {
       interp_matrix(n, row) = interp_matrix(row, n) = 1;
-      interp_matrix(n + 1, row) =
-          interp_matrix(row, n + 1) = local_centers_x[row];
-      interp_matrix(n + 2, row) =
-          interp_matrix(row, n + 2) = local_centers_y[row];
+      interp_matrix(n + 1, row) = interp_matrix(row, n + 1) =
+          local_centers_x[row];
+      interp_matrix(n + 2, row) = interp_matrix(row, n + 2) =
+          local_centers_y[row];
     }
 
     // Move semantics maybe?
-  return interp_matrix;
+    return interp_matrix;
   }
 
   void buildCoefficients(const std::array<double, n> &local_centers_x,
@@ -71,14 +71,14 @@ public:
 
   unsigned int index() const { return index_; }
   std::array<unsigned int, n> indices() const { return indices_; }
-  arma::vec::fixed<n+3> coefficients() const { return coefficients_; }
+  arma::vec::fixed<n + 3> coefficients() const { return coefficients_; }
 
   void setIndices(std::array<unsigned int, n> indices) { indices_ = indices; }
 
 private:
   unsigned int index_;
   std::array<unsigned int, n> indices_;
-  arma::vec::fixed<n+3> coefficients_;
+  arma::vec::fixed<n + 3> coefficients_;
 };
 
 template <size_t n> class LocalLagrangeAssembler {
@@ -128,7 +128,7 @@ public:
     std::vector<value> neighbors;
     rt_.query(bgi::nearest(center, n), std::back_inserter(neighbors));
 
-    std::array<unsigned,n> indices;
+    std::array<unsigned, n> indices;
     size_t counter = 0;
     for (auto it = neighbors.begin(); it != neighbors.end(); ++it) {
       indices[counter] = std::get<1>(*it);

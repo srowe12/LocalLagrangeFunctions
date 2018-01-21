@@ -1,12 +1,11 @@
 #include "local_lagrange.h"
-#include <math.h>
 #include <armadillo>
 #include <boost/geometry.hpp>
-#include <boost/geometry/geometries/point.hpp>
 #include <boost/geometry/geometries/box.hpp>
+#include <boost/geometry/geometries/point.hpp>
+#include <math.h>
 
 #include <boost/geometry/index/rtree.hpp>
-
 
 namespace bg = boost::geometry;
 namespace bgi = boost::geometry::index;
@@ -27,7 +26,8 @@ void LocalLagrangeAssembler::assembleTree() {
 }
 
 arma::mat LocalLagrange::assembleInterpolationMatrix(
-    const std::vector<double>& local_centers_x, const std::vector<double>& local_centers_y) {
+    const std::vector<double> &local_centers_x,
+    const std::vector<double> &local_centers_y) {
   // Initialize matrix to all zeros.
   arma::mat interp_matrix(local_centers_x.size() + 3,
                           local_centers_x.size() + 3, arma::fill::zeros);
@@ -56,11 +56,12 @@ arma::mat LocalLagrange::assembleInterpolationMatrix(
   return interp_matrix;
 }
 
-void LocalLagrange::buildCoefficients(const std::vector<double>& local_centers_x,
-                                      const std::vector<double>& local_centers_y,
-                                      unsigned int local_index) {
+void LocalLagrange::buildCoefficients(
+    const std::vector<double> &local_centers_x,
+    const std::vector<double> &local_centers_y, unsigned int local_index) {
 
-  //Work needed here perhaps. Is this bad generating interp_matrix in this function?
+  // Work needed here perhaps. Is this bad generating interp_matrix in this
+  // function?
   arma::mat interp_matrix =
       assembleInterpolationMatrix(local_centers_x, local_centers_y);
   arma::vec rhs(local_centers_x.size() + 3, arma::fill::zeros);
@@ -69,7 +70,8 @@ void LocalLagrange::buildCoefficients(const std::vector<double>& local_centers_x
 }
 
 std::tuple<std::vector<double>, std::vector<double>>
-LocalLagrangeAssembler::findLocalCenters(const std::vector<unsigned int>& local_indices) {
+LocalLagrangeAssembler::findLocalCenters(
+    const std::vector<unsigned int> &local_indices) {
 
   const size_t num_local_centers = local_indices.size();
   std::vector<double> local_x(num_local_centers);
@@ -94,15 +96,16 @@ LocalLagrangeAssembler::generateLocalLagrangeFunction(unsigned int index) {
 }
 
 unsigned int LocalLagrangeAssembler::findLocalIndex(
-    const std::tuple<std::vector<double>, std::vector<double>>& local_centers, unsigned int index) {
+    const std::tuple<std::vector<double>, std::vector<double>> &local_centers,
+    unsigned int index) {
 
   const double center_x = centers_x_[index];
   const double center_y = centers_y_[index];
   // Implement naive algorithm here. Upgrade later.
   // Machine precision equality errors possible.
   unsigned int local_index = 0;
-  const auto& local_centers_x = std::get<0>(local_centers);
-  const auto& local_centers_y = std::get<1>(local_centers);
+  const auto &local_centers_x = std::get<0>(local_centers);
+  const auto &local_centers_y = std::get<1>(local_centers);
   const size_t num_vectors = local_centers_x.size();
   for (size_t i = 0; i < num_vectors; ++i) {
     if (center_x == local_centers_x[i] && center_y == local_centers_y[i]) {
@@ -121,18 +124,21 @@ LocalLagrangeAssembler::getNearestNeighbors(unsigned int index) {
   Point center(centers_x_[index], centers_y_[index]);
   Value center_value(center, index);
   std::vector<Value> neighbors;
-  rt_.query(bgi::nearest(center, num_local_centers_), std::back_inserter(neighbors));
+  rt_.query(bgi::nearest(center, num_local_centers_),
+            std::back_inserter(neighbors));
 
   std::vector<unsigned> indices;
   for (const auto neighbor : neighbors) {
-    indices.emplace_back(std::get<1>(neighbor)); // Grab the index of the neighbor
+    indices.emplace_back(
+        std::get<1>(neighbor)); // Grab the index of the neighbor
   }
   return indices;
 }
 
-void buildLocalLagrangeFunctions(const std::vector<double>& centers_x, const std::vector<double>& centers_y, const size_t num_local_centers) {
+void buildLocalLagrangeFunctions(const std::vector<double> &centers_x,
+                                 const std::vector<double> &centers_y,
+                                 const size_t num_local_centers) {
 
-  LocalLagrangeAssembler assembler(centers_x, centers_y, num_local_centers); // 
-
+  LocalLagrangeAssembler assembler(centers_x, centers_y, num_local_centers); //
 }
 } // namespace local_lagrange

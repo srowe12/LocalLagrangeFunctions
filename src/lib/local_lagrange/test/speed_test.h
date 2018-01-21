@@ -5,16 +5,16 @@
 #include "math_tools.h"
 #include <gtest/gtest.h>
 #include <stdio.h>
-#include <utility>
 #include <string>
+#include <utility>
 
 #include <boost/geometry.hpp>
-#include <boost/geometry/geometries/point.hpp>
 #include <boost/geometry/geometries/box.hpp>
+#include <boost/geometry/geometries/point.hpp>
 #include <boost/geometry/index/rtree.hpp>
 
 #include <chrono>
 
-void BuildLocalLagrange(LocalLagrangeAssembler& llc, size_t iter); 
+void BuildLocalLagrange(LocalLagrangeAssembler &llc, size_t iter);
 
-#endif //SPEED_TEST_H
+#endif // SPEED_TEST_H

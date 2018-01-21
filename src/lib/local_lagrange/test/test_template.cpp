@@ -1,10 +1,10 @@
-#include <gtest/gtest.h>
 #include "../local_lagrange_template.h"
+#include <boost/geometry.hpp>
+#include <boost/geometry/geometries/box.hpp>
+#include <boost/geometry/geometries/point.hpp>
+#include <gtest/gtest.h>
 #include <stdio.h>
 #include <utility>
-#include <boost/geometry.hpp>
-#include <boost/geometry/geometries/point.hpp>
-#include <boost/geometry/geometries/box.hpp>
 
 #include <boost/geometry/index/rtree.hpp>
 
@@ -24,10 +24,10 @@ TEST(MyTest, LocalLagrnageConstructorConstructor) {
 }
 
 TEST(MyTest, TreeTest) {
-  std::vector<double> centers_x_{ 1, 2, 3 };
-  std::vector<double> centers_y_{ 0, 1, 2 };
+  std::vector<double> centers_x_{1, 2, 3};
+  std::vector<double> centers_y_{0, 1, 2};
 
-  bgi::rtree<value, bgi::quadratic<16> > rt;
+  bgi::rtree<value, bgi::quadratic<16>> rt;
   std::vector<value> points;
   for (size_t iter = 0; iter < centers_x_.size(); iter++) {
     point mypoint(centers_x_[iter], centers_y_[iter]);
@@ -52,19 +52,19 @@ TEST(MyTest, TreeTest) {
 
 TEST(MyTest, NearestNeighborTest) {
   local_lagrange::LocalLagrangeAssembler<2> llc;
-  std::vector<double> centers_x{ 1, 2, 3 };
-  std::vector<double> centers_y{ 0, 1, 2 };
+  std::vector<double> centers_x{1, 2, 3};
+  std::vector<double> centers_y{0, 1, 2};
   llc.setCenters(centers_x, centers_y);
   llc.assembleTree();
-  std::array<unsigned,2> indices = llc.getNearestNeighbors(0);
+  std::array<unsigned, 2> indices = llc.getNearestNeighbors(0);
   EXPECT_EQ(2, indices.size());
   EXPECT_EQ(1, indices[0]);
   EXPECT_EQ(0, indices[1]);
 }
 
 TEST(MyTest, AssembleInterpolationMatrix) {
-  std::array<double,3> centers_x{ 1, 2, 3 };
-  std::array<double,3> centers_y{ 0, 1, 2 };
+  std::array<double, 3> centers_x{1, 2, 3};
+  std::array<double, 3> centers_y{0, 1, 2};
   local_lagrange::LocalLagrange<3> llf(0); // Index 0.
   arma::mat interp_matrix =
       llf.assembleInterpolationMatrix(centers_x, centers_y);
@@ -80,8 +80,8 @@ TEST(MyTest, AssembleInterpolationMatrix) {
 }
 
 TEST(MyTest, SolveForCoefficients) {
-  std::array<double,3> centers_x{ 1, 2, 3 };
-  std::array<double,3> centers_y{ 0, 1, 2 };
+  std::array<double, 3> centers_x{1, 2, 3};
+  std::array<double, 3> centers_y{0, 1, 2};
   unsigned int local_index = 0;
   local_lagrange::LocalLagrange<3> llf(0); // Index 0.
   llf.buildCoefficients(centers_x, centers_y, 0);
@@ -99,16 +99,16 @@ TEST(MyTest, SolveForCoefficients) {
 
 TEST(MyTest, FindLocalIndexTest) {
 
-  std::vector<double> centers_x{ 1, 2, 3 };
-  std::vector<double> centers_y{ 0, 1, 2 };
+  std::vector<double> centers_x{1, 2, 3};
+  std::vector<double> centers_y{0, 1, 2};
 
   local_lagrange::LocalLagrangeAssembler<2> llc;
   llc.setCenters(centers_x, centers_y);
-  std::array<double,2> local_centers_x{ 2, 3 };
-  std::array<double,2> local_centers_y{ 1, 2 };
+  std::array<double, 2> local_centers_x{2, 3};
+  std::array<double, 2> local_centers_y{1, 2};
   unsigned int index = 2;
-  std::array<std::array<double,2>, 2> local_centers{ local_centers_x,
-                                                    local_centers_y };
+  std::array<std::array<double, 2>, 2> local_centers{local_centers_x,
+                                                     local_centers_y};
   unsigned int local_index = llc.findLocalIndex(local_centers, index);
   EXPECT_EQ(1, local_index);
 }
@@ -125,8 +125,8 @@ TEST(MyTest, FindLocalCentersTest) {
   llc.setCenters(centers_x, centers_y);
   llc.assembleTree();
   unsigned int index = 5;
-  std::array<unsigned int,2> local_indices = llc.getNearestNeighbors(index);
-  std::array<std::array<double,2>, 2> local_centers =
+  std::array<unsigned int, 2> local_indices = llc.getNearestNeighbors(index);
+  std::array<std::array<double, 2>, 2> local_centers =
       llc.findLocalCenters(local_indices);
   double center_x = centers_x[index];
   double center_y = centers_y[index];
@@ -150,13 +150,14 @@ TEST(MyTest, BuildLocalLagrangeFunction) {
   llc.setCenters(centers[0], centers[1]);
   llc.assembleTree();
   unsigned int index = 5;
-  local_lagrange::LocalLagrange<200> llf = llc.generateLocalLagrangeFunction(index);
+  local_lagrange::LocalLagrange<200> llf =
+      llc.generateLocalLagrangeFunction(index);
   arma::vec coefs = llf.coefficients();
   EXPECT_NEAR(0, accu(coefs.subvec(0, 199)), 1e-10);
   double x_eval = 0;
   double y_eval = 0;
   arma::vec coef_tps = coefs.subvec(0, 199);
-  std::array<unsigned int,200> local_indices = llf.indices();
+  std::array<unsigned int, 200> local_indices = llf.indices();
 
   for (size_t iter = 0; iter < 200; iter++) {
     x_eval += coef_tps(iter) * centers[0][local_indices[iter]];
@@ -166,9 +167,7 @@ TEST(MyTest, BuildLocalLagrangeFunction) {
   EXPECT_NEAR(0, y_eval, 1e-12);
 }
 
-TEST(MyTest, BuildAllLocalLagrangeFunctions) {
-
-}
+TEST(MyTest, BuildAllLocalLagrangeFunctions) {}
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
@@ -177,4 +176,3 @@ int main(int argc, char **argv) {
 
   return return_value;
 }
-
