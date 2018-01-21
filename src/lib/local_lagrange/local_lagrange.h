@@ -54,8 +54,33 @@ public:
   // The LLF evaluates via \sum_{i=1}^N c_i \|p -x_i\|^2 log(\|p - x_i\|)
   // where c_i are the coefficients in the vector coefficients_ and
   // x_i are the local_centers associated with the vector
-  double operator() (const arma::vec& points) {
-    return 0;
+  double operator() (const double x, const double y) {
+    // Compute distance from points to position
+
+    ///@todo srowe Naive implementation for now, improve on in the future
+    double result = 0.0;
+    for (size_t i = 0; i < centers_x_.size(); ++i) {
+      const double xdist = centers_x_[i] - x;
+      const double ydist = centers_y_[i] - y;
+      const double distance = xdist * xdist + ydist * ydist;
+
+      // Safety check for distance = 0
+      if (distance != 0.0) {
+
+      //.5 r^2 log(r^2) = r^2 log(r), this way we don't need square root
+      ///@todo srowe: Would it be faster to convert this to std::log1p and use a conversion factor?
+      result += coefficients_[i]*distance*std::log(distance);
+      }
+    }
+    result *= .5; // Multiply in the 1/2 for the 1/2 * r^2 log(r^2)
+    // With distance vector, compute r^2 log(r)
+
+    ///@todo srowe: We need to also compute in the Polynomial terms!
+
+    // Polynomial is last three coefficients_ vector points; These are of the form 1 + x + y
+    double polynomial_term = coefficients_[-3] + coefficients_[-2]*x + coefficients_[-1]*y;
+
+    return result + polynomial_term;
   }
 
 private:
