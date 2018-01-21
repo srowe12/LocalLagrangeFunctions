@@ -14,7 +14,7 @@
 #include <chrono>
 //#include <thread>
 #include <future>
-void BuildLocalLagrange(local_lagrange::LocalLagrangeConstructor& llc, size_t iter) {
+void BuildLocalLagrange(local_lagrange::LocalLagrangeAssembler& llc, size_t iter) {
 //   std::cout << "The iteration is" << iter << std::endl;
    local_lagrange::LocalLagrange llf = llc.generateLocalLagrangeFunction(iter);
 }

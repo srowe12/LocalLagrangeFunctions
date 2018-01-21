@@ -47,11 +47,17 @@ private:
   arma::vec coefficients_;
 };
 
-class LocalLagrangeConstructor {
+class LocalLagrangeAssembler {
 public:
-  LocalLagrangeConstructor()
+
+  ///@todo srowe: Why bother with a junk constructor like this?
+  LocalLagrangeAssembler()
       : num_centers_(0), scale_factor_(1), mesh_norm_(0) {
     updateBallRadius();
+  }
+
+  LocalLagrangeAssembler(const std::vector<double>& centers_x, const std::vector<double>& centers_y) : centers_x_(centers_x), centers_y_(centers_y) {
+  	assembleTree(); // Build up R Tree of nearest neighbor points so we can find local indices  
   }
 
   std::array<std::vector<double>, 2> findLocalCenters(const std::vector<unsigned int>& local_indices);
@@ -79,8 +85,8 @@ public:
     mesh_norm_ = mesh_norm;
     updateBallRadius();
   }
-  void setCenters(std::vector<double> centers_x,
-                  std::vector<double> centers_y) {
+  void setCenters(const std::vector<double>& centers_x,
+                  const std::vector<double>& centers_y) {
     // Assumes size of centers_x and centers_y are the same
     centers_x_ = centers_x;
     centers_y_ = centers_y;
@@ -110,3 +116,4 @@ private:
 
 } // namespace local_lagrange
 #endif // LOCAL_LAGRANGE_HDR
+

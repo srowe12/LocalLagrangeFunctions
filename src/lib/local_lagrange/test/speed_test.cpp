@@ -14,7 +14,7 @@
 #include <chrono>
 //#include <thread>
 #include <future>
-void BuildLocalLagrange(local_lagrange::LocalLagrangeConstructor& llc, size_t iter) {
+void BuildLocalLagrange(local_lagrange::LocalLagrangeAssembler& llc, size_t iter) {
 //   std::cout << "The iteration is" << iter << std::endl;
    local_lagrange::LocalLagrange llf = llc.generateLocalLagrangeFunction(iter);
 }
@@ -32,7 +32,7 @@ int main() {
 
   //TODO: Constructor is kinda dumb...
   //Set the centers into the Local Lagrange Constructor...should rename it assembler...
-  local_lagrange::LocalLagrangeConstructor llc;
+  local_lagrange::LocalLagrangeAssembler llc;
   llc.setCenters(centers[0], centers[1]);
   //Assemble the R-Tree to bin the centers based on squares, not circles. Close enough.
   llc.assembleTree();

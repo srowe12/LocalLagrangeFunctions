@@ -15,6 +15,6 @@
 
 #include <chrono>
 
-void BuildLocalLagrange(LocalLagrangeConstructor& llc, size_t iter); 
+void BuildLocalLagrange(LocalLagrangeAssembler& llc, size_t iter); 
 
 #endif //SPEED_TEST_H

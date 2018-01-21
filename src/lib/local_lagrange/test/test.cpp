@@ -17,7 +17,7 @@ typedef bg::model::point<double, 2, bg::cs::cartesian> point;
 typedef std::pair<point, unsigned> value;
 
 TEST(MyTest, LocalLagrnageConstructorConstructor) {
-  local_lagrange::LocalLagrangeConstructor llc;
+  local_lagrange::LocalLagrangeAssembler llc;
   EXPECT_EQ(0, llc.num_centers());
   EXPECT_EQ(1, llc.scale_factor());
   EXPECT_EQ(0, llc.mesh_norm());
@@ -52,7 +52,7 @@ TEST(MyTest, TreeTest) {
 
 TEST(MyTest, NearestNeighborTest) {
 
-  local_lagrange::LocalLagrangeConstructor llc;
+  local_lagrange::LocalLagrangeAssembler llc;
   std::vector<double> centers_x{ 1, 2, 3 };
   std::vector<double> centers_y{ 0, 1, 2 };
   llc.setCenters(centers_x, centers_y);
@@ -104,7 +104,7 @@ TEST(MyTest, FindLocalIndexTest) {
   std::vector<double> centers_x{ 1, 2, 3 };
   std::vector<double> centers_y{ 0, 1, 2 };
 
-  local_lagrange::LocalLagrangeConstructor llc;
+  local_lagrange::LocalLagrangeAssembler llc;
   llc.setCenters(centers_x, centers_y);
   std::vector<double> local_centers_x{ 2, 3 };
   std::vector<double> local_centers_y{ 1, 2 };
@@ -123,7 +123,7 @@ TEST(MyTest, FindLocalCentersTest) {
     centers_x[i] = i;
     centers_y[i] = i + 1;
   }
-  local_lagrange::LocalLagrangeConstructor llc;
+  local_lagrange::LocalLagrangeAssembler llc;
   llc.setCenters(centers_x, centers_y);
   llc.assembleTree();
   llc.setNum_local_centers(2);
@@ -149,7 +149,7 @@ TEST(MyTest, BuildLocalLagrangeFunction) {
   std::array<std::vector<double>, 2> centers =
       mathtools::meshgrid<double>(xmesh, xmesh);
 
-  local_lagrange::LocalLagrangeConstructor llc;
+  local_lagrange::LocalLagrangeAssembler llc;
   llc.setCenters(centers[0], centers[1]);
   llc.assembleTree();
   llc.setNum_local_centers(200);

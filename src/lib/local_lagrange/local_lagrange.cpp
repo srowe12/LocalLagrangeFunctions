@@ -16,7 +16,7 @@ namespace local_lagrange {
 typedef bg::model::point<double, 2, bg::cs::cartesian> point;
 typedef std::pair<point, unsigned> value;
 
-void LocalLagrangeConstructor::assembleTree() {
+void LocalLagrangeAssembler::assembleTree() {
   std::vector<value> points;
   for (size_t iter = 0; iter < centers_x_.size(); iter++) {
     point mypoint(centers_x_[iter], centers_y_[iter]);
@@ -69,7 +69,7 @@ void LocalLagrange::buildCoefficients(const std::vector<double>& local_centers_x
 }
 
 std::array<std::vector<double>, 2>
-LocalLagrangeConstructor::findLocalCenters(const std::vector<unsigned int>& local_indices) {
+LocalLagrangeAssembler::findLocalCenters(const std::vector<unsigned int>& local_indices) {
 
   size_t num_local_centers = local_indices.size();
   std::vector<double> local_x(num_local_centers);
@@ -83,7 +83,7 @@ LocalLagrangeConstructor::findLocalCenters(const std::vector<unsigned int>& loca
 }
 
 LocalLagrange
-LocalLagrangeConstructor::generateLocalLagrangeFunction(unsigned int index) {
+LocalLagrangeAssembler::generateLocalLagrangeFunction(unsigned int index) {
 
   LocalLagrange llf(index);
 
@@ -97,7 +97,7 @@ LocalLagrangeConstructor::generateLocalLagrangeFunction(unsigned int index) {
   return llf;
 }
 
-unsigned int LocalLagrangeConstructor::findLocalIndex(
+unsigned int LocalLagrangeAssembler::findLocalIndex(
     const std::array<std::vector<double>, 2>& local_centers, unsigned int index) {
   double center_x = centers_x_[index];
   double center_y = centers_y_[index];
@@ -115,7 +115,7 @@ unsigned int LocalLagrangeConstructor::findLocalIndex(
 }
 
 std::vector<unsigned>
-LocalLagrangeConstructor::getNearestNeighbors(unsigned int index) {
+LocalLagrangeAssembler::getNearestNeighbors(unsigned int index) {
   // Wrap values into a single point, then value pair. Pass into rt for
   // querying.
   point center(centers_x_[index], centers_y_[index]);
@@ -128,5 +128,9 @@ LocalLagrangeConstructor::getNearestNeighbors(unsigned int index) {
     indices.push_back(std::get<1>(*it));
   }
   return indices;
+}
+
+void buildLocalLagrangeFunctions(const std::vector<double>& centers_x, const std::vector<double>& centers_y) {
+
 }
 } // namespace local_lagrange
