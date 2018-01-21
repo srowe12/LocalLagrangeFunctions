@@ -23,6 +23,10 @@ typedef std::pair<point, unsigned> value;
 
 class LocalLagrange {
 public:
+
+  LocalLagrange(const std::tuple<std::vector<double>, std::vector<double>>& local_centers, const std::vector<unsigned int>& local_indices, const unsigned int local_index) 
+  : index_(local_index), indices_(local_indices) { buildCoefficients(std::get<0>(local_centers), std::get<1>(local_centers), index_);}
+  
   explicit LocalLagrange(unsigned int index) : index_(index) {}
   LocalLagrange(unsigned int index, std::vector<unsigned int> indices,
                 std::vector<double>& coefs)
@@ -50,13 +54,8 @@ private:
 class LocalLagrangeAssembler {
 public:
 
-  ///@todo srowe: Why bother with a junk constructor like this?
-  LocalLagrangeAssembler()
-      : num_centers_(0), scale_factor_(1), mesh_norm_(0) {
-    updateBallRadius();
-  }
-
-  LocalLagrangeAssembler(const std::vector<double>& centers_x, const std::vector<double>& centers_y) : centers_x_(centers_x), centers_y_(centers_y) {
+  LocalLagrangeAssembler(const std::vector<double>& centers_x, const std::vector<double>& centers_y, const size_t num_local_centers)
+   : centers_x_(centers_x), centers_y_(centers_y), num_local_centers_(num_local_centers) {
   	assembleTree(); // Build up R Tree of nearest neighbor points so we can find local indices  
   }
 

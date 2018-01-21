@@ -71,7 +71,7 @@ void LocalLagrange::buildCoefficients(const std::vector<double>& local_centers_x
 std::tuple<std::vector<double>, std::vector<double>>
 LocalLagrangeAssembler::findLocalCenters(const std::vector<unsigned int>& local_indices) {
 
-  size_t num_local_centers = local_indices.size();
+  const size_t num_local_centers = local_indices.size();
   std::vector<double> local_x(num_local_centers);
   std::vector<double> local_y(num_local_centers);
   for (size_t i = 0; i < num_local_centers; i++) {
@@ -84,14 +84,11 @@ LocalLagrangeAssembler::findLocalCenters(const std::vector<unsigned int>& local_
 LocalLagrange
 LocalLagrangeAssembler::generateLocalLagrangeFunction(unsigned int index) {
 
-  LocalLagrange llf(index);
-
   std::vector<unsigned int> local_indices = getNearestNeighbors(index);
   auto local_centers = findLocalCenters(local_indices);
   unsigned int local_index = findLocalIndex(local_centers, index);
 
-  llf.setIndices(local_indices);
-  llf.buildCoefficients(std::get<0>(local_centers), std::get<1>(local_centers), local_index);
+  LocalLagrange llf(local_centers, local_indices, local_index);
 
   return llf;
 }
@@ -133,9 +130,9 @@ LocalLagrangeAssembler::getNearestNeighbors(unsigned int index) {
   return indices;
 }
 
-void buildLocalLagrangeFunctions(const std::vector<double>& centers_x, const std::vector<double>& centers_y) {
+void buildLocalLagrangeFunctions(const std::vector<double>& centers_x, const std::vector<double>& centers_y, const size_t num_local_centers) {
 
-  LocalLagrangeAssembler assembler(centers_x, centers_y); // 
+  LocalLagrangeAssembler assembler(centers_x, centers_y, num_local_centers); // 
 
 }
 } // namespace local_lagrange

@@ -19,10 +19,7 @@ TEST(IntegrationTest,BuildAnLLF){
   std::array<std::vector<double>, 2> centers =
       mathtools::meshgrid<double>(xmesh, xmesh);
 
-  local_lagrange::LocalLagrangeAssembler llc;
-  llc.setCenters(centers[0], centers[1]);
-  llc.assembleTree();
-  llc.setNum_local_centers(200);
+  local_lagrange::LocalLagrangeAssembler llc(centers[0], centers[1], 200);
  
 
 // for (size_t iter = 0; iter < num_centers; iter++) {

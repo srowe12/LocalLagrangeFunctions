@@ -16,12 +16,7 @@ namespace bgi = boost::geometry::index;
 typedef bg::model::point<double, 2, bg::cs::cartesian> point;
 typedef std::pair<point, unsigned> value;
 
-TEST(MyTest, LocalLagrnageConstructorConstructor) {
-  local_lagrange::LocalLagrangeAssembler llc;
-  EXPECT_EQ(0, llc.num_centers());
-  EXPECT_EQ(1, llc.scale_factor());
-  EXPECT_EQ(0, llc.mesh_norm());
-}
+using namespace local_lagrange;
 
 TEST(MyTest, TreeTest) {
   std::vector<double> centers_x_{ 1, 2, 3 };
@@ -52,12 +47,10 @@ TEST(MyTest, TreeTest) {
 
 TEST(MyTest, NearestNeighborTest) {
 
-  local_lagrange::LocalLagrangeAssembler llc;
   std::vector<double> centers_x{ 1, 2, 3 };
   std::vector<double> centers_y{ 0, 1, 2 };
-  llc.setCenters(centers_x, centers_y);
-  llc.assembleTree();
-  llc.setNum_local_centers(2);
+  LocalLagrangeAssembler llc(centers_x, centers_y, 2);
+
   std::vector<unsigned> indices = llc.getNearestNeighbors(0);
   EXPECT_EQ(2, indices.size());
   EXPECT_EQ(1, indices[0]);
@@ -104,11 +97,11 @@ TEST(MyTest, FindLocalIndexTest) {
   std::vector<double> centers_x{ 1, 2, 3 };
   std::vector<double> centers_y{ 0, 1, 2 };
 
-  local_lagrange::LocalLagrangeAssembler llc;
-  llc.setCenters(centers_x, centers_y);
-  std::vector<double> local_centers_x{ 2, 3 };
-  std::vector<double> local_centers_y{ 1, 2 };
+  local_lagrange::LocalLagrangeAssembler llc(centers_x, centers_y, 2);
+
   unsigned int index = 2;
+  std::vector<double> local_centers_x{2, 3};
+  std::vector<double> local_centers_y{1, 2};
   auto local_centers = std::make_tuple(local_centers_x, local_centers_y);
   unsigned int local_index = llc.findLocalIndex(local_centers, index);
   EXPECT_EQ(1, local_index);
@@ -122,10 +115,8 @@ TEST(MyTest, FindLocalCentersTest) {
     centers_x[i] = i;
     centers_y[i] = i + 1;
   }
-  local_lagrange::LocalLagrangeAssembler llc;
-  llc.setCenters(centers_x, centers_y);
-  llc.assembleTree();
-  llc.setNum_local_centers(2);
+  local_lagrange::LocalLagrangeAssembler llc(centers_x, centers_y, 2);
+
   unsigned int index = 5;
   std::vector<unsigned int> local_indices = llc.getNearestNeighbors(index);
   auto local_centers = llc.findLocalCenters(local_indices);
@@ -153,10 +144,8 @@ TEST(MyTest, BuildLocalLagrangeFunction) {
   std::array<std::vector<double>, 2> centers =
       mathtools::meshgrid<double>(xmesh, xmesh);
 
-  local_lagrange::LocalLagrangeAssembler llc;
-  llc.setCenters(centers[0], centers[1]);
-  llc.assembleTree();
-  llc.setNum_local_centers(200);
+  local_lagrange::LocalLagrangeAssembler llc(centers[0], centers[1], 200);
+
   unsigned int index = 5;
   local_lagrange::LocalLagrange llf = llc.generateLocalLagrangeFunction(index);
   arma::vec coefs = llf.coefficients();

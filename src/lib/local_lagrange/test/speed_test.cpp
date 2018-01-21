@@ -32,13 +32,7 @@ int main() {
 
   //TODO: Constructor is kinda dumb...
   //Set the centers into the Local Lagrange Constructor...should rename it assembler...
-  local_lagrange::LocalLagrangeAssembler llc;
-  llc.setCenters(centers[0], centers[1]);
-  //Assemble the R-Tree to bin the centers based on squares, not circles. Close enough.
-  llc.assembleTree();
-  //Specify how many local centers we want to use.
-  size_t num_local_centers = 200;
-  llc.setNum_local_centers(num_local_centers);
+  local_lagrange::LocalLagrangeAssembler llc(centers[0], centers[1], 200);
  
  size_t num_centers = centers[0].size();
  
