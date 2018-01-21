@@ -27,9 +27,8 @@ public:
       const std::tuple<std::vector<double>, std::vector<double>> &local_centers,
       const std::vector<unsigned int> &local_indices,
       const unsigned int local_index)
-      : index_(local_index), indices_(local_indices) {
-    buildCoefficients(std::get<0>(local_centers), std::get<1>(local_centers),
-                      index_);
+      : index_(local_index), indices_(local_indices), centers_x_(std::get<0>(local_centers)), centers_y_(std::get<1>(local_centers)) {
+      buildCoefficients(centers_x_, centers_y_,index_);
   }
 
   explicit LocalLagrange(unsigned int index) : index_(index) {}
@@ -38,11 +37,11 @@ public:
       : index_(index), indices_(indices), coefficients_(coefs) {}
 
   arma::mat
-  assembleInterpolationMatrix(const std::vector<double> &local_centers_x,
-                              const std::vector<double> &local_centers_y);
+  assembleInterpolationMatrix(const arma::vec &local_centers_x,
+                              const arma::vec &local_centers_y);
 
-  void buildCoefficients(const std::vector<double> &local_centers_x,
-                         const std::vector<double> &local_centers_y,
+  void buildCoefficients(const arma::vec& local_centers_x,
+                         const arma::vec& local_centers_y,
                          unsigned int local_index);
 
   unsigned int index() const { return index_; }
@@ -51,9 +50,19 @@ public:
 
   void setIndices(std::vector<unsigned int> indices) { indices_ = indices; }
 
+  // Evaluates the Local Lagrange Function at a collection of points
+  // The LLF evaluates via \sum_{i=1}^N c_i \|p -x_i\|^2 log(\|p - x_i\|)
+  // where c_i are the coefficients in the vector coefficients_ and
+  // x_i are the local_centers associated with the vector
+  double operator() (const arma::vec& points) {
+    return 0;
+  }
+
 private:
   unsigned int index_;
   std::vector<unsigned int> indices_;
+  arma::vec centers_x_;
+  arma::vec centers_y_;
   arma::vec coefficients_;
 };
 
