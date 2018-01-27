@@ -162,6 +162,21 @@ TEST(MyTest, BuildLocalLagrangeFunction) {
   EXPECT_NEAR(0, y_eval, 1e-12);
 }
 
+TEST(LocalLagrangeTests, EvaluateOperator) {
+  // Build an LLF centered at 5,5 out of 10 points in x and y directions
+  std::vector<double> local_centers{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  LocalLagrangeAssembler assembler(local_centers, local_centers, 10);
+
+  auto llf = assembler.generateLocalLagrangeFunction(5);
+  arma::vec expected_evaluations{0, 0, 0, 0, 0, 1, 0, 0, 0, 0};
+  // The LLF should evaluate to 0 on all the centers except for
+  // on the point the LLF is centered on, where it should be 1.0
+  for (size_t i = 0; i < 10; ++i) {
+    EXPECT_NEAR(expected_evaluations(i),
+                llf(local_centers[i], local_centers[i]), 1e-13);
+  }
+}
+
 TEST(MyTest, BuildAllLocalLagrangeFunctions) {}
 
 int main(int argc, char **argv) {

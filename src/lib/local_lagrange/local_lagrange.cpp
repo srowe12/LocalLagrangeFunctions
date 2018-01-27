@@ -25,9 +25,9 @@ void LocalLagrangeAssembler::assembleTree() {
   rt_.insert(points.begin(), points.end());
 }
 
-arma::mat LocalLagrange::assembleInterpolationMatrix(
-    const arma::vec &local_centers_x,
-    const arma::vec &local_centers_y) {
+arma::mat
+LocalLagrange::assembleInterpolationMatrix(const arma::vec &local_centers_x,
+                                           const arma::vec &local_centers_y) {
   // Initialize matrix to all zeros.
   arma::mat interp_matrix(local_centers_x.size() + 3,
                           local_centers_x.size() + 3, arma::fill::zeros);
@@ -40,7 +40,8 @@ arma::mat LocalLagrange::assembleInterpolationMatrix(
       distx = local_centers_x[row] - local_centers_x[col];
       disty = local_centers_y[row] - local_centers_y[col];
       dist = distx * distx + disty * disty;
-      interp_matrix(row, col) = interp_matrix(col, row) = .5 * dist * log(dist);
+      interp_matrix(row, col) = interp_matrix(col, row) =
+          .5 * dist * std::log(dist);
     }
   }
 
@@ -56,9 +57,9 @@ arma::mat LocalLagrange::assembleInterpolationMatrix(
   return interp_matrix;
 }
 
-void LocalLagrange::buildCoefficients(
-    const arma::vec &local_centers_x,
-    const arma::vec &local_centers_y, unsigned int local_index) {
+void LocalLagrange::buildCoefficients(const arma::vec &local_centers_x,
+                                      const arma::vec &local_centers_y,
+                                      unsigned int local_index) {
 
   // Work needed here perhaps. Is this bad generating interp_matrix in this
   // function?

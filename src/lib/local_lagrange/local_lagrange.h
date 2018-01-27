@@ -27,8 +27,10 @@ public:
       const std::tuple<std::vector<double>, std::vector<double>> &local_centers,
       const std::vector<unsigned int> &local_indices,
       const unsigned int local_index)
-      : index_(local_index), indices_(local_indices), centers_x_(std::get<0>(local_centers)), centers_y_(std::get<1>(local_centers)) {
-      buildCoefficients(centers_x_, centers_y_,index_);
+      : index_(local_index), indices_(local_indices),
+        centers_x_(std::get<0>(local_centers)),
+        centers_y_(std::get<1>(local_centers)) {
+    buildCoefficients(centers_x_, centers_y_, index_);
   }
 
   explicit LocalLagrange(unsigned int index) : index_(index) {}
@@ -36,12 +38,11 @@ public:
                 std::vector<double> &coefs)
       : index_(index), indices_(indices), coefficients_(coefs) {}
 
-  arma::mat
-  assembleInterpolationMatrix(const arma::vec &local_centers_x,
-                              const arma::vec &local_centers_y);
+  arma::mat assembleInterpolationMatrix(const arma::vec &local_centers_x,
+                                        const arma::vec &local_centers_y);
 
-  void buildCoefficients(const arma::vec& local_centers_x,
-                         const arma::vec& local_centers_y,
+  void buildCoefficients(const arma::vec &local_centers_x,
+                         const arma::vec &local_centers_y,
                          unsigned int local_index);
 
   unsigned int index() const { return index_; }
@@ -54,7 +55,7 @@ public:
   // The LLF evaluates via \sum_{i=1}^N c_i \|p -x_i\|^2 log(\|p - x_i\|)
   // where c_i are the coefficients in the vector coefficients_ and
   // x_i are the local_centers associated with the vector
-  double operator() (const double x, const double y) {
+  double operator()(const double x, const double y) {
     // Compute distance from points to position
 
     ///@todo srowe Naive implementation for now, improve on in the future
@@ -67,9 +68,10 @@ public:
       // Safety check for distance = 0
       if (distance != 0.0) {
 
-      //.5 r^2 log(r^2) = r^2 log(r), this way we don't need square root
-      ///@todo srowe: Would it be faster to convert this to std::log1p and use a conversion factor?
-      result += coefficients_[i]*distance*std::log(distance);
+        //.5 r^2 log(r^2) = r^2 log(r), this way we don't need square root
+        ///@todo srowe: Would it be faster to convert this to std::log1p and use
+        ///a conversion factor?
+        result += coefficients_[i] * distance * std::log(distance);
       }
     }
     result *= .5; // Multiply in the 1/2 for the 1/2 * r^2 log(r^2)
@@ -77,8 +79,13 @@ public:
 
     ///@todo srowe: We need to also compute in the Polynomial terms!
 
-    // Polynomial is last three coefficients_ vector points; These are of the form 1 + x + y
-    double polynomial_term = coefficients_[-3] + coefficients_[-2]*x + coefficients_[-1]*y;
+    // Polynomial is last three coefficients_ vector points; These are of the
+    // form 1 + x + y
+    const auto n_rows = coefficients_.n_rows;
+
+    double polynomial_term = coefficients_[n_rows - 3] +
+                             coefficients_[n_rows - 2] * x +
+                             coefficients_[n_rows - 1] * y;
 
     return result + polynomial_term;
   }
