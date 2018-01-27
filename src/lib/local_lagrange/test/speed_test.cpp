@@ -1,4 +1,6 @@
 #include "../local_lagrange.h"
+#include "../local_lagrange_assembler.h"
+
 #include "math_tools.h"
 #include <gtest/gtest.h>
 #include <stdio.h>

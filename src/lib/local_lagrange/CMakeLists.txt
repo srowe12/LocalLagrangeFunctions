@@ -1,6 +1,6 @@
 set(lagrange_lib lagrange)
-set(lagrange_hdr local_lagrange.h local_lagrange_template.h)
-add_library(${lagrange_lib} local_lagrange.cpp local_lagrange_template.cpp ${lagrange_hdr})
+set(lagrange_hdr local_lagrange.h local_lagrange_assembler.h local_lagrange_template.h)
+add_library(${lagrange_lib} local_lagrange.cpp local_lagrange_assembler.cpp local_lagrange_template.cpp ${lagrange_hdr})
 FIND_PACKAGE(Boost)
 FIND_PACKAGE(Armadillo)
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR} ${ARMADILLO_INCLUDE_DIRS})
