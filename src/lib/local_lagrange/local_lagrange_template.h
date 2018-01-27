@@ -96,7 +96,7 @@ public:
       local_x[i] = centers_x_[local_indices[i]];
       local_y[i] = centers_y_[local_indices[i]];
     }
-    std::array<std::array<double, n>, 2> local_centers{local_x, local_y};
+    std::array<std::array<double, n>, 2> local_centers{{local_x, local_y}};
     return local_centers;
   }
 

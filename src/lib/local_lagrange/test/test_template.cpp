@@ -63,8 +63,8 @@ TEST(MyTest, NearestNeighborTest) {
 }
 
 TEST(MyTest, AssembleInterpolationMatrix) {
-  std::array<double, 3> centers_x{1, 2, 3};
-  std::array<double, 3> centers_y{0, 1, 2};
+  std::array<double, 3> centers_x{{1, 2, 3}};
+  std::array<double, 3> centers_y{{0, 1, 2}};
   local_lagrange::LocalLagrange<3> llf(0); // Index 0.
   arma::mat interp_matrix =
       llf.assembleInterpolationMatrix(centers_x, centers_y);
@@ -80,8 +80,8 @@ TEST(MyTest, AssembleInterpolationMatrix) {
 }
 
 TEST(MyTest, SolveForCoefficients) {
-  std::array<double, 3> centers_x{1, 2, 3};
-  std::array<double, 3> centers_y{0, 1, 2};
+  std::array<double, 3> centers_x{{1, 2, 3}};
+  std::array<double, 3> centers_y{{0, 1, 2}};
   unsigned int local_index = 0;
   local_lagrange::LocalLagrange<3> llf(0); // Index 0.
   llf.buildCoefficients(centers_x, centers_y, 0);
@@ -104,11 +104,11 @@ TEST(MyTest, FindLocalIndexTest) {
 
   local_lagrange::LocalLagrangeAssembler<2> llc;
   llc.setCenters(centers_x, centers_y);
-  std::array<double, 2> local_centers_x{2, 3};
-  std::array<double, 2> local_centers_y{1, 2};
+  std::array<double, 2> local_centers_x{{2, 3}};
+  std::array<double, 2> local_centers_y{{1, 2}};
   unsigned int index = 2;
-  std::array<std::array<double, 2>, 2> local_centers{local_centers_x,
-                                                     local_centers_y};
+  std::array<std::array<double, 2>, 2> local_centers{
+      {local_centers_x, local_centers_y}};
   unsigned int local_index = llc.findLocalIndex(local_centers, index);
   EXPECT_EQ(1, local_index);
 }
