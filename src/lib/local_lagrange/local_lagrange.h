@@ -41,7 +41,7 @@ public:
   // The LLF evaluates via \sum_{i=1}^N c_i \|p -x_i\|^2 log(\|p - x_i\|)
   // where c_i are the coefficients in the vector coefficients_ and
   // x_i are the local_centers associated with the vector
-  double operator()(const double x, const double y) {
+  double operator()(const double x, const double y) const {
     // Compute distance from points to position
 
     ///@todo srowe Naive implementation for now, improve on in the future
@@ -74,6 +74,10 @@ public:
                              coefficients_[n_rows - 1] * y;
 
     return result + polynomial_term;
+  }
+
+  void scaleCoefficients(const double scale_factor) {
+    coefficients_ *= scale_factor;
   }
 
 private:
