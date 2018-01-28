@@ -71,7 +71,7 @@ unsigned int LocalLagrangeAssembler::findLocalIndex(
 }
 
 std::vector<unsigned>
-LocalLagrangeAssembler::getNearestNeighbors(unsigned int index) {
+LocalLagrangeAssembler::getNearestNeighbors(const unsigned int index) {
   // Wrap values into a single point, then value pair. Pass into rt for
   // querying.
   Point center(centers_x_[index], centers_y_[index]);
