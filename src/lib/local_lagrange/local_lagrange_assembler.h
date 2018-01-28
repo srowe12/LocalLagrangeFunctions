@@ -20,11 +20,11 @@ namespace bgi = boost::geometry::index;
 
 namespace local_lagrange {
 
-typedef bg::model::point<double, 2, bg::cs::cartesian> point;
-typedef std::pair<point, unsigned> value;
-
 class LocalLagrangeAssembler {
 public:
+  using Point = bg::model::point<double, 2, bg::cs::cartesian>;
+  using Value = std::pair<Point, unsigned>;
+
   LocalLagrangeAssembler(const std::vector<double> &centers_x,
                          const std::vector<double> &centers_y,
                          const size_t num_local_centers)
@@ -83,7 +83,7 @@ private:
                         // scale_factor*mesh_norm*abs(log(mesh_norm));
   double mesh_norm_;
   double ball_radius_;
-  bgi::rtree<value, bgi::quadratic<16>> rt_; // R-tree for indexing points.
+  bgi::rtree<Value, bgi::quadratic<16>> rt_; // R-tree for indexing points.
 
   std::vector<double> centers_x_;
   std::vector<double> centers_y_; // Assumes 2D structure.

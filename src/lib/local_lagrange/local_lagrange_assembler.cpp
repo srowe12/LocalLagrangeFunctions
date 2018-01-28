@@ -12,11 +12,8 @@ namespace bgi = boost::geometry::index;
 
 namespace local_lagrange {
 
-using Point = bg::model::point<double, 2, bg::cs::cartesian>;
-using Value = std::pair<Point, unsigned>;
-
 void LocalLagrangeAssembler::assembleTree() {
-  std::vector<value> points;
+  std::vector<Value> points;
   for (size_t iter = 0; iter < centers_x_.size(); iter++) {
     Point mypoint(centers_x_[iter], centers_y_[iter]);
     Value myvalue(mypoint, iter);
