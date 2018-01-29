@@ -8,6 +8,7 @@
 #include <vector>
 
 namespace mathtools {
+///@todo srowe: Probably eliminate these in favor of Armadillo
 
 template <typename T>
 std::vector<T> linspace(T a, T b, unsigned int num_points) {

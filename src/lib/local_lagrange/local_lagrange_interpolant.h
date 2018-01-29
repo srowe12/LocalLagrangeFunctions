@@ -24,21 +24,7 @@ private:
 LocalLagrangeEnsemble
 buildLocalLagrangeFunctions(const std::vector<double> &centers_x,
                             const std::vector<double> &centers_y,
-                            size_t num_local_centers) {
-  // Instantiate a LocalLagrangeAssembler
-
-  LocalLagrangeAssembler assembler(centers_x, centers_y, num_local_centers);
-
-  std::vector<LocalLagrange> llfs;
-  size_t num_centers = centers_x.size();
-  llfs.reserve(num_centers);
-
-  for (size_t i = 0; i < num_centers; ++i) {
-    llfs.emplace_back(assembler.generateLocalLagrangeFunction(i));
-  }
-
-  return LocalLagrangeEnsemble(llfs);
-}
+                            size_t num_local_centers);
 
 class LocalLagrangeInterpolant {
 public:
@@ -46,6 +32,7 @@ public:
                            const arma::vec &sampled_function)
       : m_llfs(lle.localLagrangeFunctions()),
         m_sampled_function(sampled_function) {
+          std::cout << "Beginning stuff" << std::endl;
     for (size_t i = 0; i < sampled_function.size(); ++i) {
       m_llfs[i].scaleCoefficients(sampled_function(i)); // Multiply each LLF
                                                         // by the sampled
