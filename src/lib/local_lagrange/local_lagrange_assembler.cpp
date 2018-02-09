@@ -88,10 +88,4 @@ LocalLagrangeAssembler::getNearestNeighbors(const unsigned int index) {
   return indices;
 }
 
-void buildLocalLagrangeFunctions(const std::vector<double> &centers_x,
-                                 const std::vector<double> &centers_y,
-                                 const size_t num_local_centers) {
-
-  LocalLagrangeAssembler assembler(centers_x, centers_y, num_local_centers); //
-}
 } // namespace local_lagrange
