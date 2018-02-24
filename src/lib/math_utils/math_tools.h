@@ -41,7 +41,7 @@ std::array<std::vector<T>, 2> meshgrid(const std::vector<T> &xpoints,
       Y[row * num_points_y + col] = yval;
     }
   }
-  std::array<std::vector<T>, 2> return_points{{X, Y}};
+  std::array<std::vector<T>, 2> return_points{{std::move(X), std::move(Y)}};
   return return_points;
 }
 
