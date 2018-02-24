@@ -28,9 +28,9 @@ protected:
   }
 
   size_t num_points;
-  std::array<std::vector<double>, 2> points;
-  std::vector<double> x_centers;
-  std::vector<double> y_centers;
+  std::array<arma::vec, 2> points;
+  arma::vec x_centers;
+  arma::vec y_centers;
   arma::vec sampled_function;
 };
 

@@ -18,8 +18,7 @@ TEST(IntegrationTest, BuildAnLLF) {
   size_t num_points = 50;
 
   std::vector<double> xmesh = mathtools::linspace<double>(0, 1, num_points);
-  std::array<std::vector<double>, 2> centers =
-      mathtools::meshgrid<double>(xmesh, xmesh);
+  auto centers = mathtools::meshgrid<double>(xmesh, xmesh);
 
   local_lagrange::LocalLagrangeAssembler llc(centers[0], centers[1], 200);
 
@@ -32,12 +31,12 @@ TEST(IntegrationTest, BuildAnLLF) {
   double x_eval = 0;
   double y_eval = 0;
   arma::vec coef_tps = coefs.subvec(0, 199);
-  std::vector<unsigned int> local_indices = llf.indices();
+  auto local_indices = llf.indices();
   std::string index_file = "indices_" + std::to_string(iter) + ".txt";
   std::string coefs_file = "coefs_" + std::to_string(iter) + ".txt";
-  mathtools::write_vector(local_indices, index_file);
-  bool save_status = coefs.save(coefs_file, arma::raw_ascii);
-  EXPECT_TRUE(save_status);
+  // mathtools::write_vector(local_indices, index_file);
+  // bool save_status = coefs.save(coefs_file, arma::raw_ascii);
+  // EXPECT_TRUE(save_status);
   for (size_t eval_iter = 0; eval_iter < 200; eval_iter++) {
     x_eval += coef_tps(eval_iter) * centers[0][local_indices[eval_iter]];
     y_eval += coef_tps(eval_iter) * centers[1][local_indices[eval_iter]];

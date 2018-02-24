@@ -30,8 +30,7 @@ int main() {
   auto start = std::chrono::steady_clock::now();
   size_t num_points = 50;
   std::vector<double> xmesh = mathtools::linspace<double>(0, 1, num_points);
-  std::array<std::vector<double>, 2> centers =
-      mathtools::meshgrid<double>(xmesh, xmesh);
+  auto centers = mathtools::meshgrid<double>(xmesh, xmesh);
 
   // TODO: Constructor is kinda dumb...
   // Set the centers into the Local Lagrange Constructor...should rename it

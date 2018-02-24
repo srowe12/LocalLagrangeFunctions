@@ -9,10 +9,8 @@ namespace local_lagrange {
 
 class LocalLagrange {
 public:
-  LocalLagrange(
-      const std::tuple<std::vector<double>, std::vector<double>> &local_centers,
-      const std::vector<unsigned int> &local_indices,
-      const unsigned int local_index)
+  LocalLagrange(const std::tuple<arma::vec, arma::vec> &local_centers,
+                const arma::uvec &local_indices, const unsigned int local_index)
       : index_(local_index), indices_(local_indices),
         centers_x_(std::get<0>(local_centers)),
         centers_y_(std::get<1>(local_centers)) {
@@ -20,8 +18,9 @@ public:
   }
 
   explicit LocalLagrange(unsigned int index) : index_(index) {}
-  LocalLagrange(unsigned int index, std::vector<unsigned int> indices,
-                std::vector<double> &coefs)
+
+  LocalLagrange(unsigned int index, const arma::uvec &indices,
+                const std::vector<double> &coefs)
       : index_(index), indices_(indices), coefficients_(coefs) {}
 
   arma::mat assembleInterpolationMatrix(const arma::vec &local_centers_x,
@@ -32,10 +31,10 @@ public:
                          unsigned int local_index);
 
   unsigned int index() const { return index_; }
-  std::vector<unsigned int> indices() const { return indices_; }
+  arma::uvec indices() const { return indices_; }
   arma::vec coefficients() const { return coefficients_; }
 
-  void setIndices(std::vector<unsigned int> indices) { indices_ = indices; }
+  void setIndices(const arma::uvec &indices) { indices_ = indices; }
 
   // Evaluates the Local Lagrange Function at a collection of points
   // The LLF evaluates via \sum_{i=1}^N c_i \|p -x_i\|^2 log(\|p - x_i\|)
@@ -82,7 +81,7 @@ public:
 
 private:
   unsigned int index_;
-  std::vector<unsigned int> indices_;
+  arma::uvec indices_;
   arma::vec centers_x_;
   arma::vec centers_y_;
   arma::vec coefficients_;

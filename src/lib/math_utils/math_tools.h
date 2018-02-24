@@ -1,5 +1,6 @@
 #ifndef MATH_UTILS_HDR
 #define MATH_UTILS_HDR
+#include <armadillo>
 #include <array>
 #include <fstream>
 #include <iterator>
@@ -23,8 +24,8 @@ std::vector<T> linspace(T a, T b, unsigned int num_points) {
 }
 
 template <typename T>
-std::array<std::vector<T>, 2> meshgrid(const std::vector<T> &xpoints,
-                                       const std::vector<T> &ypoints) {
+std::array<arma::vec, 2> meshgrid(const std::vector<T> &xpoints,
+                                  const std::vector<T> &ypoints) {
 
   size_t num_points_x = xpoints.size();
   size_t num_points_y = ypoints.size();
@@ -41,7 +42,9 @@ std::array<std::vector<T>, 2> meshgrid(const std::vector<T> &xpoints,
       Y[row * num_points_y + col] = yval;
     }
   }
-  std::array<std::vector<T>, 2> return_points{{std::move(X), std::move(Y)}};
+  std::array<arma::vec, 2> return_points{
+      {std::move(arma::conv_to<arma::vec>::from(X)),
+       std::move(arma::conv_to<arma::vec>::from(Y))}};
   return return_points;
 }
 

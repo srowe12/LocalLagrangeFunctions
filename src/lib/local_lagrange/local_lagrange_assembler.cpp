@@ -22,13 +22,12 @@ void LocalLagrangeAssembler::assembleTree() {
   rt_.insert(points.begin(), points.end());
 }
 
-std::tuple<std::vector<double>, std::vector<double>>
-LocalLagrangeAssembler::findLocalCenters(
-    const std::vector<unsigned int> &local_indices) {
+std::tuple<arma::vec, arma::vec>
+LocalLagrangeAssembler::findLocalCenters(const arma::uvec &local_indices) {
 
   const size_t num_local_centers = local_indices.size();
-  std::vector<double> local_x(num_local_centers);
-  std::vector<double> local_y(num_local_centers);
+  arma::vec local_x(num_local_centers);
+  arma::vec local_y(num_local_centers);
   for (size_t i = 0; i < num_local_centers; i++) {
     local_x[i] = centers_x_[local_indices[i]];
     local_y[i] = centers_y_[local_indices[i]];
@@ -39,7 +38,7 @@ LocalLagrangeAssembler::findLocalCenters(
 LocalLagrange
 LocalLagrangeAssembler::generateLocalLagrangeFunction(unsigned int index) {
 
-  std::vector<unsigned int> local_indices = getNearestNeighbors(index);
+  auto local_indices = getNearestNeighbors(index);
   auto local_centers = findLocalCenters(local_indices);
   unsigned int local_index = findLocalIndex(local_centers, index);
 
@@ -49,8 +48,7 @@ LocalLagrangeAssembler::generateLocalLagrangeFunction(unsigned int index) {
 }
 
 unsigned int LocalLagrangeAssembler::findLocalIndex(
-    const std::tuple<std::vector<double>, std::vector<double>> &local_centers,
-    unsigned int index) {
+    const std::tuple<arma::vec, arma::vec> &local_centers, unsigned int index) {
 
   const double center_x = centers_x_[index];
   const double center_y = centers_y_[index];
@@ -70,7 +68,7 @@ unsigned int LocalLagrangeAssembler::findLocalIndex(
   return local_index;
 }
 
-std::vector<unsigned>
+arma::uvec
 LocalLagrangeAssembler::getNearestNeighbors(const unsigned int index) {
   // Wrap values into a single point, then value pair. Pass into rt for
   // querying.
@@ -80,10 +78,17 @@ LocalLagrangeAssembler::getNearestNeighbors(const unsigned int index) {
   rt_.query(bgi::nearest(center, num_local_centers_),
             std::back_inserter(neighbors));
 
-  std::vector<unsigned> indices;
-  for (const auto neighbor : neighbors) {
-    indices.emplace_back(
-        std::get<1>(neighbor)); // Grab the index of the neighbor
+  // std::vector<unsigned> indices;
+  // for (const auto neighbor : neighbors) {
+  //   indices.emplace_back(
+  //       std::get<1>(neighbor)); // Grab the index of the neighbor
+  // }
+
+  size_t num_neighbors = neighbors.size();
+  arma::uvec indices(num_neighbors);
+
+  for (size_t i = 0; i < num_neighbors; ++i) {
+    indices(i) = std::get<1>(neighbors[i]);
   }
   return indices;
 }

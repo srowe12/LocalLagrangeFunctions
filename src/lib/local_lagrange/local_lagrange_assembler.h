@@ -25,8 +25,7 @@ public:
   using Point = bg::model::point<double, 2, bg::cs::cartesian>;
   using Value = std::pair<Point, unsigned>;
 
-  LocalLagrangeAssembler(const std::vector<double> &centers_x,
-                         const std::vector<double> &centers_y,
+  LocalLagrangeAssembler(const arma::vec &centers_x, const arma::vec &centers_y,
                          const size_t num_local_centers)
       : centers_x_(centers_x), centers_y_(centers_y),
         num_local_centers_(num_local_centers) {
@@ -34,11 +33,11 @@ public:
                     // local indices
   }
 
-  std::tuple<std::vector<double>, std::vector<double>>
-  findLocalCenters(const std::vector<unsigned int> &local_indices);
-  unsigned int findLocalIndex(
-      const std::tuple<std::vector<double>, std::vector<double>> &local_centers,
-      unsigned int index);
+  std::tuple<arma::vec, arma::vec>
+  findLocalCenters(const arma::uvec &local_indices);
+  unsigned int
+  findLocalIndex(const std::tuple<arma::vec, arma::vec> &local_centers,
+                 unsigned int index);
   LocalLagrange generateLocalLagrangeFunction(const unsigned int index);
 
   unsigned int num_centers() const { return num_centers_; }
@@ -46,12 +45,12 @@ public:
   double mesh_norm() const { return mesh_norm_; }
   double ball_radius() const { return ball_radius_; }
 
-  std::vector<double> centers_x() const { return centers_x_; }
-  std::vector<double> centers_y() const { return centers_y_; }
+  arma::vec centers_x() const { return centers_x_; }
+  arma::vec centers_y() const { return centers_y_; }
 
   void assembleTree();
 
-  std::vector<unsigned> getNearestNeighbors(const unsigned int index);
+  arma::uvec getNearestNeighbors(const unsigned int index);
 
   void setScale_factor(double scale_factor) {
     scale_factor_ = scale_factor;
@@ -61,8 +60,7 @@ public:
     mesh_norm_ = mesh_norm;
     updateBallRadius();
   }
-  void setCenters(const std::vector<double> &centers_x,
-                  const std::vector<double> &centers_y) {
+  void setCenters(const arma::vec &centers_x, const arma::vec &centers_y) {
     // Assumes size of centers_x and centers_y are the same
     centers_x_ = centers_x;
     centers_y_ = centers_y;
@@ -85,8 +83,8 @@ private:
   double ball_radius_;
   bgi::rtree<Value, bgi::quadratic<16>> rt_; // R-tree for indexing points.
 
-  std::vector<double> centers_x_;
-  std::vector<double> centers_y_; // Assumes 2D structure.
+  arma::vec centers_x_;
+  arma::vec centers_y_; // Assumes 2D structure.
 
   unsigned int num_local_centers_; // How many local centers should we find?
 };

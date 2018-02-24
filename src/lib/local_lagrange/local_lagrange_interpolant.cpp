@@ -1,10 +1,9 @@
 #include "local_lagrange_interpolant.h"
 namespace local_lagrange {
 
-LocalLagrangeEnsemble
-buildLocalLagrangeFunctions(const std::vector<double> &centers_x,
-                            const std::vector<double> &centers_y,
-                            size_t num_local_centers) {
+LocalLagrangeEnsemble buildLocalLagrangeFunctions(const arma::vec &centers_x,
+                                                  const arma::vec &centers_y,
+                                                  size_t num_local_centers) {
   // Instantiate a LocalLagrangeAssembler
 
   LocalLagrangeAssembler assembler(centers_x, centers_y, num_local_centers);

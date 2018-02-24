@@ -143,8 +143,7 @@ TEST(MyTest, BuildLocalLagrangeFunction) {
   size_t num_points = 50;
 
   std::vector<double> xmesh = mathtools::linspace<double>(0, 1, num_points);
-  std::array<std::vector<double>, 2> centers =
-      mathtools::meshgrid<double>(xmesh, xmesh);
+  auto centers = mathtools::meshgrid<double>(xmesh, xmesh);
 
   local_lagrange::LocalLagrangeAssembler<200> llc;
   llc.setCenters(centers[0], centers[1]);

@@ -4,10 +4,10 @@
 #include <boost/geometry.hpp>
 #include <boost/geometry/geometries/box.hpp>
 #include <boost/geometry/geometries/point.hpp>
+#include <boost/geometry/index/rtree.hpp>
 #include <gtest/gtest.h>
 #include <stdio.h>
 #include <utility>
-#include <boost/geometry/index/rtree.hpp>
 
 #include "math_tools.h"
 
@@ -20,8 +20,8 @@ typedef std::pair<point, unsigned> value;
 using namespace local_lagrange;
 
 TEST(MyTest, TreeTest) {
-  std::vector<double> centers_x_{1, 2, 3};
-  std::vector<double> centers_y_{0, 1, 2};
+  arma::vec centers_x_{1, 2, 3};
+  arma::vec centers_y_{0, 1, 2};
 
   bgi::rtree<value, bgi::quadratic<16>> rt;
   std::vector<value> points;
@@ -48,19 +48,19 @@ TEST(MyTest, TreeTest) {
 
 TEST(MyTest, NearestNeighborTest) {
 
-  std::vector<double> centers_x{1, 2, 3};
-  std::vector<double> centers_y{0, 1, 2};
+  arma::vec centers_x{1, 2, 3};
+  arma::vec centers_y{0, 1, 2};
   LocalLagrangeAssembler llc(centers_x, centers_y, 2);
 
-  std::vector<unsigned> indices = llc.getNearestNeighbors(0);
+  auto indices = llc.getNearestNeighbors(0);
   EXPECT_EQ(2, indices.size());
   EXPECT_EQ(1, indices[0]);
   EXPECT_EQ(0, indices[1]);
 }
 
 TEST(MyTest, AssembleInterpolationMatrix) {
-  std::vector<double> centers_x{1, 2, 3};
-  std::vector<double> centers_y{0, 1, 2};
+  arma::vec centers_x{1, 2, 3};
+  arma::vec centers_y{0, 1, 2};
   local_lagrange::LocalLagrange llf(0); // Index 0.
   arma::mat interp_matrix =
       llf.assembleInterpolationMatrix(centers_x, centers_y);
@@ -76,8 +76,8 @@ TEST(MyTest, AssembleInterpolationMatrix) {
 }
 
 TEST(MyTest, SolveForCoefficients) {
-  std::vector<double> centers_x{1, 2, 3};
-  std::vector<double> centers_y{0, 1, 2};
+  arma::vec centers_x{1, 2, 3};
+  arma::vec centers_y{0, 1, 2};
   unsigned int local_index = 0;
   local_lagrange::LocalLagrange llf(0); // Index 0.
   llf.buildCoefficients(centers_x, centers_y, 0);
@@ -95,14 +95,14 @@ TEST(MyTest, SolveForCoefficients) {
 
 TEST(MyTest, FindLocalIndexTest) {
 
-  std::vector<double> centers_x{1, 2, 3};
-  std::vector<double> centers_y{0, 1, 2};
+  arma::vec centers_x{1, 2, 3};
+  arma::vec centers_y{0, 1, 2};
 
   local_lagrange::LocalLagrangeAssembler llc(centers_x, centers_y, 2);
 
   unsigned int index = 2;
-  std::vector<double> local_centers_x{2, 3};
-  std::vector<double> local_centers_y{1, 2};
+  arma::vec local_centers_x{2, 3};
+  arma::vec local_centers_y{1, 2};
   auto local_centers = std::make_tuple(local_centers_x, local_centers_y);
   unsigned int local_index = llc.findLocalIndex(local_centers, index);
   EXPECT_EQ(1, local_index);
@@ -110,8 +110,8 @@ TEST(MyTest, FindLocalIndexTest) {
 
 TEST(MyTest, FindLocalCentersTest) {
   size_t num_centers = 30;
-  std::vector<double> centers_x(num_centers);
-  std::vector<double> centers_y(num_centers);
+  arma::vec centers_x(num_centers);
+  arma::vec centers_y(num_centers);
   for (size_t i = 0; i < num_centers; i++) {
     centers_x[i] = i;
     centers_y[i] = i + 1;
@@ -119,7 +119,7 @@ TEST(MyTest, FindLocalCentersTest) {
   local_lagrange::LocalLagrangeAssembler llc(centers_x, centers_y, 2);
 
   unsigned int index = 5;
-  std::vector<unsigned int> local_indices = llc.getNearestNeighbors(index);
+  auto local_indices = llc.getNearestNeighbors(index);
   auto local_centers = llc.findLocalCenters(local_indices);
 
   auto &local_centers_x = std::get<0>(local_centers);
@@ -140,9 +140,8 @@ TEST(MyTest, BuildLocalLagrangeFunction) {
 
   size_t num_points = 50;
 
-  std::vector<double> xmesh = mathtools::linspace<double>(0, 1, num_points);
-  std::array<std::vector<double>, 2> centers =
-      mathtools::meshgrid<double>(xmesh, xmesh);
+  auto xmesh = mathtools::linspace<double>(0, 1, num_points);
+  std::array<arma::vec, 2> centers = mathtools::meshgrid<double>(xmesh, xmesh);
 
   local_lagrange::LocalLagrangeAssembler llc(centers[0], centers[1], 200);
 
@@ -153,7 +152,7 @@ TEST(MyTest, BuildLocalLagrangeFunction) {
   double x_eval = 0;
   double y_eval = 0;
   arma::vec coef_tps = coefs.subvec(0, 199);
-  std::vector<unsigned int> local_indices = llf.indices();
+  auto local_indices = llf.indices();
 
   for (size_t iter = 0; iter < 200; iter++) {
     x_eval += coef_tps(iter) * centers[0][local_indices[iter]];
@@ -165,7 +164,7 @@ TEST(MyTest, BuildLocalLagrangeFunction) {
 
 TEST(LocalLagrangeTests, EvaluateOperator) {
   // Build an LLF centered at 5,5 out of 10 points in x and y directions
-  std::vector<double> local_centers{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  arma::vec local_centers{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
   LocalLagrangeAssembler assembler(local_centers, local_centers, 10);
 
   auto llf = assembler.generateLocalLagrangeFunction(5);
