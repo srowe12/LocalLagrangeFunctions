@@ -20,7 +20,7 @@ public:
   explicit LocalLagrange(unsigned int index) : index_(index) {}
 
   LocalLagrange(unsigned int index, const arma::uvec &indices,
-                const std::vector<double> &coefs)
+                const arma::vec &coefs)
       : index_(index), indices_(indices), coefficients_(coefs) {}
 
   arma::mat assembleInterpolationMatrix(const arma::vec &local_centers_x,
@@ -61,8 +61,6 @@ public:
     }
     result *= .5; // Multiply in the 1/2 for the 1/2 * r^2 log(r^2)
     // With distance vector, compute r^2 log(r)
-
-    ///@todo srowe: We need to also compute in the Polynomial terms!
 
     // Polynomial is last three coefficients_ vector points; These are of the
     // form 1 + x + y
