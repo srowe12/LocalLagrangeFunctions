@@ -49,3 +49,23 @@ TEST_F(LocalLagrangeInterpolantTests, TestSimpleInterpolant) {
     EXPECT_NEAR(sampled_function(i), interpolant(x, y), 1e-13);
   }
 }
+
+TEST_F(LocalLagrangeInterpolantTests, OffgridPointEvaluation) {
+  LocalLagrangeEnsemble local_lagrange_ensemble =
+      buildLocalLagrangeFunctions(x_centers, y_centers, 500);
+
+  // Now that we have the function sampled, let's test it out on the ensemble
+  LocalLagrangeInterpolant interpolant(local_lagrange_ensemble,
+                                       sampled_function);
+
+  double some_x = 1.0 / 7.0;
+  double some_y = 1.0 / 7.0;
+
+  double value_at_point = interpolant(some_x, some_y);
+
+  double expected_value = std::sin(2 * M_PI / 7.0) * std::cos(2 * M_PI / 7.0);
+
+  // We only have 10 sample points in the x and y direction, so I don't expect
+  // it to be incredibly accurate
+  EXPECT_NEAR(expected_value, value_at_point, 2e-3);
+}
