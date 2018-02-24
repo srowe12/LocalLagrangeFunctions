@@ -6,26 +6,37 @@
 
 using namespace local_lagrange;
 
-TEST(LocalLagrangeEnsembleTests, TestSimpleLagrangeEnsemble) {}
+class LocalLagrangeInterpolantTests : public ::testing::Test {
+protected:
+  void SetUp() override {
+    std::vector<double> one_dim_points =
+        mathtools::linspace<double>(0.0, 1.0, 10.0);
+    points = mathtools::meshgrid(one_dim_points, one_dim_points);
+    x_centers = points[0];
+    y_centers = points[1];
 
-TEST(LocalLagrangeInterpolantTests, TestSimpleInterpolant) {
-  std::vector<double> one_dim_points =
-      mathtools::linspace<double>(0.0, 1.0, 10.0);
-  auto points = mathtools::meshgrid(one_dim_points, one_dim_points);
-  const auto &x_centers = points[0];
-  const auto &y_centers = points[1];
+    // Choose a function sampled on the same point set
+    num_points = x_centers.size();
+    arma::vec sample_function(num_points);
 
+    for (size_t i = 0; i < num_points; ++i) {
+      sample_function(i) =
+          std::sin(2 * M_PI * x_centers[i]) * std::cos(2 * M_PI * y_centers[i]);
+    }
+
+    sampled_function = sample_function;
+  }
+
+  size_t num_points;
+  std::array<std::vector<double>, 2> points;
+  std::vector<double> x_centers;
+  std::vector<double> y_centers;
+  arma::vec sampled_function;
+};
+
+TEST_F(LocalLagrangeInterpolantTests, TestSimpleInterpolant) {
   LocalLagrangeEnsemble local_lagrange_ensemble =
       buildLocalLagrangeFunctions(x_centers, y_centers, 500);
-
-  // Choose a function sampled on the same point set
-  size_t num_points = x_centers.size();
-  arma::vec sampled_function(num_points);
-
-  for (size_t i = 0; i < num_points; ++i) {
-    sampled_function(i) =
-        std::sin(2 * M_PI * x_centers[i]) * std::cos(2 * M_PI * y_centers[i]);
-  }
 
   // Now that we have the function sampled, let's test it out on the ensemble
   LocalLagrangeInterpolant interpolant(local_lagrange_ensemble,
