@@ -31,7 +31,7 @@ public:
                            const arma::vec &sampled_function)
       : m_llfs(lle.localLagrangeFunctions()),
         m_sampled_function(sampled_function) {
-    std::cout << "Beginning stuff" << std::endl;
+
     for (size_t i = 0; i < sampled_function.size(); ++i) {
       m_llfs[i].scaleCoefficients(sampled_function(i)); // Multiply each LLF
                                                         // by the sampled
