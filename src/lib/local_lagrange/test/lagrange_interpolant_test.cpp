@@ -20,7 +20,7 @@ protected:
 
     for (size_t i = 0; i < num_points; ++i) {
       sample_function(i) =
-          std::sin(2 * M_PI * points[i,0]) * std::cos(2 * M_PI * points[i,1]);
+          std::sin(2 * M_PI * points(i,0)) * std::cos(2 * M_PI * points(i,1));
     }
 
     sampled_function = sample_function;
@@ -41,8 +41,8 @@ TEST_F(LocalLagrangeInterpolantTests, TestSimpleInterpolant) {
                                        sampled_function);
 
   for (size_t i = 0; i < num_points; ++i) {
-    const double x = points[i,0];
-    const double y = points[i,1];
+    const double x = points(i,0);
+    const double y = points(i,1);
 
     EXPECT_NEAR(sampled_function(i), interpolant(x, y), 1e-13);
   }
