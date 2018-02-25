@@ -36,7 +36,7 @@ LocalLagrangeAssembler::findLocalCenters(const arma::uvec &local_indices) {
   arma::mat local_centers(num_local_centers, 2);
 
   ///@todo srowe: Is this simply a submatrix view we can easily extract via
-  ///armadillo?
+  /// armadillo?
   for (size_t i = 0; i < num_local_centers; ++i) {
     local_centers(i, 0) = centers_(local_indices(i), 0);
     local_centers(i, 1) = centers_(local_indices(i), 1);
@@ -66,11 +66,8 @@ LocalLagrangeAssembler::findLocalIndex(const arma::mat &local_centers,
   // Machine precision equality errors possible.
   unsigned int local_index = 0;
   const size_t num_vectors = local_centers.n_rows;
-  constexpr double tol = 1e-14;
-  for (size_t i = 0; i < num_vectors; ++i) {
 
-    const double diff_x = center_x - local_centers(i, 0);
-    const double diff_y = center_y - local_centers(i, 1);
+  for (size_t i = 0; i < num_vectors; ++i) {
 
     // if ((std::fabs(diff_x) < tol) && (std::fabs(diff_y) < tol)) {
     if ((center_x == local_centers(i, 0)) &&
@@ -92,12 +89,6 @@ LocalLagrangeAssembler::getNearestNeighbors(const unsigned int index) {
   std::vector<Value> neighbors;
   rt_.query(bgi::nearest(center, num_local_centers_),
             std::back_inserter(neighbors));
-
-  // std::vector<unsigned> indices;
-  // for (const auto neighbor : neighbors) {
-  //   indices.emplace_back(
-  //       std::get<1>(neighbor)); // Grab the index of the neighbor
-  // }
 
   size_t num_neighbors = neighbors.size();
   arma::uvec indices(num_neighbors);
