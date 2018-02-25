@@ -44,8 +44,8 @@ public:
     double result = 0.0;
     const size_t num_centers = centers_.n_rows;
     for (size_t i = 0; i < num_centers; ++i) {
-      const double xdist = centers_[i,0] - x;
-      const double ydist = centers_[i,1] - y;
+      const double xdist = centers_(i,0) - x;
+      const double ydist = centers_(i,1) - y;
       const double distance = xdist * xdist + ydist * ydist;
 
       // Safety check for distance = 0
@@ -54,7 +54,7 @@ public:
         //.5 r^2 log(r^2) = r^2 log(r), this way we don't need square root
         ///@todo srowe: Would it be faster to convert this to std::log1p and use
         /// a conversion factor?
-        result += coefficients_[i] * distance * std::log(distance);
+        result += coefficients_(i) * distance * std::log(distance);
       }
     }
     result *= .5; // Multiply in the 1/2 for the 1/2 * r^2 log(r^2)
@@ -64,9 +64,9 @@ public:
     // form 1 + x + y
     const auto n_rows = coefficients_.n_rows;
 
-    double polynomial_term = coefficients_[n_rows - 3] +
-                             coefficients_[n_rows - 2] * x +
-                             coefficients_[n_rows - 1] * y;
+    double polynomial_term = coefficients_(n_rows - 3) +
+                             coefficients_(n_rows - 2) * x +
+                             coefficients_(n_rows - 1) * y;
 
     return result + polynomial_term;
   }

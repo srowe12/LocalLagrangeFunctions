@@ -17,8 +17,8 @@ LocalLagrange::assembleInterpolationMatrix(const arma::mat& local_centers) {
   size_t num_centers = local_centers.n_rows;
   for (size_t row = 0; row < num_centers; row++) {
     for (size_t col = row + 1; col < num_centers; col++) {
-      distx = local_centers[row,0] - local_centers[col,0];
-      disty = local_centers[row,1] - local_centers[col,1];
+      distx = local_centers(row,0) - local_centers(col,0);
+      disty = local_centers(row,1) - local_centers(col,1);
       dist = distx * distx + disty * disty;
       interp_matrix(row, col) = interp_matrix(col, row) =
           .5 * dist * std::log(dist);
@@ -28,9 +28,9 @@ LocalLagrange::assembleInterpolationMatrix(const arma::mat& local_centers) {
   for (size_t row = 0; row < num_centers; row++) {
     interp_matrix(num_centers, row) = interp_matrix(row, num_centers) = 1;
     interp_matrix(num_centers + 1, row) = interp_matrix(row, num_centers + 1) =
-        local_centers[row,0];
+        local_centers(row,0);
     interp_matrix(num_centers + 2, row) = interp_matrix(row, num_centers + 2) =
-        local_centers[row,1];
+        local_centers(row,1);
   }
 
   return interp_matrix;
