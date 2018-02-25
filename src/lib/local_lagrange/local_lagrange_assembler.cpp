@@ -15,8 +15,8 @@ namespace bgi = boost::geometry::index;
 namespace local_lagrange {
 
 void LocalLagrangeAssembler::assembleTree() {
-  
-   const size_t num_centers = centers_.n_rows;
+
+  const size_t num_centers = centers_.n_rows;
 
   std::vector<Value> points;
 
