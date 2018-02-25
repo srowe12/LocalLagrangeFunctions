@@ -19,13 +19,11 @@ void LocalLagrangeAssembler::assembleTree() {
   const size_t num_centers = centers_.n_rows;
 
   std::vector<Value> points;
-
   points.reserve(num_centers);
 
   for (size_t iter = 0; iter < num_centers; ++iter) {
     Point mypoint(centers_(iter, 0), centers_(iter, 1));
-    Value myvalue(mypoint, iter);
-    points.push_back(myvalue);
+    points.emplace_back(std::move(mypoint), iter);
   }
   rt_.insert(points.begin(), points.end());
 }
