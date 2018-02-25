@@ -25,18 +25,18 @@ public:
   using Point = bg::model::point<double, 2, bg::cs::cartesian>;
   using Value = std::pair<Point, unsigned>;
 
-  LocalLagrangeAssembler(const arma::vec &centers_x, const arma::vec &centers_y,
+  LocalLagrangeAssembler(const arma::mat& centers,
                          const size_t num_local_centers)
-      : centers_x_(centers_x), centers_y_(centers_y),
+      : centers_(centers),
         num_local_centers_(num_local_centers) {
     assembleTree(); // Build up R Tree of nearest neighbor points so we can find
                     // local indices
   }
 
-  std::tuple<arma::vec, arma::vec>
+  arma::mat
   findLocalCenters(const arma::uvec &local_indices);
   unsigned int
-  findLocalIndex(const std::tuple<arma::vec, arma::vec> &local_centers,
+  findLocalIndex(const arma::mat &local_centers,
                  unsigned int index);
   LocalLagrange generateLocalLagrangeFunction(const unsigned int index);
 
@@ -44,9 +44,6 @@ public:
   double scale_factor() const { return scale_factor_; }
   double mesh_norm() const { return mesh_norm_; }
   double ball_radius() const { return ball_radius_; }
-
-  arma::vec centers_x() const { return centers_x_; }
-  arma::vec centers_y() const { return centers_y_; }
 
   void assembleTree();
 
@@ -60,11 +57,10 @@ public:
     mesh_norm_ = mesh_norm;
     updateBallRadius();
   }
-  void setCenters(const arma::vec &centers_x, const arma::vec &centers_y) {
+  void setCenters(const arma::mat& centers) {
     // Assumes size of centers_x and centers_y are the same
-    centers_x_ = centers_x;
-    centers_y_ = centers_y;
-    num_centers_ = centers_x_.size();
+    centers_ = centers;
+    num_centers_ = centers_.n_rows;
   }
 
   void setNum_local_centers(const unsigned int num_local_centers) {
@@ -83,8 +79,7 @@ private:
   double ball_radius_;
   bgi::rtree<Value, bgi::quadratic<16>> rt_; // R-tree for indexing points.
 
-  arma::vec centers_x_;
-  arma::vec centers_y_; // Assumes 2D structure.
+  arma::mat centers_; // N x d, with N points and d dimensions.
 
   unsigned int num_local_centers_; // How many local centers should we find?
 };

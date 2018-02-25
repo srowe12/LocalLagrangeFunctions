@@ -9,12 +9,11 @@ namespace local_lagrange {
 
 class LocalLagrange {
 public:
-  LocalLagrange(const std::tuple<arma::vec, arma::vec> &local_centers,
+  LocalLagrange(const arma::mat &local_centers,
                 const arma::uvec &local_indices, const unsigned int local_index)
       : index_(local_index), indices_(local_indices),
-        centers_x_(std::get<0>(local_centers)),
-        centers_y_(std::get<1>(local_centers)) {
-    buildCoefficients(centers_x_, centers_y_, index_);
+        centers_(local_centers) {
+    buildCoefficients(centers_, index_);
   }
 
   explicit LocalLagrange(unsigned int index) : index_(index) {}
@@ -23,11 +22,9 @@ public:
                 const arma::vec &coefs)
       : index_(index), indices_(indices), coefficients_(coefs) {}
 
-  arma::mat assembleInterpolationMatrix(const arma::vec &local_centers_x,
-                                        const arma::vec &local_centers_y);
+  arma::mat assembleInterpolationMatrix(const arma::mat &local_centers);
 
-  void buildCoefficients(const arma::vec &local_centers_x,
-                         const arma::vec &local_centers_y,
+  void buildCoefficients(const arma::mat &local_centers,
                          unsigned int local_index);
 
   unsigned int index() const { return index_; }
@@ -45,9 +42,10 @@ public:
 
     ///@todo srowe Naive implementation for now, improve on in the future
     double result = 0.0;
-    for (size_t i = 0; i < centers_x_.size(); ++i) {
-      const double xdist = centers_x_[i] - x;
-      const double ydist = centers_y_[i] - y;
+    const size_t num_centers = centers_.n_rows;
+    for (size_t i = 0; i < num_centers; ++i) {
+      const double xdist = centers_[i,0] - x;
+      const double ydist = centers_[i,1] - y;
       const double distance = xdist * xdist + ydist * ydist;
 
       // Safety check for distance = 0
@@ -80,8 +78,7 @@ public:
 private:
   unsigned int index_;
   arma::uvec indices_;
-  arma::vec centers_x_;
-  arma::vec centers_y_;
+  arma::mat centers_;
   arma::vec coefficients_;
 };
 

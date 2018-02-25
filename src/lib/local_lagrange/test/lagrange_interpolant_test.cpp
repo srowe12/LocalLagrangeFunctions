@@ -12,8 +12,7 @@ protected:
     std::vector<double> one_dim_points =
         mathtools::linspace<double>(0.0, 1.0, 10.0);
     points = mathtools::meshgrid(one_dim_points, one_dim_points);
-    x_centers = points[0];
-    y_centers = points[1];
+
 
     // Choose a function sampled on the same point set
     num_points = x_centers.size();
@@ -21,16 +20,15 @@ protected:
 
     for (size_t i = 0; i < num_points; ++i) {
       sample_function(i) =
-          std::sin(2 * M_PI * x_centers[i]) * std::cos(2 * M_PI * y_centers[i]);
+          std::sin(2 * M_PI * points[i,0]) * std::cos(2 * M_PI * points[i,1]);
     }
 
     sampled_function = sample_function;
   }
 
   size_t num_points;
-  std::array<arma::vec, 2> points;
-  arma::vec x_centers;
-  arma::vec y_centers;
+  arma::mat points;
+
   arma::vec sampled_function;
 };
 
@@ -43,8 +41,8 @@ TEST_F(LocalLagrangeInterpolantTests, TestSimpleInterpolant) {
                                        sampled_function);
 
   for (size_t i = 0; i < num_points; ++i) {
-    const double x = x_centers[i];
-    const double y = y_centers[i];
+    const double x = centers[i,0];
+    const double y = centers[i,1];
 
     EXPECT_NEAR(sampled_function(i), interpolant(x, y), 1e-13);
   }

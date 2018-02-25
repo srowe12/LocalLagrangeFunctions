@@ -14,25 +14,29 @@ namespace local_lagrange {
 
 void LocalLagrangeAssembler::assembleTree() {
   std::vector<Value> points;
-  for (size_t iter = 0; iter < centers_x_.size(); iter++) {
-    Point mypoint(centers_x_[iter], centers_y_[iter]);
+
+  const size_t num_centers = centers_.n_rows;
+  for (size_t iter = 0; iter < num_centers; ++iter) {
+    Point mypoint(centers_[iter,0], centers_[iter,1]);
     Value myvalue(mypoint, iter);
     points.push_back(myvalue);
   }
   rt_.insert(points.begin(), points.end());
 }
 
-std::tuple<arma::vec, arma::vec>
+arma::mat
 LocalLagrangeAssembler::findLocalCenters(const arma::uvec &local_indices) {
 
   const size_t num_local_centers = local_indices.size();
-  arma::vec local_x(num_local_centers);
-  arma::vec local_y(num_local_centers);
-  for (size_t i = 0; i < num_local_centers; i++) {
-    local_x[i] = centers_x_[local_indices[i]];
-    local_y[i] = centers_y_[local_indices[i]];
+
+  ///@todo srowe: Make this 2 a template parameter on dimension size, or
+  // derive it dynamically at runtime
+  arma::mat local_centers(num_local_centers, 2);
+  for (size_t i = 0; i < num_local_centers; ++i) {
+    local_centers[i,0] = centers_[local_indices[i],0];
+    local_centers[i,1] = centers_[local_indices[i],1];
   }
-  return std::make_tuple(local_x, local_y);
+  return local_centers;
 }
 
 LocalLagrange
@@ -48,18 +52,16 @@ LocalLagrangeAssembler::generateLocalLagrangeFunction(unsigned int index) {
 }
 
 unsigned int LocalLagrangeAssembler::findLocalIndex(
-    const std::tuple<arma::vec, arma::vec> &local_centers, unsigned int index) {
+    const arma::mat &local_centers, unsigned int index) {
 
-  const double center_x = centers_x_[index];
-  const double center_y = centers_y_[index];
+  const double center_x = centers_[index,0];
+  const double center_y = centers_[index,1];
   // Implement naive algorithm here. Upgrade later.
   // Machine precision equality errors possible.
   unsigned int local_index = 0;
-  const auto &local_centers_x = std::get<0>(local_centers);
-  const auto &local_centers_y = std::get<1>(local_centers);
-  const size_t num_vectors = local_centers_x.size();
+  const size_t num_vectors = local_centers.n_rows;
   for (size_t i = 0; i < num_vectors; ++i) {
-    if (center_x == local_centers_x[i] && center_y == local_centers_y[i]) {
+    if (center_x == local_centers[i,0] && center_y == local_centers[i,1]) {
       local_index = i;
       break;
     }
@@ -72,7 +74,7 @@ arma::uvec
 LocalLagrangeAssembler::getNearestNeighbors(const unsigned int index) {
   // Wrap values into a single point, then value pair. Pass into rt for
   // querying.
-  Point center(centers_x_[index], centers_y_[index]);
+  Point center(centers_[index,0], centers_[index,1]);
   Value center_value(center, index);
   std::vector<Value> neighbors;
   rt_.query(bgi::nearest(center, num_local_centers_),

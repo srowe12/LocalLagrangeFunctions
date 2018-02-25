@@ -33,12 +33,12 @@ TEST(MathTest, MeshgridTest) {
   std::vector<double> ypoints = mathtools::linspace<double>(ay, by, num_y);
 
   auto pointset = mathtools::meshgrid<double>(xpoints, ypoints);
-  auto xvals = pointset[0];
-  auto yvals = pointset[1];
+  auto xvals = pointset.col(0);
+  auto yvals = pointset.col(1);
 
   size_t num_vals = (num_x + 1) * (num_y + 1);
-  EXPECT_EQ(num_vals, xvals.size());
-  EXPECT_EQ(num_vals, yvals.size());
+  EXPECT_EQ(num_vals, xvals.n_rows);
+  EXPECT_EQ(num_vals, yvals.n_cols);
 
   EXPECT_DOUBLE_EQ(xvals[0], ax);
   EXPECT_DOUBLE_EQ(xvals[num_vals - 1], bx);

@@ -24,7 +24,7 @@ std::vector<T> linspace(T a, T b, unsigned int num_points) {
 }
 
 template <typename T>
-std::array<arma::vec, 2> meshgrid(const std::vector<T> &xpoints,
+arma::mat meshgrid(const std::vector<T> &xpoints,
                                   const std::vector<T> &ypoints) {
 
   size_t num_points_x = xpoints.size();
@@ -42,9 +42,9 @@ std::array<arma::vec, 2> meshgrid(const std::vector<T> &xpoints,
       Y[row * num_points_y + col] = yval;
     }
   }
-  std::array<arma::vec, 2> return_points{
-      {std::move(arma::conv_to<arma::vec>::from(X)),
-       std::move(arma::conv_to<arma::vec>::from(Y))}};
+  arma::mat return_points(num_points, 2);
+  return_points.col(0) = arma::conv_to<arma::vec>::from(X);
+  return_points.col(1) = arma::conv_to<arma::vec>::from(Y);
   return return_points;
 }
 
