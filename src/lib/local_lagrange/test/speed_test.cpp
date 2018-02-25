@@ -1,5 +1,4 @@
-#include "../local_lagrange.h"
-#include "../local_lagrange_assembler.h"
+#include "../local_lagrange_interpolant.h"
 
 #include "math_tools.h"
 #include <gtest/gtest.h>
@@ -14,13 +13,8 @@
 
 #include <algorithm>
 #include <chrono>
-//#include <thread>
 #include <future>
-void BuildLocalLagrange(local_lagrange::LocalLagrangeAssembler &llc,
-                        size_t iter) {
-  //   std::cout << "The iteration is" << iter << std::endl;
-  local_lagrange::LocalLagrange llf = llc.generateLocalLagrangeFunction(iter);
-}
+
 int main() {
   // Purpose of this app is to time how long it takes to generate a full set of
   // LLF's.
@@ -32,46 +26,15 @@ int main() {
   std::vector<double> xmesh = mathtools::linspace<double>(0, 1, num_points);
   auto centers = mathtools::meshgrid<double>(xmesh, xmesh);
 
-  // TODO: Constructor is kinda dumb...
-  // Set the centers into the Local Lagrange Constructor...should rename it
-  // assembler...
-  local_lagrange::LocalLagrangeAssembler llc(centers, 200);
-
   size_t num_centers = centers.n_rows;
 
-#pragma omp parallel for num_threads(6)
-  for (size_t iter = 0; iter < num_centers; ++iter) {
-    //     std::cout << "The iteration is" << iter << std::endl;
-    local_lagrange::LocalLagrange llf = llc.generateLocalLagrangeFunction(iter);
-  }
-  /*
-   std::vector<std::future<void>> futures;
-   for (size_t i = 0; i < num_centers; ++i) {
-     futures.push_back(std::async(BuildLocalLagrange,std::ref(llc),i));
-   }
-
-   for (auto &e : futures) {
-     e.get();
-   }
-   */
-  /*
-   for (size_t iter = 0; iter < num_centers; iter++) {
-      std::cout << "The iteration is " << iter << std::endl;
-      local_lagrange::LocalLagrange llf =
-          llc.generateLocalLagrangeFunction(iter);
-      arma::vec coefs = llf.coefficients();
-      std::string index_file = "indices_" + std::to_string(iter)+".txt";
-      std::string coefs_file = "coefs_" + std::to_string(iter)+".txt";
-      mathtools::write_vector(local_indices,index_file);
-      bool save_status = coefs.save(coefs_file,arma::raw_ascii);
-   }
-   */
+  auto llfs = local_lagrange::buildLocalLagrangeFunctions(centers, 200);
 
   std::cout << "Run complete!" << std::endl;
   auto end = std::chrono::steady_clock::now();
   auto diff = end - start;
-  std::cout << std::chrono::duration<double, std::deci>(diff).count()
-            << "deciseconds" << std::endl;
+  std::cout << std::chrono::duration<double, std::milli>(diff).count()
+            << "milliseconds" << std::endl;
 
   return 0;
 }

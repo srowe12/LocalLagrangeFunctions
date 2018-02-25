@@ -22,8 +22,7 @@ target_link_libraries(lagrange_int_test ${math_lib} ${lagrange_lib} ${ARMADILLO_
 add_test(NAME lagrange_int_test COMMAND lagrange_int_test)
 
 set(lagrange_speed_test_src speed_test.cpp)
-set(lagrange_speed_test_hdr speed_test.h)
-add_executable(lagrange_speed_test ${lagrange_speed_test_src} ${lagrange_speed_test_hdr})
+add_executable(lagrange_speed_test ${lagrange_speed_test_src})
 include_directories( ${CMAKE_LIB_DIR}/math_utils/ ${math_hdr} ${ARMADILLO_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
 target_link_libraries(lagrange_speed_test ${math_lib} ${lagrange_lib} ${ARMADILLO_LIBRARIES} ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
