@@ -15,9 +15,13 @@ namespace bgi = boost::geometry::index;
 namespace local_lagrange {
 
 void LocalLagrangeAssembler::assembleTree() {
+  
+   const size_t num_centers = centers_.n_rows;
+
   std::vector<Value> points;
 
-  const size_t num_centers = centers_.n_rows;
+  points.reserve(num_centers);
+
   for (size_t iter = 0; iter < num_centers; ++iter) {
     Point mypoint(centers_(iter, 0), centers_(iter, 1));
     Value myvalue(mypoint, iter);
