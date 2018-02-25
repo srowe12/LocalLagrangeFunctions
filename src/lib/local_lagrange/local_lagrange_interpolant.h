@@ -21,7 +21,7 @@ private:
   std::vector<LocalLagrange> m_llfs; // Vector of Local Lagrange Functions
 };
 
-LocalLagrangeEnsemble buildLocalLagrangeFunctions(const arma::mat& centers,
+LocalLagrangeEnsemble buildLocalLagrangeFunctions(const arma::mat &centers,
                                                   size_t num_local_centers);
 
 class LocalLagrangeInterpolant {

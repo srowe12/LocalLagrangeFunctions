@@ -1,7 +1,7 @@
 #include "local_lagrange_interpolant.h"
 namespace local_lagrange {
 
-LocalLagrangeEnsemble buildLocalLagrangeFunctions(const arma::mat& centers,
+LocalLagrangeEnsemble buildLocalLagrangeFunctions(const arma::mat &centers,
                                                   size_t num_local_centers) {
   // Instantiate a LocalLagrangeAssembler
 

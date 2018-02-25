@@ -9,10 +9,9 @@ namespace local_lagrange {
 
 class LocalLagrange {
 public:
-  LocalLagrange(const arma::mat &local_centers,
-                const arma::uvec &local_indices, const unsigned int local_index)
-      : index_(local_index), indices_(local_indices),
-        centers_(local_centers) {
+  LocalLagrange(const arma::mat &local_centers, const arma::uvec &local_indices,
+                const unsigned int local_index)
+      : index_(local_index), indices_(local_indices), centers_(local_centers) {
     buildCoefficients(centers_, index_);
   }
 
@@ -44,8 +43,8 @@ public:
     double result = 0.0;
     const size_t num_centers = centers_.n_rows;
     for (size_t i = 0; i < num_centers; ++i) {
-      const double xdist = centers_(i,0) - x;
-      const double ydist = centers_(i,1) - y;
+      const double xdist = centers_(i, 0) - x;
+      const double ydist = centers_(i, 1) - y;
       const double distance = xdist * xdist + ydist * ydist;
 
       // Safety check for distance = 0

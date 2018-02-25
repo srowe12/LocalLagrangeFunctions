@@ -25,7 +25,7 @@ std::vector<T> linspace(T a, T b, unsigned int num_points) {
 
 template <typename T>
 arma::mat meshgrid(const std::vector<T> &xpoints,
-                                  const std::vector<T> &ypoints) {
+                   const std::vector<T> &ypoints) {
 
   size_t num_points_x = xpoints.size();
   size_t num_points_y = ypoints.size();

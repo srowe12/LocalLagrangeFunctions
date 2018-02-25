@@ -25,19 +25,16 @@ public:
   using Point = bg::model::point<double, 2, bg::cs::cartesian>;
   using Value = std::pair<Point, unsigned>;
 
-  LocalLagrangeAssembler(const arma::mat& centers,
+  LocalLagrangeAssembler(const arma::mat &centers,
                          const size_t num_local_centers)
-      : centers_(centers),
-        num_local_centers_(num_local_centers) {
+      : centers_(centers), num_local_centers_(num_local_centers) {
     assembleTree(); // Build up R Tree of nearest neighbor points so we can find
                     // local indices
   }
 
-  arma::mat
-  findLocalCenters(const arma::uvec &local_indices);
-  unsigned int
-  findLocalIndex(const arma::mat &local_centers,
-                 unsigned int index);
+  arma::mat findLocalCenters(const arma::uvec &local_indices);
+  unsigned int findLocalIndex(const arma::mat &local_centers,
+                              unsigned int index);
   LocalLagrange generateLocalLagrangeFunction(const unsigned int index);
 
   unsigned int num_centers() const { return num_centers_; }
@@ -57,7 +54,7 @@ public:
     mesh_norm_ = mesh_norm;
     updateBallRadius();
   }
-  void setCenters(const arma::mat& centers) {
+  void setCenters(const arma::mat &centers) {
     // Assumes size of centers_x and centers_y are the same
     centers_ = centers;
     num_centers_ = centers_.n_rows;

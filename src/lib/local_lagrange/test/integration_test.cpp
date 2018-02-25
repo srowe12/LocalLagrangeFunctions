@@ -38,8 +38,8 @@ TEST(IntegrationTest, BuildAnLLF) {
   // bool save_status = coefs.save(coefs_file, arma::raw_ascii);
   // EXPECT_TRUE(save_status);
   for (size_t eval_iter = 0; eval_iter < 200; eval_iter++) {
-    x_eval += coef_tps(eval_iter) * centers[local_indices[eval_iter],0];
-    y_eval += coef_tps(eval_iter) * centers[local_indices[eval_iter],1];
+    x_eval += coef_tps(eval_iter) * centers[local_indices[eval_iter], 0];
+    y_eval += coef_tps(eval_iter) * centers[local_indices[eval_iter], 1];
   }
   EXPECT_LT(x_eval, 1e-8);
   EXPECT_LT(y_eval, 1e-8);

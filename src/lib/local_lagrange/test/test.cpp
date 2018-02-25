@@ -48,7 +48,7 @@ TEST(MyTest, TreeTest) {
 
 TEST(MyTest, NearestNeighborTest) {
 
-  arma::mat centers{{1,0},{2,1},{3,2}};
+  arma::mat centers{{1, 0}, {2, 1}, {3, 2}};
   LocalLagrangeAssembler llc(centers, 2);
 
   auto indices = llc.getNearestNeighbors(0);
@@ -59,11 +59,10 @@ TEST(MyTest, NearestNeighborTest) {
 
 TEST(MyTest, AssembleInterpolationMatrix) {
 
-  arma::mat centers{{1,0},{2,1},{3,2}};
+  arma::mat centers{{1, 0}, {2, 1}, {3, 2}};
 
   local_lagrange::LocalLagrange llf(0); // Index 0.
-  arma::mat interp_matrix =
-      llf.assembleInterpolationMatrix(centers);
+  arma::mat interp_matrix = llf.assembleInterpolationMatrix(centers);
   for (size_t i = 0; i < 6; i++) {
     EXPECT_EQ(0.0, interp_matrix(i, i));
   }
@@ -77,14 +76,13 @@ TEST(MyTest, AssembleInterpolationMatrix) {
 
 TEST(MyTest, SolveForCoefficients) {
 
-  arma::mat centers {{1,0}, {2, 1}, {3, 2}};
+  arma::mat centers{{1, 0}, {2, 1}, {3, 2}};
   unsigned int local_index = 0;
   local_lagrange::LocalLagrange llf(0); // Index 0.
   llf.buildCoefficients(centers, 0);
   arma::vec coefs = llf.coefficients();
 
-  arma::mat interp_matrix =
-      llf.assembleInterpolationMatrix(centers);
+  arma::mat interp_matrix = llf.assembleInterpolationMatrix(centers);
   arma::vec rhs = interp_matrix * coefs;
   EXPECT_NEAR(1, rhs(local_index), 1e-13);
   rhs(local_index) = 0;
@@ -95,15 +93,14 @@ TEST(MyTest, SolveForCoefficients) {
 
 TEST(MyTest, FindLocalIndexTest) {
 
-
-  arma::mat centers {{1,0}, {2, 1}, {3, 2}};
+  arma::mat centers{{1, 0}, {2, 1}, {3, 2}};
 
   local_lagrange::LocalLagrangeAssembler llc(centers, 2);
 
   unsigned int index = 2;
 
-  arma::mat local_centers{{2,1},{3,2}};
-  
+  arma::mat local_centers{{2, 1}, {3, 2}};
+
   unsigned int local_index = llc.findLocalIndex(local_centers, index);
   EXPECT_EQ(1, local_index);
 }
@@ -113,8 +110,8 @@ TEST(MyTest, FindLocalCentersTest) {
 
   arma::mat centers(30, 2);
   for (size_t i = 0; i < num_centers; i++) {
-    centers(i,0) = i;
-    centers(i,1) = i + 1;
+    centers(i, 0) = i;
+    centers(i, 1) = i + 1;
   }
   local_lagrange::LocalLagrangeAssembler llc(centers, 2);
 
@@ -123,15 +120,15 @@ TEST(MyTest, FindLocalCentersTest) {
   local_indices.print("local indices");
   auto local_centers = llc.findLocalCenters(local_indices);
   local_centers.print("Local Centers Are");
-  double center_x = centers(index,0);
-  double center_y = centers(index,1);
+  double center_x = centers(index, 0);
+  double center_y = centers(index, 1);
   std::cout << "The center is " << center_x << " and " << center_y << std::endl;
   double dist;
 
   auto num_local_centers = local_centers.n_rows;
   for (size_t i = 0; i < num_local_centers; ++i) {
-    dist = (local_centers(i,0) - center_x) * (local_centers(i,0) - center_x) +
-           (local_centers(i,1) - center_y) * (local_centers(i,1) - center_y);
+    dist = (local_centers(i, 0) - center_x) * (local_centers(i, 0) - center_x) +
+           (local_centers(i, 1) - center_y) * (local_centers(i, 1) - center_y);
     EXPECT_GT(2.0000001, dist);
   }
 }
@@ -155,8 +152,8 @@ TEST(MyTest, BuildLocalLagrangeFunction) {
   auto local_indices = llf.indices();
 
   for (size_t iter = 0; iter < 200; iter++) {
-    x_eval += coef_tps(iter) * centers(local_indices(iter),0);
-    y_eval += coef_tps(iter) * centers(local_indices(iter),1);
+    x_eval += coef_tps(iter) * centers(local_indices(iter), 0);
+    y_eval += coef_tps(iter) * centers(local_indices(iter), 1);
   }
   EXPECT_NEAR(0, x_eval, 1e-12);
   EXPECT_NEAR(0, y_eval, 1e-12);
@@ -165,7 +162,8 @@ TEST(MyTest, BuildLocalLagrangeFunction) {
 TEST(LocalLagrangeTests, EvaluateOperator) {
   // Build an LLF centered at 5,5 out of 10 points in x and y directions
 
-  arma::mat local_centers{{1,1},{2,2},{3,3},{4,4},{5,5},{6,6}, {7,7}, {8,8}, {9,9}, {10,10}};
+  arma::mat local_centers{{1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5},
+                          {6, 6}, {7, 7}, {8, 8}, {9, 9}, {10, 10}};
   LocalLagrangeAssembler assembler(local_centers, 10);
 
   auto llf = assembler.generateLocalLagrangeFunction(5);
@@ -174,7 +172,7 @@ TEST(LocalLagrangeTests, EvaluateOperator) {
   // on the point the LLF is centered on, where it should be 1.0
   for (size_t i = 0; i < 10; ++i) {
     EXPECT_NEAR(expected_evaluations(i),
-                llf(local_centers(i,0), local_centers(i,1)), 1e-13);
+                llf(local_centers(i, 0), local_centers(i, 1)), 1e-13);
   }
 }
 
