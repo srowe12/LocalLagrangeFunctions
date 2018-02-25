@@ -48,9 +48,8 @@ TEST(MyTest, TreeTest) {
 
 TEST(MyTest, NearestNeighborTest) {
 
-  arma::vec centers_x{1, 2, 3};
-  arma::vec centers_y{0, 1, 2};
-  LocalLagrangeAssembler llc(centers_x, centers_y, 2);
+  arma::mat centers{{1,0},{2,1},{3,2}};
+  LocalLagrangeAssembler llc(centers, 2);
 
   auto indices = llc.getNearestNeighbors(0);
   EXPECT_EQ(2, indices.size());
@@ -59,11 +58,12 @@ TEST(MyTest, NearestNeighborTest) {
 }
 
 TEST(MyTest, AssembleInterpolationMatrix) {
-  arma::vec centers_x{1, 2, 3};
-  arma::vec centers_y{0, 1, 2};
+
+  arma::mat centers{{1,0},{2,1},{3,2}};
+
   local_lagrange::LocalLagrange llf(0); // Index 0.
   arma::mat interp_matrix =
-      llf.assembleInterpolationMatrix(centers_x, centers_y);
+      llf.assembleInterpolationMatrix(centers);
   for (size_t i = 0; i < 6; i++) {
     EXPECT_EQ(0.0, interp_matrix(i, i));
   }
@@ -76,12 +76,11 @@ TEST(MyTest, AssembleInterpolationMatrix) {
 }
 
 TEST(MyTest, SolveForCoefficients) {
-  arma::vec centers_x{1, 2, 3};
-  arma::vec centers_y{0, 1, 2};
+
   arma::mat centers {{1,0}, {2, 1}, {3, 2}};
   unsigned int local_index = 0;
   local_lagrange::LocalLagrange llf(0); // Index 0.
-  llf.buildCoefficients(centers 0);
+  llf.buildCoefficients(centers, 0);
   arma::vec coefs = llf.coefficients();
 
   arma::mat interp_matrix =
@@ -102,8 +101,6 @@ TEST(MyTest, FindLocalIndexTest) {
   local_lagrange::LocalLagrangeAssembler llc(centers, 2);
 
   unsigned int index = 2;
-  arma::vec local_centers_x{2, 3};
-  arma::vec local_centers_y{1, 2};
 
   arma::mat local_centers{{2,1},{3,2}};
   
@@ -113,27 +110,24 @@ TEST(MyTest, FindLocalIndexTest) {
 
 TEST(MyTest, FindLocalCentersTest) {
   size_t num_centers = 30;
-  arma::vec centers_x(num_centers);
-  arma::vec centers_y(num_centers);
+
   arma::mat centers(30, 2);
   for (size_t i = 0; i < num_centers; i++) {
     centers[i,0] = i;
     centers[i,1] = i + 1;
   }
-  local_lagrange::LocalLagrangeAssembler llc(centers 2);
+  local_lagrange::LocalLagrangeAssembler llc(centers, 2);
 
   unsigned int index = 5;
   auto local_indices = llc.getNearestNeighbors(index);
   auto local_centers = llc.findLocalCenters(local_indices);
 
-  auto &local_centers_x = std::get<0>(local_centers);
-  auto &local_centers_y = std::get<1>(local_centers);
-
   double center_x = centers[index,0];
   double center_y = centers[index,1];
   double dist;
 
-  for (size_t i = 0; i < local_centers_x.size(); i++) {
+  auto num_local_centers = local_centers.n_rows;
+  for (size_t i = 0; i < num_local_centers; ++i) {
     dist = (local_centers[i,0] - center_x) * (local_centers[i,0] - center_x) +
            (local_centers[i,1] - center_y) * (local_centers[i,1] - center_y);
     EXPECT_GT(2.0000001, dist);

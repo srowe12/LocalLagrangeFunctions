@@ -38,7 +38,7 @@ TEST(MathTest, MeshgridTest) {
 
   size_t num_vals = (num_x + 1) * (num_y + 1);
   EXPECT_EQ(num_vals, xvals.n_rows);
-  EXPECT_EQ(num_vals, yvals.n_cols);
+  EXPECT_EQ(num_vals, yvals.n_rows);
 
   EXPECT_DOUBLE_EQ(xvals[0], ax);
   EXPECT_DOUBLE_EQ(xvals[num_vals - 1], bx);

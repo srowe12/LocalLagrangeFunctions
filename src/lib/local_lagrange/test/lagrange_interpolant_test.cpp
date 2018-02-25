@@ -15,7 +15,7 @@ protected:
 
 
     // Choose a function sampled on the same point set
-    num_points = x_centers.size();
+    num_points = points.n_rows;
     arma::vec sample_function(num_points);
 
     for (size_t i = 0; i < num_points; ++i) {
@@ -34,15 +34,15 @@ protected:
 
 TEST_F(LocalLagrangeInterpolantTests, TestSimpleInterpolant) {
   LocalLagrangeEnsemble local_lagrange_ensemble =
-      buildLocalLagrangeFunctions(x_centers, y_centers, 500);
+      buildLocalLagrangeFunctions(points, 500);
 
   // Now that we have the function sampled, let's test it out on the ensemble
   LocalLagrangeInterpolant interpolant(local_lagrange_ensemble,
                                        sampled_function);
 
   for (size_t i = 0; i < num_points; ++i) {
-    const double x = centers[i,0];
-    const double y = centers[i,1];
+    const double x = points[i,0];
+    const double y = points[i,1];
 
     EXPECT_NEAR(sampled_function(i), interpolant(x, y), 1e-13);
   }
@@ -50,7 +50,7 @@ TEST_F(LocalLagrangeInterpolantTests, TestSimpleInterpolant) {
 
 TEST_F(LocalLagrangeInterpolantTests, OffgridPointEvaluation) {
   LocalLagrangeEnsemble local_lagrange_ensemble =
-      buildLocalLagrangeFunctions(x_centers, y_centers, 500);
+      buildLocalLagrangeFunctions(points, 500);
 
   // Now that we have the function sampled, let's test it out on the ensemble
   LocalLagrangeInterpolant interpolant(local_lagrange_ensemble,

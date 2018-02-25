@@ -35,9 +35,9 @@ int main() {
   // TODO: Constructor is kinda dumb...
   // Set the centers into the Local Lagrange Constructor...should rename it
   // assembler...
-  local_lagrange::LocalLagrangeAssembler llc(centers[0], centers[1], 200);
+  local_lagrange::LocalLagrangeAssembler llc(centers, 200);
 
-  size_t num_centers = centers[0].size();
+  size_t num_centers = centers.n_rows;
 
 #pragma omp parallel for num_threads(6)
   for (size_t iter = 0; iter < num_centers; ++iter) {
