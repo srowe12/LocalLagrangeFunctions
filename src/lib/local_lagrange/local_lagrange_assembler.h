@@ -50,23 +50,15 @@ public:
   unsigned int findLocalIndex(const arma::mat &local_centers,
                               unsigned int index) {
 
-    const double center_x = centers_(index, 0);
-    const double center_y = centers_(index, 1);
-    std::cout << "Hello" << std::endl;
     const arma::rowvec center = centers_.row(index);
-    std::cout << "Got the center" << std::endl;
-    center.print("The center is");
 
     // Implement naive algorithm here. Upgrade later.
     // Machine precision equality errors possible.
     unsigned int local_index = 0;
     const size_t num_vectors = local_centers.n_rows;
-
     for (size_t i = 0; i < num_vectors; ++i) {
-      local_centers.row(i).print("The row is");
       auto matching = arma::all(center == local_centers.row(i));
 
-      std::cout << "The matching is " << matching << std::endl;
       if (matching) {
         local_index = i;
       }
