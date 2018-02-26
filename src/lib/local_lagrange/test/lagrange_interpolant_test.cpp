@@ -37,7 +37,7 @@ TEST_F(LocalLagrangeInterpolantTests, TestSimpleInterpolant) {
 
   // Now that we have the function sampled, let's test it out on the ensemble
   LocalLagrangeInterpolant<2> interpolant(local_lagrange_ensemble,
-                                       sampled_function);
+                                          sampled_function);
 
   for (size_t i = 0; i < num_points; ++i) {
     EXPECT_NEAR(sampled_function(i), interpolant(points.row(i)), 1e-13);
@@ -50,7 +50,7 @@ TEST_F(LocalLagrangeInterpolantTests, OffgridPointEvaluation) {
 
   // Now that we have the function sampled, let's test it out on the ensemble
   LocalLagrangeInterpolant<2> interpolant(local_lagrange_ensemble,
-                                       sampled_function);
+                                          sampled_function);
 
   double some_x = 1.0 / 7.0;
   double some_y = 1.0 / 7.0;

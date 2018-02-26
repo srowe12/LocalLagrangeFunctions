@@ -143,7 +143,8 @@ TEST(MyTest, BuildLocalLagrangeFunction) {
   local_lagrange::LocalLagrangeAssembler<2> llc(centers, 200);
 
   unsigned int index = 5;
-  local_lagrange::LocalLagrange<2> llf = llc.generateLocalLagrangeFunction(index);
+  local_lagrange::LocalLagrange<2> llf =
+      llc.generateLocalLagrangeFunction(index);
   arma::vec coefs = llf.coefficients();
   EXPECT_NEAR(0, accu(coefs.subvec(0, 199)), 1e-10);
   double x_eval = 0;

@@ -69,7 +69,8 @@ public:
     return local_index;
   }
 
-  LocalLagrange<Dimension> generateLocalLagrangeFunction(const unsigned int index) {
+  LocalLagrange<Dimension>
+  generateLocalLagrangeFunction(const unsigned int index) {
 
     auto local_indices = getNearestNeighbors(index);
     auto local_centers = findLocalCenters(local_indices);

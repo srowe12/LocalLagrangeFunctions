@@ -7,8 +7,7 @@
 namespace local_lagrange {
 // Provides ability to interpolate functions with a collection of Local Lagrange
 // Functions
-template <size_t Dimension>
-class LocalLagrangeEnsemble {
+template <size_t Dimension> class LocalLagrangeEnsemble {
 public:
   LocalLagrangeEnsemble(const std::vector<LocalLagrange<Dimension>> &llfs)
       : m_llfs(llfs) {}
@@ -16,16 +15,20 @@ public:
   LocalLagrangeEnsemble(std::vector<LocalLagrange<Dimension>> &&llfs)
       : m_llfs(std::move(llfs)) {}
 
-  std::vector<LocalLagrange<Dimension>> localLagrangeFunctions() const { return m_llfs; }
+  std::vector<LocalLagrange<Dimension>> localLagrangeFunctions() const {
+    return m_llfs;
+  }
 
 private:
-  std::vector<LocalLagrange<Dimension>> m_llfs; // Vector of Local Lagrange Functions
+  std::vector<LocalLagrange<Dimension>>
+      m_llfs; // Vector of Local Lagrange Functions
 };
 
 template <size_t Dimension>
-LocalLagrangeEnsemble<Dimension> buildLocalLagrangeFunctions(const arma::mat &centers,
-                                                  size_t num_local_centers) {
-    // Instantiate a LocalLagrangeAssembler
+LocalLagrangeEnsemble<Dimension>
+buildLocalLagrangeFunctions(const arma::mat &centers,
+                            size_t num_local_centers) {
+  // Instantiate a LocalLagrangeAssembler
 
   LocalLagrangeAssembler<Dimension> assembler(centers, num_local_centers);
 
@@ -40,8 +43,7 @@ LocalLagrangeEnsemble<Dimension> buildLocalLagrangeFunctions(const arma::mat &ce
   return LocalLagrangeEnsemble<Dimension>(llfs);
 }
 
-template <size_t Dimension>
-class LocalLagrangeInterpolant {
+template <size_t Dimension> class LocalLagrangeInterpolant {
 public:
   LocalLagrangeInterpolant(const LocalLagrangeEnsemble<Dimension> &lle,
                            const arma::vec &sampled_function)
