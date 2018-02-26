@@ -61,7 +61,7 @@ TEST(MyTest, AssembleInterpolationMatrix) {
 
   arma::mat centers{{1, 0}, {2, 1}, {3, 2}};
 
-  local_lagrange::LocalLagrange llf(0); // Index 0.
+  local_lagrange::LocalLagrange<2> llf(0); // Index 0.
   arma::mat interp_matrix = llf.assembleInterpolationMatrix(centers);
   for (size_t i = 0; i < 6; i++) {
     EXPECT_EQ(0.0, interp_matrix(i, i));
@@ -78,7 +78,7 @@ TEST(MyTest, SolveForCoefficients) {
 
   arma::mat centers{{1, 0}, {2, 1}, {3, 2}};
   unsigned int local_index = 0;
-  local_lagrange::LocalLagrange llf(0); // Index 0.
+  local_lagrange::LocalLagrange<2> llf(0); // Index 0.
   llf.buildCoefficients(centers, 0);
   arma::vec coefs = llf.coefficients();
 
@@ -143,7 +143,7 @@ TEST(MyTest, BuildLocalLagrangeFunction) {
   local_lagrange::LocalLagrangeAssembler<2> llc(centers, 200);
 
   unsigned int index = 5;
-  local_lagrange::LocalLagrange llf = llc.generateLocalLagrangeFunction(index);
+  local_lagrange::LocalLagrange<2> llf = llc.generateLocalLagrangeFunction(index);
   arma::vec coefs = llf.coefficients();
   EXPECT_NEAR(0, accu(coefs.subvec(0, 199)), 1e-10);
   double x_eval = 0;

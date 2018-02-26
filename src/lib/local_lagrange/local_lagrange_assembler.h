@@ -56,6 +56,7 @@ public:
     // Machine precision equality errors possible.
     unsigned int local_index = 0;
     const size_t num_vectors = local_centers.n_rows;
+
     for (size_t i = 0; i < num_vectors; ++i) {
       auto matching = arma::all(center == local_centers.row(i));
 
@@ -68,13 +69,13 @@ public:
     return local_index;
   }
 
-  LocalLagrange generateLocalLagrangeFunction(const unsigned int index) {
+  LocalLagrange<Dimension> generateLocalLagrangeFunction(const unsigned int index) {
 
     auto local_indices = getNearestNeighbors(index);
     auto local_centers = findLocalCenters(local_indices);
     unsigned int local_index = findLocalIndex(local_centers, index);
 
-    LocalLagrange llf(local_centers, local_indices, local_index);
+    LocalLagrange<Dimension> llf(local_centers, local_indices, local_index);
 
     return llf;
   }

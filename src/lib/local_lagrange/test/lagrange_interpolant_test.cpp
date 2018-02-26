@@ -32,11 +32,11 @@ protected:
 };
 
 TEST_F(LocalLagrangeInterpolantTests, TestSimpleInterpolant) {
-  LocalLagrangeEnsemble local_lagrange_ensemble =
-      buildLocalLagrangeFunctions(points, 500);
+  LocalLagrangeEnsemble<2> local_lagrange_ensemble =
+      buildLocalLagrangeFunctions<2>(points, 500);
 
   // Now that we have the function sampled, let's test it out on the ensemble
-  LocalLagrangeInterpolant interpolant(local_lagrange_ensemble,
+  LocalLagrangeInterpolant<2> interpolant(local_lagrange_ensemble,
                                        sampled_function);
 
   for (size_t i = 0; i < num_points; ++i) {
@@ -45,11 +45,11 @@ TEST_F(LocalLagrangeInterpolantTests, TestSimpleInterpolant) {
 }
 
 TEST_F(LocalLagrangeInterpolantTests, OffgridPointEvaluation) {
-  LocalLagrangeEnsemble local_lagrange_ensemble =
-      buildLocalLagrangeFunctions(points, 500);
+  LocalLagrangeEnsemble<2> local_lagrange_ensemble =
+      buildLocalLagrangeFunctions<2>(points, 500);
 
   // Now that we have the function sampled, let's test it out on the ensemble
-  LocalLagrangeInterpolant interpolant(local_lagrange_ensemble,
+  LocalLagrangeInterpolant<2> interpolant(local_lagrange_ensemble,
                                        sampled_function);
 
   double some_x = 1.0 / 7.0;

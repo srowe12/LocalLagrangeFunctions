@@ -25,7 +25,7 @@ TEST(IntegrationTest, BuildAnLLF) {
   // for (size_t iter = 0; iter < num_centers; iter++) {
   size_t iter = 1341;
   std::cout << "The iteration is " << iter << std::endl;
-  local_lagrange::LocalLagrange llf = llc.generateLocalLagrangeFunction(iter);
+  local_lagrange::LocalLagrange<2> llf = llc.generateLocalLagrangeFunction(iter);
   arma::vec coefs = llf.coefficients();
   EXPECT_NEAR(0, accu(coefs.subvec(0, 199)), 1e-11);
   double x_eval = 0;

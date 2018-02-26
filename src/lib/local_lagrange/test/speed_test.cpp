@@ -28,7 +28,7 @@ int main() {
 
   size_t num_centers = centers.n_rows;
 
-  auto llfs = local_lagrange::buildLocalLagrangeFunctions(centers, 200);
+  auto llfs = local_lagrange::buildLocalLagrangeFunctions<2>(centers, 200);
 
   std::cout << "Run complete!" << std::endl;
   auto end = std::chrono::steady_clock::now();
