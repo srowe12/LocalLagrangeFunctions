@@ -5,7 +5,7 @@ LocalLagrangeEnsemble buildLocalLagrangeFunctions(const arma::mat &centers,
                                                   size_t num_local_centers) {
   // Instantiate a LocalLagrangeAssembler
 
-  LocalLagrangeAssembler assembler(centers, num_local_centers);
+  LocalLagrangeAssembler<2> assembler(centers, num_local_centers);
 
   std::vector<LocalLagrange> llfs;
   size_t num_centers = centers.n_rows;

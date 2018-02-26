@@ -49,7 +49,7 @@ TEST(MyTest, TreeTest) {
 TEST(MyTest, NearestNeighborTest) {
 
   arma::mat centers{{1, 0}, {2, 1}, {3, 2}};
-  LocalLagrangeAssembler llc(centers, 2);
+  LocalLagrangeAssembler<2> llc(centers, 2);
 
   auto indices = llc.getNearestNeighbors(0);
   EXPECT_EQ(2, indices.n_elem);
@@ -95,7 +95,7 @@ TEST(MyTest, FindLocalIndexTest) {
 
   arma::mat centers{{1, 0}, {2, 1}, {3, 2}};
 
-  local_lagrange::LocalLagrangeAssembler llc(centers, 2);
+  local_lagrange::LocalLagrangeAssembler<2> llc(centers, 2);
 
   unsigned int index = 2;
 
@@ -113,7 +113,7 @@ TEST(MyTest, FindLocalCentersTest) {
     centers(i, 0) = i;
     centers(i, 1) = i + 1;
   }
-  local_lagrange::LocalLagrangeAssembler llc(centers, 2);
+  local_lagrange::LocalLagrangeAssembler<2> llc(centers, 2);
 
   unsigned int index = 5;
   auto local_indices = llc.getNearestNeighbors(index);
@@ -140,7 +140,7 @@ TEST(MyTest, BuildLocalLagrangeFunction) {
   auto xmesh = mathtools::linspace<double>(0, 1, num_points);
   auto centers = mathtools::meshgrid<double>(xmesh, xmesh);
 
-  local_lagrange::LocalLagrangeAssembler llc(centers, 200);
+  local_lagrange::LocalLagrangeAssembler<2> llc(centers, 200);
 
   unsigned int index = 5;
   local_lagrange::LocalLagrange llf = llc.generateLocalLagrangeFunction(index);
@@ -164,7 +164,7 @@ TEST(LocalLagrangeTests, EvaluateOperator) {
 
   arma::mat local_centers{{1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5},
                           {6, 6}, {7, 7}, {8, 8}, {9, 9}, {10, 10}};
-  LocalLagrangeAssembler assembler(local_centers, 10);
+  LocalLagrangeAssembler<2> assembler(local_centers, 10);
 
   auto llf = assembler.generateLocalLagrangeFunction(5);
   arma::vec expected_evaluations{0, 0, 0, 0, 0, 1, 0, 0, 0, 0};

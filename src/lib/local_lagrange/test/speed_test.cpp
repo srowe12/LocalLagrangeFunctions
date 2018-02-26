@@ -24,7 +24,7 @@ int main() {
   auto start = std::chrono::steady_clock::now();
   size_t num_points = 50;
   std::vector<double> xmesh = mathtools::linspace<double>(0, 1, num_points);
-  auto centers = mathtools::meshgrid<double>(xmesh, xmesh);
+  auto centers = mathtools::meshgrid<double>(xmesh, xmesh); 
 
   size_t num_centers = centers.n_rows;
 
