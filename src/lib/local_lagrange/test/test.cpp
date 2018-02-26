@@ -171,8 +171,7 @@ TEST(LocalLagrangeTests, EvaluateOperator) {
   // The LLF should evaluate to 0 on all the centers except for
   // on the point the LLF is centered on, where it should be 1.0
   for (size_t i = 0; i < 10; ++i) {
-    EXPECT_NEAR(expected_evaluations(i),
-                llf(local_centers(i, 0), local_centers(i, 1)), 1e-13);
+    EXPECT_NEAR(expected_evaluations(i), llf(local_centers.row(i)), 1e-13);
   }
 }
 

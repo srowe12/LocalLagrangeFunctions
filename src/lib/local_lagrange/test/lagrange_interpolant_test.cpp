@@ -40,10 +40,7 @@ TEST_F(LocalLagrangeInterpolantTests, TestSimpleInterpolant) {
                                        sampled_function);
 
   for (size_t i = 0; i < num_points; ++i) {
-    const double x = points(i, 0);
-    const double y = points(i, 1);
-
-    EXPECT_NEAR(sampled_function(i), interpolant(x, y), 1e-13);
+    EXPECT_NEAR(sampled_function(i), interpolant(points.row(i)), 1e-13);
   }
 }
 
@@ -58,7 +55,7 @@ TEST_F(LocalLagrangeInterpolantTests, OffgridPointEvaluation) {
   double some_x = 1.0 / 7.0;
   double some_y = 1.0 / 7.0;
 
-  double value_at_point = interpolant(some_x, some_y);
+  double value_at_point = interpolant(arma::rowvec{some_x, some_y});
 
   double expected_value = std::sin(2 * M_PI / 7.0) * std::cos(2 * M_PI / 7.0);
 

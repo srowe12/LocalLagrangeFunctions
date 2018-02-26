@@ -40,10 +40,10 @@ public:
     }
   }
 
-  double operator()(const double x, const double y) const {
+  double operator()(const arma::rowvec &point) const {
     double result = 0.0;
     for (const auto &llf : m_llfs) {
-      result += llf(x, y);
+      result += llf(point);
     }
 
     return result;

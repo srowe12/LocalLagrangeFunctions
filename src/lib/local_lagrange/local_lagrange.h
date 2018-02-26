@@ -36,16 +36,15 @@ public:
   // The LLF evaluates via \sum_{i=1}^N c_i \|p -x_i\|^2 log(\|p - x_i\|)
   // where c_i are the coefficients in the vector coefficients_ and
   // x_i are the local_centers associated with the vector
-  double operator()(const double x, const double y) const {
+  double operator()(const arma::rowvec &point) const {
     // Compute distance from points to position
 
     ///@todo srowe Naive implementation for now, improve on in the future
     double result = 0.0;
     const size_t num_centers = centers_.n_rows;
     for (size_t i = 0; i < num_centers; ++i) {
-      const double xdist = centers_(i, 0) - x;
-      const double ydist = centers_(i, 1) - y;
-      const double distance = xdist * xdist + ydist * ydist;
+      const arma::rowvec diff = centers_.row(i) - point;
+      const double distance = arma::dot(diff, diff);
 
       // Safety check for distance = 0
       if (distance != 0.0) {
@@ -63,9 +62,10 @@ public:
     // form 1 + x + y
     const auto n_rows = coefficients_.n_rows;
 
-    double polynomial_term = coefficients_(n_rows - 3) +
-                             coefficients_(n_rows - 2) * x +
-                             coefficients_(n_rows - 1) * y;
+    ///@todo srowe: Those constant values are incorrect for dimension != 2
+    double polynomial_term =
+        coefficients_(n_rows - 3) +
+        arma::dot(coefficients_.rows(n_rows - 2, n_rows - 1), point);
 
     return result + polynomial_term;
   }
