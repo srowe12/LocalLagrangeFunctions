@@ -21,6 +21,8 @@ namespace bgi = boost::geometry::index;
 
 namespace local_lagrange {
 
+
+
 template <size_t Dimension = 2> class LocalLagrangeAssembler {
 public:
   using Point = bg::model::point<double, Dimension, bg::cs::cartesian>;
