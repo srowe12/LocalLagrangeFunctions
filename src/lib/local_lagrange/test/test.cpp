@@ -19,18 +19,6 @@ typedef std::pair<point, unsigned> value;
 
 using namespace local_lagrange;
 
-TEST(LocalLagrangeTests, ComputeDistance) {
-
-  arma::mat points{{0, 1, 2}, {3, 4, 5}};
-
-  size_t row = 0;
-  size_t col = 1;
-  double dist = computeDistance<2>(row, col, points);
-
-  double expected_dist = 3 * 3 + 3 * 3 + 3 * 3;
-  EXPECT_EQ(expected_dist, dist);
-}
-
 TEST(MyTest, TreeTest) {
   arma::vec centers_x_{1, 2, 3};
   arma::vec centers_y_{0, 1, 2};

@@ -1,25 +1,12 @@
 #ifndef LOCAL_LAGRANGE_HDR
 #define LOCAL_LAGRANGE_HDR
+#include "../math_utils/math_tools.h"
 #include <armadillo>
 #include <array>
 #include <cmath>
 #include <vector>
 
 namespace local_lagrange {
-
-template <size_t Coordinate>
-double computeDistance(const size_t row, const size_t col,
-                       const arma::mat &points) {
-  return (points(row, Coordinate) - points(col, Coordinate)) *
-             (points(row, Coordinate) - points(col, Coordinate)) +
-         computeDistance<Coordinate - 1>(row, col, points);
-}
-
-template <>
-double computeDistance<0>(const size_t row, const size_t col,
-                          const arma::mat &points) {
-  return (points(row, 0) - points(col, 0)) * (points(row, 0) - points(col, 0));
-}
 
 template <size_t Dimension = 2> class LocalLagrange {
 public:
@@ -42,16 +29,18 @@ public:
     arma::mat interp_matrix(n_rows + 3, n_rows + 3, arma::fill::zeros);
     double dist = 0.0;
     size_t num_centers = local_centers.n_rows;
-    for (size_t row = 0; row < num_centers; row++) {
-      for (size_t col = row + 1; col < num_centers; col++) {
-        dist = computeDistance<Dimension - 1>(row, col, local_centers);
+    for (size_t row = 0; row < num_centers; ++row) {
+      for (size_t col = row + 1; col < num_centers; ++col) {
+        dist =
+            mathtools::computeDistance<Dimension - 1>(row, col, local_centers);
 
         interp_matrix(row, col) = interp_matrix(col, row) =
             .5 * dist * std::log(dist);
       }
     }
 
-    for (size_t row = 0; row < num_centers; row++) {
+    ///@todo srowe: We need to modify this for different dimensions
+    for (size_t row = 0; row < num_centers; ++row) {
       interp_matrix(num_centers, row) = interp_matrix(row, num_centers) = 1;
       interp_matrix(num_centers + 1, row) =
           interp_matrix(row, num_centers + 1) = local_centers(row, 0);

@@ -2,6 +2,18 @@
 #include <gtest/gtest.h>
 #include <stdio.h>
 
+TEST(MathTest, ComputeDistance) {
+
+  arma::mat points{{0, 1, 2}, {3, 4, 5}};
+
+  size_t row = 0;
+  size_t col = 1;
+  double dist = mathtools::computeDistance<2>(row, col, points);
+
+  double expected_dist = 3 * 3 + 3 * 3 + 3 * 3;
+  EXPECT_EQ(expected_dist, dist);
+}
+
 TEST(MathTest, LinspaceTest) {
   double a = 0;
   double b = 1;
