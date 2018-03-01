@@ -25,8 +25,7 @@ TEST(LocalLagrangeTests, ComputeDistance) {
 
   size_t row = 0;
   size_t col = 1;
-  double dist = 0.0;
-  computeDistance<2>(dist, row, col, points);
+  double dist = computeDistance<2>(row, col, points);
 
   double expected_dist = 3 * 3 + 3 * 3 + 3 * 3;
   EXPECT_EQ(expected_dist, dist);
