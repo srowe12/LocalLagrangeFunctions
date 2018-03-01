@@ -7,6 +7,21 @@
 
 namespace local_lagrange {
 
+template <size_t Coordinate>
+double computeDistance(double &dist, const size_t row, const size_t col,
+                       const arma::mat &points) {
+  dist += (points(row, Coordinate) - points(col, Coordinate)) *
+          (points(row, Coordinate) - points(col, Coordinate));
+  return dist + computeDistance<Coordinate - 1>(dist, row, col, points);
+}
+
+template <>
+double computeDistance<0>(double &dist, const size_t row, const size_t col,
+                          const arma::mat &points) {
+  dist += (points(row, 0) - points(col, 0)) * (points(row, 0) - points(col, 0));
+  return dist;
+}
+
 template <size_t Dimension = 2> class LocalLagrange {
 public:
   LocalLagrange(const arma::mat &local_centers, const arma::uvec &local_indices,
@@ -26,15 +41,13 @@ public:
 
     size_t n_rows = local_centers.n_rows;
     arma::mat interp_matrix(n_rows + 3, n_rows + 3, arma::fill::zeros);
-    double distx = 0;
-    double disty = 0;
-    double dist = 0;
+    double dist = 0.0;
     size_t num_centers = local_centers.n_rows;
     for (size_t row = 0; row < num_centers; row++) {
       for (size_t col = row + 1; col < num_centers; col++) {
-        distx = local_centers(row, 0) - local_centers(col, 0);
-        disty = local_centers(row, 1) - local_centers(col, 1);
-        dist = distx * distx + disty * disty;
+        double dist = 0.0;
+        computeDistance<Dimension - 1>(dist, row, col, local_centers);
+
         interp_matrix(row, col) = interp_matrix(col, row) =
             .5 * dist * std::log(dist);
       }
