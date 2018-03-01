@@ -7,7 +7,7 @@
 
 namespace local_lagrange {
 
-class LocalLagrange {
+template <size_t Dimension = 2> class LocalLagrange {
 public:
   LocalLagrange(const arma::mat &local_centers, const arma::uvec &local_indices,
                 const unsigned int local_index)
@@ -21,10 +21,45 @@ public:
                 const arma::vec &coefs)
       : index_(index), indices_(indices), coefficients_(coefs) {}
 
-  arma::mat assembleInterpolationMatrix(const arma::mat &local_centers);
+  arma::mat assembleInterpolationMatrix(const arma::mat &local_centers) {
+    // Initialize matrix to all zeros.
+
+    size_t n_rows = local_centers.n_rows;
+    arma::mat interp_matrix(n_rows + 3, n_rows + 3, arma::fill::zeros);
+    double distx = 0;
+    double disty = 0;
+    double dist = 0;
+    size_t num_centers = local_centers.n_rows;
+    for (size_t row = 0; row < num_centers; row++) {
+      for (size_t col = row + 1; col < num_centers; col++) {
+        distx = local_centers(row, 0) - local_centers(col, 0);
+        disty = local_centers(row, 1) - local_centers(col, 1);
+        dist = distx * distx + disty * disty;
+        interp_matrix(row, col) = interp_matrix(col, row) =
+            .5 * dist * std::log(dist);
+      }
+    }
+
+    for (size_t row = 0; row < num_centers; row++) {
+      interp_matrix(num_centers, row) = interp_matrix(row, num_centers) = 1;
+      interp_matrix(num_centers + 1, row) =
+          interp_matrix(row, num_centers + 1) = local_centers(row, 0);
+      interp_matrix(num_centers + 2, row) =
+          interp_matrix(row, num_centers + 2) = local_centers(row, 1);
+    }
+
+    return interp_matrix;
+  }
 
   void buildCoefficients(const arma::mat &local_centers,
-                         unsigned int local_index);
+                         unsigned int local_index) {
+    // Work needed here perhaps. Is this bad generating interp_matrix in this
+    // function?
+    arma::mat interp_matrix = assembleInterpolationMatrix(local_centers);
+    arma::vec rhs(local_centers.n_rows + 3, arma::fill::zeros);
+    rhs(local_index) = 1;
+    coefficients_ = arma::solve(interp_matrix, rhs);
+  }
 
   unsigned int index() const { return index_; }
   arma::uvec indices() const { return indices_; }
@@ -36,16 +71,15 @@ public:
   // The LLF evaluates via \sum_{i=1}^N c_i \|p -x_i\|^2 log(\|p - x_i\|)
   // where c_i are the coefficients in the vector coefficients_ and
   // x_i are the local_centers associated with the vector
-  double operator()(const double x, const double y) const {
+  double operator()(const arma::rowvec::fixed<Dimension> &point) const {
     // Compute distance from points to position
 
     ///@todo srowe Naive implementation for now, improve on in the future
     double result = 0.0;
     const size_t num_centers = centers_.n_rows;
     for (size_t i = 0; i < num_centers; ++i) {
-      const double xdist = centers_(i, 0) - x;
-      const double ydist = centers_(i, 1) - y;
-      const double distance = xdist * xdist + ydist * ydist;
+      const arma::rowvec::fixed<Dimension> diff = centers_.row(i) - point;
+      const double distance = arma::dot(diff, diff);
 
       // Safety check for distance = 0
       if (distance != 0.0) {
@@ -63,9 +97,10 @@ public:
     // form 1 + x + y
     const auto n_rows = coefficients_.n_rows;
 
-    double polynomial_term = coefficients_(n_rows - 3) +
-                             coefficients_(n_rows - 2) * x +
-                             coefficients_(n_rows - 1) * y;
+    ///@todo srowe: Those constant values are incorrect for dimension != 2
+    double polynomial_term =
+        coefficients_(n_rows - 3) +
+        arma::dot(coefficients_.rows(n_rows - 2, n_rows - 1), point);
 
     return result + polynomial_term;
   }

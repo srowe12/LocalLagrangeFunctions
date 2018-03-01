@@ -7,26 +7,45 @@
 namespace local_lagrange {
 // Provides ability to interpolate functions with a collection of Local Lagrange
 // Functions
-class LocalLagrangeEnsemble {
+template <size_t Dimension> class LocalLagrangeEnsemble {
 public:
-  LocalLagrangeEnsemble(const std::vector<LocalLagrange> &llfs)
+  LocalLagrangeEnsemble(const std::vector<LocalLagrange<Dimension>> &llfs)
       : m_llfs(llfs) {}
 
-  LocalLagrangeEnsemble(std::vector<LocalLagrange> &&llfs)
+  LocalLagrangeEnsemble(std::vector<LocalLagrange<Dimension>> &&llfs)
       : m_llfs(std::move(llfs)) {}
 
-  std::vector<LocalLagrange> localLagrangeFunctions() const { return m_llfs; }
+  std::vector<LocalLagrange<Dimension>> localLagrangeFunctions() const {
+    return m_llfs;
+  }
 
 private:
-  std::vector<LocalLagrange> m_llfs; // Vector of Local Lagrange Functions
+  std::vector<LocalLagrange<Dimension>>
+      m_llfs; // Vector of Local Lagrange Functions
 };
 
-LocalLagrangeEnsemble buildLocalLagrangeFunctions(const arma::mat &centers,
-                                                  size_t num_local_centers);
+template <size_t Dimension>
+LocalLagrangeEnsemble<Dimension>
+buildLocalLagrangeFunctions(const arma::mat &centers,
+                            size_t num_local_centers) {
+  // Instantiate a LocalLagrangeAssembler
 
-class LocalLagrangeInterpolant {
+  LocalLagrangeAssembler<Dimension> assembler(centers, num_local_centers);
+
+  std::vector<LocalLagrange<Dimension>> llfs;
+  size_t num_centers = centers.n_rows;
+  llfs.reserve(num_centers);
+
+  for (size_t i = 0; i < num_centers; ++i) {
+    llfs.emplace_back(assembler.generateLocalLagrangeFunction(i));
+  }
+
+  return LocalLagrangeEnsemble<Dimension>(llfs);
+}
+
+template <size_t Dimension> class LocalLagrangeInterpolant {
 public:
-  LocalLagrangeInterpolant(const LocalLagrangeEnsemble &lle,
+  LocalLagrangeInterpolant(const LocalLagrangeEnsemble<Dimension> &lle,
                            const arma::vec &sampled_function)
       : m_llfs(lle.localLagrangeFunctions()),
         m_sampled_function(sampled_function) {
@@ -40,17 +59,17 @@ public:
     }
   }
 
-  double operator()(const double x, const double y) const {
+  double operator()(const arma::rowvec &point) const {
     double result = 0.0;
     for (const auto &llf : m_llfs) {
-      result += llf(x, y);
+      result += llf(point);
     }
 
     return result;
   }
 
 private:
-  std::vector<LocalLagrange> m_llfs;
+  std::vector<LocalLagrange<Dimension>> m_llfs;
   arma::vec m_sampled_function;
 };
 

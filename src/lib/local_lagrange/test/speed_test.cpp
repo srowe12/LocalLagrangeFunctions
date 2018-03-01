@@ -24,11 +24,11 @@ int main() {
   auto start = std::chrono::steady_clock::now();
   size_t num_points = 50;
   std::vector<double> xmesh = mathtools::linspace<double>(0, 1, num_points);
-  auto centers = mathtools::meshgrid<double>(xmesh, xmesh);
+  auto centers = mathtools::meshgrid<double>(xmesh, xmesh); 
 
   size_t num_centers = centers.n_rows;
 
-  auto llfs = local_lagrange::buildLocalLagrangeFunctions(centers, 200);
+  auto llfs = local_lagrange::buildLocalLagrangeFunctions<2>(centers, 200);
 
   std::cout << "Run complete!" << std::endl;
   auto end = std::chrono::steady_clock::now();

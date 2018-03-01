@@ -20,12 +20,13 @@ TEST(IntegrationTest, BuildAnLLF) {
   std::vector<double> xmesh = mathtools::linspace<double>(0, 1, num_points);
   auto centers = mathtools::meshgrid<double>(xmesh, xmesh);
 
-  local_lagrange::LocalLagrangeAssembler llc(centers, 200);
+  local_lagrange::LocalLagrangeAssembler<2> llc(centers, 200);
 
   // for (size_t iter = 0; iter < num_centers; iter++) {
   size_t iter = 1341;
   std::cout << "The iteration is " << iter << std::endl;
-  local_lagrange::LocalLagrange llf = llc.generateLocalLagrangeFunction(iter);
+  local_lagrange::LocalLagrange<2> llf =
+      llc.generateLocalLagrangeFunction(iter);
   arma::vec coefs = llf.coefficients();
   EXPECT_NEAR(0, accu(coefs.subvec(0, 199)), 1e-11);
   double x_eval = 0;
