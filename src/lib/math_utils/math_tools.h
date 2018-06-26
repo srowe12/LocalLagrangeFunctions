@@ -30,7 +30,7 @@ inline double computePointDistance(const size_t i, const size_t j,
                                    const arma::mat &other_points) {
   return (points(i, Coordinate) - other_points(j, Coordinate)) *
              (points(i, Coordinate) - other_points(j, Coordinate)) +
-         computeDistance<Coordinate - 1>(i, j, points, other_points);
+         computePointDistance<Coordinate - 1>(i, j, points, other_points);
 }
 
 template <>

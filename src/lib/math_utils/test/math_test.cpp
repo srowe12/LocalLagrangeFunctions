@@ -14,6 +14,20 @@ TEST(MathTest, ComputeDistance) {
   EXPECT_EQ(expected_dist, dist);
 }
 
+TEST(MathTest, ComputePointDistance) {
+
+  arma::mat points{{0, 1, 2}, {3, 4, 5}};
+  arma::mat other_points{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
+
+  size_t row = 1;
+  size_t col = 2;
+  double dist =
+      mathtools::computePointDistance<2>(row, col, points, other_points);
+
+  double expected_dist = 3 * 3 + 3 * 3 + 3 * 3;
+  EXPECT_EQ(expected_dist, dist);
+}
+
 TEST(MathTest, LinspaceTest) {
   double a = 0;
   double b = 1;
