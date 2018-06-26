@@ -11,17 +11,34 @@
 namespace mathtools {
 
 template <size_t Coordinate>
-double computeDistance(const size_t row, const size_t col,
-                       const arma::mat &points) {
+inline double computeDistance(const size_t row, const size_t col,
+                              const arma::mat &points) {
   return (points(row, Coordinate) - points(col, Coordinate)) *
              (points(row, Coordinate) - points(col, Coordinate)) +
          computeDistance<Coordinate - 1>(row, col, points);
 }
 
 template <>
-double computeDistance<0>(const size_t row, const size_t col,
-                          const arma::mat &points) {
+inline double computeDistance<0>(const size_t row, const size_t col,
+                                 const arma::mat &points) {
   return (points(row, 0) - points(col, 0)) * (points(row, 0) - points(col, 0));
+}
+
+template <size_t Coordinate>
+inline double computePointDistance(const size_t i, const size_t j,
+                                   const arma::mat &points,
+                                   const arma::mat &other_points) {
+  return (points(i, Coordinate) - other_points(j, Coordinate)) *
+             (points(i, Coordinate) - other_points(j, Coordinate)) +
+         computeDistance<Coordinate - 1>(i, j, points, other_points);
+}
+
+template <>
+inline double computePointDistance<0>(const size_t i, const size_t j,
+                                      const arma::mat &points,
+                                      const arma::mat &other_points) {
+  return (points(i, 0) - other_points(j, 0)) *
+         (points(i, 0) - other_points(j, 0));
 }
 
 ///@todo srowe: Probably eliminate these in favor of Armadillo
