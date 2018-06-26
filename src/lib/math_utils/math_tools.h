@@ -1,5 +1,6 @@
 #ifndef MATH_UTILS_HDR
 #define MATH_UTILS_HDR
+
 #include <armadillo>
 #include <array>
 #include <fstream>
