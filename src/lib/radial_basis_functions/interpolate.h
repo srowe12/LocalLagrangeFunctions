@@ -7,7 +7,7 @@
 
 namespace rbf {
 
-template <typename Kernel>
+template <typename Kernel, size_t Dimension>
 class RadialBasisFunctionInterpolant {
 public:
   RadialBasisFunctionInterpolant(const Kernel &kernel, const arma::mat &centers,
@@ -33,7 +33,8 @@ public:
       for (size_t j = 0; j < num_data_points; ++j) {
 
         distance_matrix(i, j) =
-            kernel_(computeDistance(i, j, data_points, centers_));
+            kernel_(mathtools::computePointDistance<Dimension - 1>(
+                i, j, data_points, centers_));
       }
     }
 
@@ -55,8 +56,8 @@ private:
     // Naive implementation now
     for (size_t row = 1; row < num_centers; ++row) {
       for (size_t col = row; col < num_centers; ++col) {
-        interpolation_matrix(row, col) =
-            kernel_(computeDistance(row, col, centers_));
+        interpolation_matrix(row, col) = kernel_(
+            mathtools::computeDistance<Dimension - 1>(row, col, centers_));
         interpolation_matrix(col, row) = interpolation_matrix(row, col);
       }
     }

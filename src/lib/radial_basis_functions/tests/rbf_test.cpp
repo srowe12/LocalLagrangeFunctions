@@ -1,3 +1,4 @@
+#include "../gaussian.h"
 #include "../interpolate.h"
 #include <gtest/gtest.h>
 
@@ -10,7 +11,19 @@ TEST(RbfTest, ConstructoGaussianInterpolant) {
   const double a = 0.0;
   const double b = 1.0;
   auto x_mesh = mathtools::linspace(a, b, 20);
-  auto data = mathtools::meshgrid(x_mesh, x_mesh);
+  const arma::mat data = mathtools::meshgrid(x_mesh, x_mesh);
+
+  // Use this data to build up a Gaussian interpolant
+
+  Gaussian<double> gaussian(1.0);
+
+  arma::vec sampled_data(20 * 20);
+  for (size_t i = 0; i < data.n_rows; ++i) {
+    sampled_data(i) = std::sin(data(i, 0)) * std::cos(data(i, 1));
+  }
+
+  RadialBasisFunctionInterpolant<Gaussian<double>, 1>(gaussian, data,
+                                                      sampled_data);
 }
 
 int main(int argc, char **argv) {
