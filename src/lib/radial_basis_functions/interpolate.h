@@ -4,6 +4,7 @@
 #include <armadillo>
 
 #include "../math_utils/math_tools.h"
+#include <iostream> ///@todo srowe; Delete this
 
 namespace rbf {
 
@@ -25,15 +26,18 @@ public:
     // Phi(data,x) = P, where P_ij = dist(data_i - center_j). Then P_ij * c_j
     // evaluates to the solution
     const auto num_data_points = data_points.n_rows;
-    arma::mat distance_matrix(num_data_points, centers_.n_rows);
+    const auto num_centers = centers_.n_rows;
+
+    std::cout << "Beginning interpolation" << std::endl;
+    arma::mat distance_matrix(num_data_points, num_centers);
 
     // Naive implemtation for now
     ///@todo srowe: Dimensionality mismatch???
     for (size_t i = 0; i < num_data_points; ++i) {
-      for (size_t j = 0; j < num_data_points; ++j) {
+      for (size_t j = 0; j < num_centers; ++j) {
 
         distance_matrix(i, j) =
-            kernel_(mathtools::computePointDistance<Dimension - 1>(
+            kernel_(mathtools::computePointDistance<Dimension>(
                 i, j, data_points, centers_));
       }
     }
@@ -46,7 +50,6 @@ public:
     
 private:
   void buildCoefficients(const arma::vec &sampled_data) {
-
     // Build Interpolation Matrix
     const size_t num_centers = centers_.n_rows;
 
@@ -55,18 +58,20 @@ private:
     // Compute distance matirx
     // Naive implementation now
     for (size_t row = 1; row < num_centers; ++row) {
-      for (size_t col = row; col < num_centers; ++col) {
-        interpolation_matrix(row, col) = kernel_(
-            mathtools::computeDistance<Dimension - 1>(row, col, centers_));
+      for (size_t col = row + 1; col < num_centers; ++col) {
+        interpolation_matrix(row, col) =
+            kernel_(mathtools::computeDistance<Dimension>(row, col, centers_));
         interpolation_matrix(col, row) = interpolation_matrix(row, col);
       }
     }
 
-    ///@todo srowe; WRONG: For kernels such that phi(0) != 0, this is incorrect
-    // Diagonal needs to be zero
+    const double diagonal_value = kernel_(0.0);
+    ;
     for (size_t row = 0; row < num_centers; ++row) {
-      interpolation_matrix(row, row) = 0.0; ///@todo srowe: Improve this
+      interpolation_matrix(row, row) =
+          diagonal_value; ///@todo srowe: Improve this
     }
+
     // Solve linear system
     coefficients_ = arma::solve(interpolation_matrix, sampled_data);
 

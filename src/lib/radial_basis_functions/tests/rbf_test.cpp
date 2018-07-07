@@ -6,6 +6,16 @@
 
 using namespace rbf;
 
+TEST(RbfTests, GaussianTest) {
+
+  Gaussian<double> gaussian(1.0);
+
+  const double val = gaussian(4.0);
+
+  const double expected_val = std::exp(-1.0 * 4.0);
+  EXPECT_NEAR(expected_val, val, 1e-12);
+}
+
 TEST(RbfTest, ConstructoGaussianInterpolant) {
   // We build up a Gaussian interpolant for 2D data
   const double a = 0.0;
@@ -16,10 +26,10 @@ TEST(RbfTest, ConstructoGaussianInterpolant) {
   const size_t N = data.n_rows;
   // Use this data to build up a Gaussian interpolant
 
-  Gaussian<double> gaussian(1.0);
-
-  arma::vec sampled_data(20 * 20);
-  for (size_t i = 0; i < data.n_rows; ++i) {
+  Gaussian<double> gaussian(16.0);
+  std::cout << "The N is " << N << std::endl;
+  arma::vec sampled_data(N);
+  for (size_t i = 0; i < N; ++i) {
     sampled_data(i) = std::sin(data(i, 0)) * std::cos(data(i, 1));
   }
 
@@ -27,14 +37,14 @@ TEST(RbfTest, ConstructoGaussianInterpolant) {
                                                       sampled_data);
 
   // Compute on the same dataset and see how well we do! We should get zeros back
-  const auto interpolated_data = interpolant.interpolate(data);
+
+  const arma::vec interpolated_data = interpolant.interpolate(data);
 
   ASSERT_EQ(N, interpolated_data.n_rows);
 
   for (size_t i = 0; i < N ; ++i) {
-  	EXPECT_NEAR(0.0, interpolated_data(i), 1e-9);
+    EXPECT_NEAR(sampled_data(i), interpolated_data(i), 1e-7);
   }
-
 
 
 }
