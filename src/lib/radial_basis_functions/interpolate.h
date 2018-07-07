@@ -28,7 +28,6 @@ public:
     const auto num_data_points = data_points.n_rows;
     const auto num_centers = centers_.n_rows;
 
-    std::cout << "Beginning interpolation" << std::endl;
     arma::mat distance_matrix(num_data_points, num_centers);
 
     // Naive implemtation for now
@@ -57,7 +56,7 @@ private:
     arma::mat interpolation_matrix(num_centers, num_centers);
     // Compute distance matirx
     // Naive implementation now
-    for (size_t row = 1; row < num_centers; ++row) {
+    for (size_t row = 0; row < num_centers; ++row) {
       for (size_t col = row + 1; col < num_centers; ++col) {
         interpolation_matrix(row, col) =
             kernel_(mathtools::computeDistance<Dimension>(row, col, centers_));

@@ -20,14 +20,15 @@ TEST(RbfTest, ConstructoGaussianInterpolant) {
   // We build up a Gaussian interpolant for 2D data
   const double a = 0.0;
   const double b = 1.0;
-  const int n = 20;
-  auto x_mesh = mathtools::linspace(a, b, 20);
+  const int n = 4;
+  auto x_mesh = mathtools::linspace(a, b, 4);
   const arma::mat data = mathtools::meshgrid(x_mesh, x_mesh);
   const size_t N = data.n_rows;
   // Use this data to build up a Gaussian interpolant
 
-  Gaussian<double> gaussian(16.0);
+  Gaussian<double> gaussian(4.0);
   std::cout << "The N is " << N << std::endl;
+  data.print("Data");
   arma::vec sampled_data(N);
   for (size_t i = 0; i < N; ++i) {
     sampled_data(i) = std::sin(data(i, 0)) * std::cos(data(i, 1));
