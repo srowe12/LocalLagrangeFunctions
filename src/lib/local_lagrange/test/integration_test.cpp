@@ -11,7 +11,7 @@
 
 #include <boost/geometry/index/rtree.hpp>
 
-#include "math_tools.h"
+#include "../../math_utils/math_tools.h"
 
 TEST(IntegrationTest, BuildAnLLF) {
 
