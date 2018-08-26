@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <utility>
 
-#include "../../math_utils/math_tools.h"
+#include <math_utils/math_tools.h>
 
 namespace bg = boost::geometry;
 namespace bgi = boost::geometry::index;

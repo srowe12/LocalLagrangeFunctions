@@ -2,7 +2,7 @@
 #include "../interpolate.h"
 #include <gtest/gtest.h>
 
-#include "../../math_utils/math_tools.h" ///@todo srowe; Yikes, fix these relative includes
+#include <math_utils/math_tools.h> 
 
 using namespace rbf;
 

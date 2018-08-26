@@ -1,6 +1,6 @@
 #include "../local_lagrange_interpolant.h"
 
-#include "../../math_utils/math_tools.h"
+#include <math_utils/math_tools.h>
 #include <gtest/gtest.h>
 #include <stdio.h>
 #include <string>
