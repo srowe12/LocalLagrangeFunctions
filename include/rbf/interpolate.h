@@ -66,10 +66,6 @@ private:
     const double diagonal_value = kernel_(0.0);
 
     interpolation_matrix.diag().fill(diagonal_value);
-    for (size_t row = 0; row < num_centers; ++row) {
-      interpolation_matrix(row, row) =
-          diagonal_value; ///@todo srowe: Improve this
-    }
 
     // Solve linear system
     coefficients_ = arma::solve(interpolation_matrix, sampled_data);
