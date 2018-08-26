@@ -1,5 +1,5 @@
-#include "../local_lagrange.h"
-#include "../local_lagrange_assembler.h"
+#include <local_lagrange/local_lagrange.h>
+#include <local_lagrange/local_lagrange_assembler.h>
 
 #include <boost/geometry.hpp>
 #include <boost/geometry/geometries/box.hpp>
@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <utility>
 
-#include "math_tools.h"
+#include <math_utils/math_tools.h>
 
 namespace bg = boost::geometry;
 namespace bgi = boost::geometry::index;

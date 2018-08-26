@@ -1,6 +1,6 @@
-#include "../local_lagrange_template.h"
 #include "math_tools.h"
 #include <gtest/gtest.h>
+#include <local_lagrange/local_lagrange_template.h>
 #include <stdio.h>
 #include <string>
 #include <utility>

@@ -1,6 +1,6 @@
 #ifndef LOCAL_LAGRANGE_HDR
 #define LOCAL_LAGRANGE_HDR
-#include "../math_utils/math_tools.h"
+#include <math_utils/math_tools.h>
 #include <armadillo>
 #include <array>
 #include <cmath>

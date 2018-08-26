@@ -1,1 +1,1 @@
-#include "gaussian.h"
+#include <rbf/gaussian.h>

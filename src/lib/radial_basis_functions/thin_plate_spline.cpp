@@ -1,1 +1,1 @@
-#include "thin_plate_spline.h"
+#include <rbf/thin_plate_spline.h>

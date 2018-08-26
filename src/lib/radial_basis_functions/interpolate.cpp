@@ -1,1 +1,1 @@
-#include "interpolate.h"
+#include <rbf/interpolate.h>

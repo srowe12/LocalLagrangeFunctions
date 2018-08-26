@@ -3,8 +3,7 @@
 
 #include <armadillo>
 
-#include "../math_utils/math_tools.h"
-#include <iostream> ///@todo srowe; Delete this
+#include <math_utils/math_tools.h>
 
 namespace rbf {
 
