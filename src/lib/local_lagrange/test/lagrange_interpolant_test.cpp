@@ -1,8 +1,8 @@
-#include <math_utils/math_tools.h>
-#include "../local_lagrange.h"
-#include "../local_lagrange_assembler.h"
-#include "../local_lagrange_interpolant.h"
 #include <gtest/gtest.h>
+#include <local_lagrange/local_lagrange.h>
+#include <local_lagrange/local_lagrange_assembler.h>
+#include <local_lagrange/local_lagrange_interpolant.h>
+#include <math_utils/math_tools.h>
 
 using namespace local_lagrange;
 
