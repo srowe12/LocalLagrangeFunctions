@@ -11,6 +11,29 @@
 
 namespace mathtools {
 
+template <size_t Dimension, size_t Coordinate>
+inline double computeLengthSquared(const arma::rowvec::fixed<Dimension>& v) {
+  if constexpr (Coordinate == 0) {
+    return v(0)*v(0);
+  }
+  else {
+    return v(Coordinate)*v(Coordinate) + computeLengthSquared<Dimension, Coordinate-1>(v);
+ }
+}
+
+template <size_t Dimension>
+inline double computeLengthSquared(const arma::rowvec::fixed<Dimension>& v) {
+  if constexpr (Dimension > 1) {
+    return computeLengthSquared<Dimension, Dimension-1>(v);
+  }
+  else {
+    return v(0)*v(0);
+  }
+}
+
+
+
+
 template <size_t Coordinate>
 inline double computeDistance(const size_t row, const size_t col,
                               const arma::mat &points) {
