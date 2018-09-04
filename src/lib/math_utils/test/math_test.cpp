@@ -1,9 +1,9 @@
-#include <math_utils/math_tools.h>
 #include <gtest/gtest.h>
+#include <math_utils/math_tools.h>
 #include <stdio.h>
 
 TEST(MathTest, TestComputeLength) {
-  arma::rowvec::fixed<3> v{1,2,3};
+  arma::rowvec::fixed<3> v{1, 2, 3};
   const auto length = mathtools::computeLengthSquared<3>(v);
   EXPECT_DOUBLE_EQ(14, length);
 }
@@ -58,8 +58,6 @@ TEST(MathTest, LinspaceTest) {
   EXPECT_DOUBLE_EQ(a, points_odd[0]);
   EXPECT_DOUBLE_EQ(b, points_odd[num_points]);
 }
-
-
 
 TEST(MathTest, MeshgridTest) {
   double ax = 3;
