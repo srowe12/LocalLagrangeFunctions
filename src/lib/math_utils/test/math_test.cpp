@@ -14,6 +14,14 @@ TEST(MathTest, TestComputeLengthOneDim) {
   EXPECT_DOUBLE_EQ(4, length);
 }
 
+TEST(MathTest, TestComputeSquaredDistance) {
+  arma::rowvec::fixed<3> v1{1, 2, 3};
+  arma::rowvec::fixed<3> v2{-3, -1, -2};
+
+  const auto squared_distance = mathtools::computeSquaredDistance<3>(v1, v2);
+  EXPECT_DOUBLE_EQ(4 * 4 + 3 * 3 + 5 * 5, squared_distance);
+}
+
 TEST(MathTest, ComputeDistance) {
 
   arma::mat points{{0, 1, 2}, {3, 4, 5}};

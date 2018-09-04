@@ -30,6 +30,30 @@ inline double computeLengthSquared(const arma::rowvec::fixed<Dimension> &v) {
   }
 }
 
+///@todo srowe: These need to be marked constexpr I think
+template <size_t Dimension, size_t Coordinate>
+inline double computeSquaredDistance(const arma::rowvec::fixed<Dimension> &v1,
+                                     const arma::rowvec::fixed<Dimension> &v2) {
+
+  if constexpr (Coordinate == 0) {
+    return (v1(0) - v2(0)) * (v1(0) - v2(0));
+  } else {
+    return (v1(Coordinate) - v2(Coordinate)) *
+               (v1(Coordinate) - v2(Coordinate)) +
+           computeSquaredDistance<Dimension, Coordinate - 1>(v1, v2);
+  }
+}
+
+template <size_t Dimension>
+inline double computeSquaredDistance(const arma::rowvec::fixed<Dimension> &v1,
+                                     const arma::rowvec::fixed<Dimension> &v2) {
+  if constexpr (Dimension > 1) {
+    return computeSquaredDistance<Dimension, Dimension - 1>(v1, v2);
+  } else {
+    return (v1(0) - v2(0)) * (v1(0) - v2(0));
+  }
+}
+
 template <size_t Coordinate>
 inline double computeDistance(const size_t row, const size_t col,
                               const arma::mat &points) {
