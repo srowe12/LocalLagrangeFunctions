@@ -78,8 +78,9 @@ public:
     double result = 0.0;
     const size_t num_centers = centers_.n_rows;
     for (size_t i = 0; i < num_centers; ++i) {
-      const arma::rowvec::fixed<Dimension> diff = centers_.row(i) - point;
-      const double distance = arma::dot(diff, diff);
+
+      const double distance =
+          mathtools::computeSquaredDistance<Dimension>(centers_.row(i), point);
 
       // Safety check for distance = 0
       if (distance != 0.0) {
