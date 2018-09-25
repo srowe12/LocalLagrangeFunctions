@@ -12,7 +12,7 @@
 namespace mathtools {
 
 template <size_t Dimension, size_t Coordinate>
-inline double computeLengthSquared(const arma::rowvec::fixed<Dimension> &v) {
+constexpr inline double computeLengthSquared(const arma::rowvec::fixed<Dimension> &v) {
   if constexpr (Coordinate == 0) {
     return v(0) * v(0);
   } else {
@@ -22,7 +22,7 @@ inline double computeLengthSquared(const arma::rowvec::fixed<Dimension> &v) {
 }
 
 template <size_t Dimension>
-inline double computeLengthSquared(const arma::rowvec::fixed<Dimension> &v) {
+constexpr inline double computeLengthSquared(const arma::rowvec::fixed<Dimension> &v) {
   if constexpr (Dimension > 1) {
     return computeLengthSquared<Dimension, Dimension - 1>(v);
   } else {
@@ -32,7 +32,7 @@ inline double computeLengthSquared(const arma::rowvec::fixed<Dimension> &v) {
 
 ///@todo srowe: These need to be marked constexpr I think
 template <size_t Dimension, size_t Coordinate>
-inline double computeSquaredDistance(const arma::rowvec::fixed<Dimension> &v1,
+constexpr inline double computeSquaredDistance(const arma::rowvec::fixed<Dimension> &v1,
                                      const arma::rowvec::fixed<Dimension> &v2) {
 
   if constexpr (Coordinate == 0) {
@@ -45,7 +45,7 @@ inline double computeSquaredDistance(const arma::rowvec::fixed<Dimension> &v1,
 }
 
 template <size_t Dimension>
-inline double computeSquaredDistance(const arma::rowvec::fixed<Dimension> &v1,
+constexpr inline double computeSquaredDistance(const arma::rowvec::fixed<Dimension> &v1,
                                      const arma::rowvec::fixed<Dimension> &v2) {
   if constexpr (Dimension > 1) {
     return computeSquaredDistance<Dimension, Dimension - 1>(v1, v2);
