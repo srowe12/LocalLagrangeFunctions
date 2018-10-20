@@ -4,8 +4,11 @@
 // https://www.geeksforgeeks.org/k-dimensional-tree/
 template <size_t N> struct Node {
 
-	Node(arma::rowvec& point) : point(point), left(nullptr), right(nullptr) {}
-	Node(arma::rowvec& point, std::shared_ptr<Node<N>> l, std::shared_ptr<Node<N>> r) : point(point), left(l), right(r) {}
+  explicit Node(arma::rowvec &point)
+      : point(point), left(nullptr), right(nullptr) {}
+  Node(arma::rowvec &point, std::shared_ptr<Node<N>> l,
+       std::shared_ptr<Node<N>> r)
+      : point(point), left(l), right(r) {}
   arma::rowvec point;
   std::shared_ptr<Node<N>> left;
   std::shared_ptr<Node<N>> right;
@@ -102,14 +105,20 @@ inline arma::mat SortOnColumnIndex(const arma::mat &points, const unsigned dimen
 template <size_t N>
 std::shared_ptr<Node<N>> BuildTree(const arma::mat &points, const unsigned int depth = 0) {
   unsigned axis = depth % N;
-
+  std::cout << "Building Tree with axis" << axis << std::endl;
   arma::mat sorted_points = SortOnColumnIndex(points, axis);
 
   auto median_point = sorted_points.n_rows / 2; ///@todo srowe: Not really right
   // https://en.wikipedia.org/wiki/K-d_tree
   arma::rowvec median_row = points.row(median_point);
+
+  std::cout << "The median point is" << median_point << std::endl;
+  if (sorted_points.n_rows < 2) {
+    arma::rowvec point = sorted_points.row(1);
+    return std::make_shared<Node<N>>(point);
+  }
   return std::make_shared<Node<N>>(
-      median_row,
-      BuildTree<N>(points.rows(0, median_point), depth + 1),
-      BuildTree<N>(points.rows(median_point + 1, sorted_points.n_rows), depth + 1));
+      median_row, BuildTree<N>(points.rows(0, median_point - 1), depth + 1),
+      BuildTree<N>(points.rows(median_point + 1, sorted_points.n_rows),
+                   depth + 1));
 }
