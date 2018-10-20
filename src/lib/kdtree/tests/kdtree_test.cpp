@@ -9,6 +9,6 @@ TEST(KdtreeTests, SimpleTest) {
 
   auto tree = BuildTree<2>(points);
 
-  arma::mat point{0, 0};
-  tree.search(tree, point);
+  arma::rowvec point{0, 0};
+  bool in_tree = search<2>(tree, point);
 }

@@ -3,9 +3,12 @@
 // Code inspired and leveraged from:
 // https://www.geeksforgeeks.org/k-dimensional-tree/
 template <size_t N> struct Node {
-  arma::rowvec::fixed<N> point;
-  Node<N> *left;
-  Node<N> *right;
+
+	Node(arma::rowvec& point) : point(point), left(nullptr), right(nullptr) {}
+	Node(arma::rowvec& point, std::shared_ptr<Node<N>> l, std::shared_ptr<Node<N>> r) : point(point), left(l), right(r) {}
+  arma::rowvec point;
+  std::shared_ptr<Node<N>> left;
+  std::shared_ptr<Node<N>> right;
 };
 
 template <size_t N>
@@ -48,53 +51,65 @@ std::shared_ptr<Node<N>> insert(std::shared_ptr<Node<N>> root,
   return insertRec(root, point, 0);
 }
 
+template <size_t N>
+bool ComparePoints(const arma::rowvec& p1, const arma::rowvec& p2) {
+	///@todo srowe; Use other stuff already written
+	double diff  = 0.0;
+	for (size_t i = 0; i < N; ++i) {
+		diff += (p1[i]-p2[i])*(p1[i]-p2[i]);
+	}
+	return diff < 1e-13;
+}
+
 // Searches a point in the KD tree the parameter depth is used to determine
 // current axis
 template <size_t N>
 bool searchRec(std::shared_ptr<Node<N>> root,
-               const arma::rowvec::fixed<N> &point, unsigned depth = 0) {
+               const arma::rowvec &point, unsigned depth = 0) {
   // Base cases
   if (root == nullptr) {
     return false;
   }
-  if (point == root->point) {
+  arma::rowvec root_point = root->point;
+  if (ComparePoints<N>(point, root_point)) {
     return true;
   }
 
   unsigned current_depth = depth % N;
 
   if (point(current_depth) < root->point(current_depth)) {
-    return searchRec(root->left, point, depth + 1);
+    return searchRec<N>(root->left, point, depth + 1);
   }
 
-  return searchRec(root->right, point, depth + 1);
+  return searchRec<N>(root->right, point, depth + 1);
 }
 
 template <size_t N>
 bool search(std::shared_ptr<Node<N>> root,
-            const arma::rowvec::fixed<N> &point) {
-  return searchRec(root, point, 0);
+            const arma::rowvec &point) {
+  return searchRec<N>(root, point, 0);
 }
 
-arma::mat SortOnColumnIndex(const arma::mat &points, const unsigned dimension) {
+inline arma::mat SortOnColumnIndex(const arma::mat &points, const unsigned dimension) {
   // Slice down the column
   arma::uvec indices = arma::sort_index(points.col(dimension));
 
   // Sort
 
-  return std::move(points(indices, arma::span::all()));
+  return points.rows(indices);
 }
 
 template <size_t N>
-std::shared_ptr<Node<N>> BuildTree(const arma::mat &points, depth = 0) {
+std::shared_ptr<Node<N>> BuildTree(const arma::mat &points, const unsigned int depth = 0) {
   unsigned axis = depth % N;
 
   arma::mat sorted_points = SortOnColumnIndex(points, axis);
 
-  auto median_point = sorted_points.rows / 2; ///@todo srowe: Not really right
+  auto median_point = sorted_points.n_rows / 2; ///@todo srowe: Not really right
   // https://en.wikipedia.org/wiki/K-d_tree
-  return std::make_shared<Node>{
-      points.row(median_point),
-      BuildTree(points.rows(0, median_point), depth + 1),
-      BuildTree(points.rows(median_point + 1, sorted_points.rows), depth + 1)};
+  arma::rowvec median_row = points.row(median_point);
+  return std::make_shared<Node<N>>(
+      median_row,
+      BuildTree<N>(points.rows(0, median_point), depth + 1),
+      BuildTree<N>(points.rows(median_point + 1, sorted_points.n_rows), depth + 1));
 }
