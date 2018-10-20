@@ -95,6 +95,7 @@ bool search(std::shared_ptr<Node<N>> root,
 
 inline arma::mat SortOnColumnIndex(const arma::mat &points, const unsigned dimension) {
   // Slice down the column
+  std::cout << "Sorting" << std::endl;
   arma::uvec indices = arma::sort_index(points.col(dimension));
 
   // Sort
@@ -113,12 +114,22 @@ std::shared_ptr<Node<N>> BuildTree(const arma::mat &points, const unsigned int d
   arma::rowvec median_row = points.row(median_point);
 
   std::cout << "The median point is" << median_point << std::endl;
-  if (sorted_points.n_rows < 2) {
+  if (sorted_points.n_rows < 3) {
+    std::cout << "Calling end with length" << sorted_points.n_rows << std::endl;
     arma::rowvec point = sorted_points.row(1);
+	std::cout << "Got the rowvec point" << std::endl;
     return std::make_shared<Node<N>>(point);
   }
+
+  std::cout << "Calling normal recursive call with median point" << median_point << std::endl;
+  const size_t sorted_rows = sorted_points.n_rows;
+  std::cout << "The sorted rows size is" << sorted_rows << std::endl;
+  std::cout << "Indexing into sorted_points with" << median_point +1 << std::endl;
+  arma::mat right = sorted_points.rows(median_point + 1, sorted_rows-1);
+  arma::mat left = sorted_points.rows(0, median_point -1);
   return std::make_shared<Node<N>>(
-      median_row, BuildTree<N>(points.rows(0, median_point - 1), depth + 1),
-      BuildTree<N>(points.rows(median_point + 1, sorted_points.n_rows),
+      median_row, 
+	  BuildTree<N>(left, depth + 1),
+      BuildTree<N>(right,
                    depth + 1));
 }
