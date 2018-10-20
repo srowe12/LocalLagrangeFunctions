@@ -113,23 +113,30 @@ std::shared_ptr<Node<N>> BuildTree(const arma::mat &points, const unsigned int d
   // https://en.wikipedia.org/wiki/K-d_tree
   arma::rowvec median_row = points.row(median_point);
 
-  std::cout << "The median point is" << median_point << std::endl;
-  if (sorted_points.n_rows < 3) {
-    std::cout << "Calling end with length" << sorted_points.n_rows << std::endl;
-    arma::rowvec point = sorted_points.row(1);
-	std::cout << "Got the rowvec point" << std::endl;
-    return std::make_shared<Node<N>>(point);
+  const size_t sorted_rows = sorted_points.n_rows;
+  // Make the left one
+  std::shared_ptr<Node<N>> left = std::shared_ptr<Node<N>>(nullptr);
+
+  int left_length = sorted_rows - median_point;
+  arma::mat left_points = sorted_points.rows(0, median_point - 1);
+  if (left_length / 2 > 0) {
+    left = BuildTree<N>(left_points, depth + 1);
   }
 
+  int right_length = median_point - 1;
+  std::shared_ptr<Node<N>> right = std::shared_ptr<Node<N>>(nullptr);
+  arma::mat right_points =
+      sorted_points.rows(median_point + 1, sorted_rows - 1);
+  if (right_length / 2 > 0) {
+    right = BuildTree<N>(right_points, depth + 1);
+  }
+
+  // Make the right one
+
   std::cout << "Calling normal recursive call with median point" << median_point << std::endl;
-  const size_t sorted_rows = sorted_points.n_rows;
+
   std::cout << "The sorted rows size is" << sorted_rows << std::endl;
   std::cout << "Indexing into sorted_points with" << median_point +1 << std::endl;
-  arma::mat right = sorted_points.rows(median_point + 1, sorted_rows-1);
-  arma::mat left = sorted_points.rows(0, median_point -1);
-  return std::make_shared<Node<N>>(
-      median_row, 
-	  BuildTree<N>(left, depth + 1),
-      BuildTree<N>(right,
-                   depth + 1));
+
+  return std::make_shared<Node<N>>(median_row, left, right);
 }
