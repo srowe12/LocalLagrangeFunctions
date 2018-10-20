@@ -106,37 +106,49 @@ inline arma::mat SortOnColumnIndex(const arma::mat &points, const unsigned dimen
 template <size_t N>
 std::shared_ptr<Node<N>> BuildTree(const arma::mat &points, const unsigned int depth = 0) {
   unsigned axis = depth % N;
-  std::cout << "Building Tree with axis" << axis << std::endl;
+  std::cout << "Building Tree with axis " << axis << std::endl;
   arma::mat sorted_points = SortOnColumnIndex(points, axis);
 
   auto median_point = sorted_points.n_rows / 2; ///@todo srowe: Not really right
   // https://en.wikipedia.org/wiki/K-d_tree
-  arma::rowvec median_row = points.row(median_point);
+  arma::rowvec median_row = sorted_points.row(median_point);
 
   const size_t sorted_rows = sorted_points.n_rows;
   // Make the left one
   std::shared_ptr<Node<N>> left = std::shared_ptr<Node<N>>(nullptr);
-
-  int left_length = sorted_rows - median_point;
-  arma::mat left_points = sorted_points.rows(0, median_point - 1);
-  if (left_length / 2 > 0) {
+sorted_points.print("The available points are");
+  int left_length = median_point;
+  
+  if (left_length > 1) {
+	  arma::mat left_points = sorted_points.rows(0, median_point - 1);
     left = BuildTree<N>(left_points, depth + 1);
   }
-
-  int right_length = median_point - 1;
-  std::shared_ptr<Node<N>> right = std::shared_ptr<Node<N>>(nullptr);
-  arma::mat right_points =
-      sorted_points.rows(median_point + 1, sorted_rows - 1);
-  if (right_length / 2 > 0) {
-    right = BuildTree<N>(right_points, depth + 1);
+  else {
+	  // Leaf point
+	  std::cout << " left_length = " << left_length << " so adding row(0)" << std::endl;
+	  arma::rowvec left_point = sorted_points.row(0);
+	  left = std::make_shared<Node<N>>(left_point, nullptr, nullptr);
   }
 
-  // Make the right one
 
-  std::cout << "Calling normal recursive call with median point" << median_point << std::endl;
+  int right_length = sorted_rows - median_point;
+  std::shared_ptr<Node<N>> right = std::shared_ptr<Node<N>>(nullptr);
 
-  std::cout << "The sorted rows size is" << sorted_rows << std::endl;
-  std::cout << "Indexing into sorted_points with" << median_point +1 << std::endl;
-
+  if (right_length > 1) {
+	    arma::mat right_points =
+      sorted_points.rows(median_point + 1, sorted_rows - 1);
+	  std::cout << " Going down the right tree now!" << std::endl;
+    right = BuildTree<N>(right_points, depth + 1);
+  }
+  /*
+  else {
+	  // We have a final node
+	  arma::rowvec right_point = sorted_points.row(median_point+1);
+	  right = std::make_shared<Node<N>>(right_point, nullptr, nullptr);
+  }
+  */
+std::cout << "The left and right lengths are " << left_length << " , " << right_length;
+std::cout << "With median point " << median_point << " and size of sorted_points " << sorted_points.n_rows << std::endl;
+  median_row.print("Adding this point!");
   return std::make_shared<Node<N>>(median_row, left, right);
 }
