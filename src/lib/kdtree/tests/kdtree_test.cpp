@@ -11,5 +11,11 @@ TEST(KdtreeTests, SimpleTest) {
   auto tree = BuildTree<2>(points);
   std::cout << "Done building" << std::endl;
   arma::rowvec point{0, 0};
-  bool in_tree = search<2>(tree, point);
+  for (size_t i = 0; i < points.n_rows; ++i) {
+    arma::rowvec point = points.row(i);
+    bool in_tree = search<2>(tree, point);
+    point.print("The point is");
+    std::cout << "The success is" << in_tree << std::endl;
+    EXPECT_TRUE(in_tree);
+  }
 }
