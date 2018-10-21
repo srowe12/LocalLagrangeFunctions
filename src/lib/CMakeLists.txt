@@ -1,3 +1,4 @@
+add_subdirectory(kdtree)
 add_subdirectory(local_lagrange)
 add_subdirectory(math_utils)
 add_subdirectory(radial_basis_functions)

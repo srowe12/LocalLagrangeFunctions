@@ -55,6 +55,17 @@ constexpr inline double computeSquaredDistance(const arma::rowvec::fixed<Dimensi
 }
 
 template <size_t Coordinate>
+double computeDistance(const arma::rowvec &p1, const arma::rowvec &p2) {
+  return computeDistance<Coordinate - 1>(p1, p2) +
+         (p1(Coordinate) - p2(Coordinate)) * (p1(Coordinate) - p2(Coordinate));
+}
+
+template <>
+double computeDistance<0>(const arma::rowvec &p1, const arma::rowvec &p2) {
+  return (p1(0) - p2(0)) * (p1(0) - p2(0));
+}
+
+template <size_t Coordinate>
 inline double computeDistance(const size_t row, const size_t col,
                               const arma::mat &points) {
   return (points(row, Coordinate) - points(col, Coordinate)) *

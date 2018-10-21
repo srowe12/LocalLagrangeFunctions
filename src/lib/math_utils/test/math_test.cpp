@@ -22,6 +22,18 @@ TEST(MathTest, TestComputeSquaredDistance) {
   EXPECT_DOUBLE_EQ(4 * 4 + 3 * 3 + 5 * 5, squared_distance);
 }
 
+TEST(MathTest, ComputeDistanceRowVecs) {
+
+  arma::mat points{{0, 1, 2}, {3, 4, 5}};
+
+  const arma::rowvec p1{0, 1, 2};
+  const arma::rowvec p2{3, 4, 5};
+  double dist = mathtools::computeDistance<2>(p1, p2);
+
+  double expected_dist = 3 * 3 + 3 * 3 + 3 * 3;
+  EXPECT_EQ(expected_dist, dist);
+}
+
 TEST(MathTest, ComputeDistance) {
 
   arma::mat points{{0, 1, 2}, {3, 4, 5}};
