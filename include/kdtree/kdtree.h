@@ -1,5 +1,7 @@
 #include <armadillo>
 
+#include <math_utils/math_tools.h>
+
 // Code inspired and leveraged from:
 // https://www.geeksforgeeks.org/k-dimensional-tree/
 // and for radius query and building from:
@@ -128,12 +130,8 @@ void RadiusQuery(std::shared_ptr<Node<N>> tree, const arma::rowvec &point,
   }
 
   const double r2 = radius * radius;
-  double distance = 0.0;
-  ///@todo srowe: Replace with a better unrolled version in math_tools
-  for (size_t i = 0; i < N; ++i) {
-    double dist = tree->point(i) - point(i);
-    distance += dist * dist;
-  }
+
+  const double distance = mathtools::computeDistance<N - 1>(tree->point, point);
 
   const double one_dim_diff = point(depth) - tree->point(depth);
 
