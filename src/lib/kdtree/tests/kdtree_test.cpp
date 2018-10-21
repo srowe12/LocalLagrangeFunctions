@@ -39,3 +39,20 @@ TEST(KdtreeTests, EvenNumberPointsBuildTree) {
   bool in_tree = search<2>(tree, bad_point);
   EXPECT_FALSE(in_tree);
 }
+
+TEST(KdtreeTests, EvenNumberPointsBuildTree) {
+
+  arma::mat points{{0, 0}, {1, 1}, {0, 1}, {1, 0}, {.5, .5}};
+
+  auto tree = BuildTree<2>(points);
+  const double radius = .1;
+  arma::rowvec point{.5, .5};
+
+  const arma::mat points = RadiusQuery(tree, point, radius);
+
+  ASSERT_EQ(1, points.n_rows);
+
+  const double error = arma::norm(points.row(0) - point);
+
+  EXPECT_NEAR(0.0, error, 1e-8);
+}
