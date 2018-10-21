@@ -11,6 +11,49 @@
 
 namespace mathtools {
 
+template <size_t Dimension, size_t Coordinate>
+constexpr inline double computeLengthSquared(const arma::rowvec::fixed<Dimension> &v) {
+  if constexpr (Coordinate == 0) {
+    return v(0) * v(0);
+  } else {
+    return v(Coordinate) * v(Coordinate) +
+           computeLengthSquared<Dimension, Coordinate - 1>(v);
+  }
+}
+
+template <size_t Dimension>
+constexpr inline double computeLengthSquared(const arma::rowvec::fixed<Dimension> &v) {
+  if constexpr (Dimension > 1) {
+    return computeLengthSquared<Dimension, Dimension - 1>(v);
+  } else {
+    return v(0) * v(0);
+  }
+}
+
+///@todo srowe: These need to be marked constexpr I think
+template <size_t Dimension, size_t Coordinate>
+constexpr inline double computeSquaredDistance(const arma::rowvec::fixed<Dimension> &v1,
+                                     const arma::rowvec::fixed<Dimension> &v2) {
+
+  if constexpr (Coordinate == 0) {
+    return (v1(0) - v2(0)) * (v1(0) - v2(0));
+  } else {
+    return (v1(Coordinate) - v2(Coordinate)) *
+               (v1(Coordinate) - v2(Coordinate)) +
+           computeSquaredDistance<Dimension, Coordinate - 1>(v1, v2);
+  }
+}
+
+template <size_t Dimension>
+constexpr inline double computeSquaredDistance(const arma::rowvec::fixed<Dimension> &v1,
+                                     const arma::rowvec::fixed<Dimension> &v2) {
+  if constexpr (Dimension > 1) {
+    return computeSquaredDistance<Dimension, Dimension - 1>(v1, v2);
+  } else {
+    return (v1(0) - v2(0)) * (v1(0) - v2(0));
+  }
+}
+
 template <size_t Coordinate>
 double computeDistance(const arma::rowvec &p1, const arma::rowvec &p2) {
   return computeDistance<Coordinate - 1>(p1, p2) +

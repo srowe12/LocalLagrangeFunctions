@@ -25,7 +25,7 @@ public:
   arma::mat assembleInterpolationMatrix(const arma::mat &local_centers) {
     // Initialize matrix to all zeros.
 
-    size_t n_rows = local_centers.n_rows;
+    const size_t n_rows = local_centers.n_rows;
     arma::mat interp_matrix(n_rows + 3, n_rows + 3, arma::fill::zeros);
     double dist = 0.0;
     size_t num_centers = local_centers.n_rows;
@@ -55,7 +55,7 @@ public:
                          unsigned int local_index) {
     // Work needed here perhaps. Is this bad generating interp_matrix in this
     // function?
-    arma::mat interp_matrix = assembleInterpolationMatrix(local_centers);
+    const arma::mat interp_matrix = assembleInterpolationMatrix(local_centers);
     arma::vec rhs(local_centers.n_rows + 3, arma::fill::zeros);
     rhs(local_index) = 1;
     coefficients_ = arma::solve(interp_matrix, rhs);
@@ -78,11 +78,14 @@ public:
     double result = 0.0;
     const size_t num_centers = centers_.n_rows;
     for (size_t i = 0; i < num_centers; ++i) {
-      const arma::rowvec::fixed<Dimension> diff = centers_.row(i) - point;
-      const double distance = arma::dot(diff, diff);
+
+      const double distance =
+          mathtools::computeSquaredDistance<Dimension>(centers_.row(i), point);
 
       // Safety check for distance = 0
       if (distance != 0.0) {
+
+        ///@todo srowe: Make the Kernel a parameter
 
         //.5 r^2 log(r^2) = r^2 log(r), this way we don't need square root
         ///@todo srowe: Would it be faster to convert this to std::log1p and use
@@ -97,6 +100,7 @@ public:
     // form 1 + x + y
     const auto n_rows = coefficients_.n_rows;
 
+    ///@todo srowe: Make the polynomials more generic 
     ///@todo srowe: Those constant values are incorrect for dimension != 2
     double polynomial_term =
         coefficients_(n_rows - 3) +

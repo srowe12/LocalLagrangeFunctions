@@ -19,9 +19,6 @@ template <size_t N> struct Node {
   std::shared_ptr<Node<N>> right;
 };
 
-
-
-
 template <size_t N>
 bool ComparePoints(const arma::rowvec &p1, const arma::rowvec &p2) {
   ///@todo srowe; Use other stuff already written

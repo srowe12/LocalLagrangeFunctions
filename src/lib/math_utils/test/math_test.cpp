@@ -1,6 +1,26 @@
-#include <math_utils/math_tools.h>
 #include <gtest/gtest.h>
+#include <math_utils/math_tools.h>
 #include <stdio.h>
+
+TEST(MathTest, TestComputeLength) {
+  arma::rowvec::fixed<3> v{1, 2, 3};
+  const auto length = mathtools::computeLengthSquared<3>(v);
+  EXPECT_DOUBLE_EQ(14, length);
+}
+
+TEST(MathTest, TestComputeLengthOneDim) {
+  arma::rowvec::fixed<1> v{-2};
+  const auto length = mathtools::computeLengthSquared<1>(v);
+  EXPECT_DOUBLE_EQ(4, length);
+}
+
+TEST(MathTest, TestComputeSquaredDistance) {
+  arma::rowvec::fixed<3> v1{1, 2, 3};
+  arma::rowvec::fixed<3> v2{-3, -1, -2};
+
+  const auto squared_distance = mathtools::computeSquaredDistance<3>(v1, v2);
+  EXPECT_DOUBLE_EQ(4 * 4 + 3 * 3 + 5 * 5, squared_distance);
+}
 
 TEST(MathTest, ComputeDistanceRowVecs) {
 
@@ -13,6 +33,7 @@ TEST(MathTest, ComputeDistanceRowVecs) {
   double expected_dist = 3 * 3 + 3 * 3 + 3 * 3;
   EXPECT_EQ(expected_dist, dist);
 }
+
 TEST(MathTest, ComputeDistance) {
 
   arma::mat points{{0, 1, 2}, {3, 4, 5}};

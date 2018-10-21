@@ -6,7 +6,7 @@
 template <typename T> struct Gaussian {
   Gaussian(const T val) : ScaleParameter(val) {}
 
-  T operator()(const T r_squared) {
+  inline T operator()(const T r_squared) {
     return std::exp(-ScaleParameter * r_squared);
   }
 
