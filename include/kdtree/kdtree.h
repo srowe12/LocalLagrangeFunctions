@@ -2,6 +2,9 @@
 
 // Code inspired and leveraged from:
 // https://www.geeksforgeeks.org/k-dimensional-tree/
+// and for radius query and building from:
+// https://github.com/crvs/KDTree/
+
 template <size_t N> struct Node {
 
   explicit Node(arma::rowvec &point)
@@ -73,6 +76,7 @@ bool searchRec(std::shared_ptr<Node<N>> root, const arma::rowvec &point,
   if (root == nullptr) {
     return false;
   }
+
   arma::rowvec root_point = root->point;
   if (ComparePoints<N>(point, root_point)) {
     return true;
