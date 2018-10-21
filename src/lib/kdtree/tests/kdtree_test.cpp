@@ -45,7 +45,7 @@ TEST(KdtreeTests, RadiusQueryOnePoint) {
   arma::mat points{{0, 0}, {1, 1}, {0, 1}, {1, 0}, {.5, .5}};
 
   auto tree = BuildTree<2>(points);
-  const double radius = .1;
+  const double radius = .1 * .1;
   arma::rowvec point{.5, .5};
 
   const std::vector<arma::rowvec> found_points =
@@ -74,7 +74,7 @@ TEST(KdtreeTests, RadiusQueryMultiplePoints) {
   arma::mat points{{0, 0}, {1, 1}, {0, 1}, {1, 0}, {.5, .5}};
 
   auto tree = BuildTree<2>(points);
-  const double radius = .5;
+  const double radius = .5 * .5;
   arma::rowvec point{.75, .75};
 
   const std::vector<arma::rowvec> found_points =
@@ -93,7 +93,7 @@ TEST(KdtreeTests, RadiusQueryMultiplePointsBigger) {
   arma::mat points{{0, 0}, {1, 1}, {0, 1}, {1, 0}, {.5, .5}};
 
   auto tree = BuildTree<2>(points);
-  const double radius = .8;
+  const double radius = .8 * .8;
   arma::rowvec point{.75, .75};
 
   const std::vector<arma::rowvec> found_points =

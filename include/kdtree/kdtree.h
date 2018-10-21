@@ -20,13 +20,9 @@ template <size_t N> struct Node {
 };
 
 template <size_t N>
-bool ComparePoints(const arma::rowvec &p1, const arma::rowvec &p2) {
-  ///@todo srowe; Use other stuff already written
-  double diff = 0.0;
-  for (size_t i = 0; i < N; ++i) {
-    diff += (p1[i] - p2[i]) * (p1[i] - p2[i]);
-  }
-  return diff < 1e-13;
+inline bool ComparePoints(const arma::rowvec &p1, const arma::rowvec &p2) {
+
+  return mathtools::computeDistance<N - 1>(p1, p2) < 1e-13;
 }
 
 // Searches a point in the KD tree the parameter depth is used to determine
@@ -105,7 +101,7 @@ std::shared_ptr<Node<N>> BuildTree(const arma::mat &points,
 template <size_t N>
 std::vector<arma::rowvec> RadiusQuery(std::shared_ptr<Node<N>> tree,
                                       const arma::rowvec &point,
-                                      const double radius) {
+                                      const double radius_squared) {
   std::vector<arma::rowvec> neighbors;
 
   // Tree is a nullptr, so exit
@@ -113,20 +109,18 @@ std::vector<arma::rowvec> RadiusQuery(std::shared_ptr<Node<N>> tree,
     return neighbors;
   }
   unsigned int depth = 0;
-  RadiusQuery(tree, point, radius, depth, neighbors);
+  RadiusQuery(tree, point, radius_squared, depth, neighbors);
 
   return neighbors;
 }
 
 template <size_t N>
 void RadiusQuery(std::shared_ptr<Node<N>> tree, const arma::rowvec &point,
-                 const double radius, unsigned int depth,
+                 const double radius_squared, unsigned int depth,
                  std::vector<arma::rowvec> &neighbors) {
   if (!tree) {
     return;
   }
-
-  const double r2 = radius * radius;
 
   const double distance = mathtools::computeDistance<N - 1>(tree->point, point);
 
@@ -135,7 +129,7 @@ void RadiusQuery(std::shared_ptr<Node<N>> tree, const arma::rowvec &point,
   const double one_dim_diff_squared = one_dim_diff * one_dim_diff;
 
   // Is this point sufficiently close to the target point? If so, add it
-  if (distance <= r2) {
+  if (distance <= radius_squared) {
     neighbors.push_back(tree->point);
   }
 
@@ -153,9 +147,9 @@ void RadiusQuery(std::shared_ptr<Node<N>> tree, const arma::rowvec &point,
   }
 
   const unsigned int next_depth = (depth + 1) % N;
-  RadiusQuery(next_node, point, radius, next_depth, neighbors);
+  RadiusQuery(next_node, point, radius_squared, next_depth, neighbors);
 
-  if (one_dim_diff_squared <= r2) {
-    RadiusQuery(optional_node, point, radius, next_depth, neighbors);
+  if (one_dim_diff_squared <= radius_squared) {
+    RadiusQuery(optional_node, point, radius_squared, next_depth, neighbors);
   }
 }
