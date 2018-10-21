@@ -80,9 +80,6 @@ TEST(KdtreeTests, RadiusQueryMultiplePoints) {
   const std::vector<arma::rowvec> found_points =
       RadiusQuery<2>(tree, point, radius);
 
-  for (const auto &p : found_points) {
-    p.print("Found");
-  }
   ASSERT_EQ(2, found_points.size());
 
   arma::rowvec expected_first_point{.5, .5};
