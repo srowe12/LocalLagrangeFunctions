@@ -138,3 +138,65 @@ std::shared_ptr<Node<N>> BuildTree(const arma::mat &points,
   }
   return std::make_shared<Node<N>>(median_row, left, right);
 }
+
+template <size_t N>
+std::vector<arma::rowvec> RadiusQuery(std::shared_ptr<Node<N>> tree,
+                                      const arma::rowvec &point,
+                                      const double radius) {
+  std::vector<arma::rowvec> neighbors;
+
+  // Tree is a nullptr, so exit
+  if (!tree) {
+    return neighbors;
+  }
+  unsigned int depth = 0;
+  RadiusQuery(tree, point, radius, depth, neighbors);
+
+  return neighbors;
+}
+
+template <size_t N>
+void RadiusQuery(std::shared_ptr<Node<N>> tree, const arma::rowvec &point,
+                 const double radius, unsigned int depth,
+                 std::vector<arma::rowvec> &neighbors) {
+  if (!tree) {
+    return;
+  }
+
+  const double r2 = radius * radius;
+  double distance = 0.0;
+  ///@todo srowe: Replace with a better unrolled version in math_tools
+  for (size_t i = 0; i < N; ++i) {
+    double dist = point(i) - tree->point(i);
+    distance += dist * dist;
+  }
+
+  const double one_dim_diff = point(depth) - tree->point(depth);
+
+  const double one_dim_diff_squared = one_dim_diff * one_dim_diff;
+
+  // Is this point sufficiently close to the target point? If so, add it
+  if (distance <= r2) {
+    neighbors.push_back(tree->point);
+  }
+
+  // Which direction of the tree should we choose? We base this off of the
+  // current dimension we are comparing
+
+  std::shared_ptr<Node<N>> next_node;
+  std::shared_ptr<Node<N>> optional_node;
+  if (one_dim_diff > 0) {
+    next_node = tree->left;
+    optional_node = tree->right;
+  } else {
+    next_node = tree->right;
+    optional_node = tree->left;
+  }
+
+  const unsigned int next_depth = (depth + 1) % N;
+  RadiusQuery(next_node, point, radius, next_depth, neighbors);
+
+  if (one_dim_diff_squared <= r2) {
+    RadiusQuery(optional_node, point, radius, next_depth, neighbors);
+  }
+}
