@@ -17,45 +17,8 @@ template <size_t N> struct Node {
   std::shared_ptr<Node<N>> right;
 };
 
-template <size_t N>
-std::shared_ptr<Node<N>> newNode(const arma::rowvec::fixed<N> &point) {
-  Node<N> temp = std::make_shared<Node<N>>();
 
-  temp->point = point;
-  temp->left = nullptr;
-  temp->right = nullptr;
-  return std::make_shared(temp);
-}
 
-template <size_t N>
-// Inserts a new node and returns root of the modified tree
-// The parameter depth is used to decide the axis of comparison, hence
-// the depth % N
-std::shared_ptr<Node<N>> insertRec(std::shared_ptr<Node<N>> root,
-                                   const arma::rowvec::fixed<N> &point,
-                                   unsigned depth) {
-
-  // Tree is empty?
-  if (root == nullptr) {
-    return newNode(point);
-  }
-
-  unsigned current_depth = depth % N;
-
-  if (point(current_depth) < (root->point(current_depth))) {
-    root->left = insertRec(root->left, point, depth + 1);
-  } else {
-    root->right = insertRec(root->right, point, depth + 1);
-  }
-
-  return root;
-}
-
-template <size_t N>
-std::shared_ptr<Node<N>> insert(std::shared_ptr<Node<N>> root,
-                                const arma::rowvec::fixed<N> &point) {
-  return insertRec(root, point, 0);
-}
 
 template <size_t N>
 bool ComparePoints(const arma::rowvec &p1, const arma::rowvec &p2) {
