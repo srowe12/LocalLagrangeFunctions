@@ -84,8 +84,30 @@ TEST(KdtreeTests, RadiusQueryMultiplePoints) {
 
   arma::rowvec expected_first_point{.5, .5};
   arma::rowvec expected_second_point{1, 1};
-  arma::rowvec expected_third_point{.75, .7};
 
   EXPECT_TRUE(inVector(found_points, expected_first_point));
   EXPECT_TRUE(inVector(found_points, expected_second_point));
+}
+
+TEST(KdtreeTests, RadiusQueryMultiplePointsBigger) {
+  arma::mat points{{0, 0}, {1, 1}, {0, 1}, {1, 0}, {.5, .5}};
+
+  auto tree = BuildTree<2>(points);
+  const double radius = .8;
+  arma::rowvec point{.75, .75};
+
+  const std::vector<arma::rowvec> found_points =
+      RadiusQuery<2>(tree, point, radius);
+
+  ASSERT_EQ(4, found_points.size());
+
+  arma::rowvec expected_first_point{.5, .5};
+  arma::rowvec expected_second_point{1, 1};
+  arma::rowvec expected_third_point{1, 0};
+  arma::rowvec expected_fourth_point{0, 1};
+
+  EXPECT_TRUE(inVector(found_points, expected_first_point));
+  EXPECT_TRUE(inVector(found_points, expected_second_point));
+  EXPECT_TRUE(inVector(found_points, expected_third_point));
+  EXPECT_TRUE(inVector(found_points, expected_fourth_point));
 }
