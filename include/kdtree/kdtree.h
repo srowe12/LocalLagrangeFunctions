@@ -166,8 +166,9 @@ void RadiusQuery(std::shared_ptr<Node<N>> tree, const arma::rowvec &point,
   const double r2 = radius * radius;
   double distance = 0.0;
   ///@todo srowe: Replace with a better unrolled version in math_tools
+  tree->point.print("The current branch point is");
   for (size_t i = 0; i < N; ++i) {
-    double dist = point(i) - tree->point(i);
+    double dist = tree->point(i) - point(i);
     distance += dist * dist;
   }
 
@@ -192,6 +193,9 @@ void RadiusQuery(std::shared_ptr<Node<N>> tree, const arma::rowvec &point,
     next_node = tree->right;
     optional_node = tree->left;
   }
+
+  std::cout << "The one dim diff is" << one_dim_diff
+            << " and the distance squared is" << distance << std::endl;
 
   const unsigned int next_depth = (depth + 1) % N;
   RadiusQuery(next_node, point, radius, next_depth, neighbors);
