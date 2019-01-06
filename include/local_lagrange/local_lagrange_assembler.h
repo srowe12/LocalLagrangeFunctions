@@ -14,6 +14,7 @@
 #include <boost/geometry/index/rtree.hpp>
 
 #include "local_lagrange.h"
+#include <kdtree/kdtree.h>
 
 // Namespace aliases for Boost
 namespace bg = boost::geometry;
@@ -64,6 +65,7 @@ public:
 
       if (matching) {
         local_index = i;
+        break;
       }
     }
 
@@ -74,10 +76,27 @@ public:
   LocalLagrange<Dimension>
   generateLocalLagrangeFunction(const unsigned int index) {
 
+    /*
     auto local_indices = getNearestNeighbors(index);
     auto local_centers = findLocalCenters(local_indices);
     unsigned int local_index = findLocalIndex(local_centers, index);
+    */
 
+    // Let's query the data via kdtree
+    const arma::rowvec local_point = centers_.row(index);
+
+    constexpr double radius_squared = 1e-1; ///@todo srowe: This should be a configurable parameter obviously
+    const std::vector<arma::rowvec> local_centers_v = RadiusQuery<Dimension>(kdtree_root_,local_point, radius_squared);
+    // Stupidly make an arma mat from this
+    arma::mat local_centers(local_centers_v.size(), Dimension);
+
+    int i = 0;
+    for (const auto& row : local_centers_v) {
+        local_centers.row(i) = row;
+        ++i;
+    }
+    const arma::uvec local_indices{0}; // Dud, this needs to be eliminated! ///@todo srowe
+    const size_t local_index = findLocalIndex(local_centers, index);
     LocalLagrange<Dimension> llf(local_centers, local_indices, local_index);
 
     return llf;
@@ -99,6 +118,8 @@ public:
       points.emplace_back(std::move(mypoint), iter);
     }
     rt_.insert(points.begin(), points.end());
+
+    kdtree_root_ = BuildTree<Dimension>(centers_);
   }
 
   arma::uvec getNearestNeighbors(const unsigned int index) {
@@ -147,6 +168,7 @@ private:
   double mesh_norm_;
   double ball_radius_;
   bgi::rtree<Value, bgi::quadratic<16>> rt_; // R-tree for indexing points.
+  std::shared_ptr<Node<Dimension>> kdtree_root_;
 
   arma::mat centers_; // N x d, with N points and d dimensions.
 
