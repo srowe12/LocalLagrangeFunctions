@@ -138,7 +138,7 @@ void RadiusQuery(std::shared_ptr<Node<N>> tree, const arma::rowvec &point,
 
   std::shared_ptr<Node<N>> next_node;
   std::shared_ptr<Node<N>> optional_node;
-  if (one_dim_diff > 0) {
+  if (one_dim_diff < 0) {
     next_node = tree->left;
     optional_node = tree->right;
   } else {
