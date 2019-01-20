@@ -111,3 +111,51 @@ TEST(KdtreeTests, RadiusQueryMultiplePointsBigger) {
   EXPECT_TRUE(inVector(found_points, expected_third_point));
   EXPECT_TRUE(inVector(found_points, expected_fourth_point));
 }
+
+TEST(KdTreeTest, RadiusQueryMultiplePointsBiggerIncludingPoint) {
+    
+  size_t num_points = 50;
+
+  auto xmesh = mathtools::linspace<double>(0, 1, num_points);
+  auto points = mathtools::meshgrid<double>(xmesh, xmesh);
+  arma::rowvec p1 = points.row(0);
+  arma::rowvec p2 = points.row(1);
+  p1.print("p1");
+  p2.print("p2");
+  std::cout << "The computed distance between p1 and p2 is" <<   mathtools::computeDistance<1>(p1,p2) << "\n";
+    auto tree = BuildTree<2>(points);
+  if (!tree) {
+      std::cout << "Tree is nulL!" << std::endl;
+  }
+    const double radius = .1*.1;
+
+  bool in_tree = search<2>(tree, p1);
+  if (in_tree) {
+      std::cout << "p1 found " << "\n";
+  }
+ else {
+     std::cout << "p1 not found\n";
+ }
+  
+  const auto found_points = RadiusQuery<2>(tree, p1, radius);
+  std::cout << "Num found points = " << found_points.size() << "\n";
+  for (const arma::rowvec& p : found_points) {
+      p.print("");
+  }
+
+  int num_rows = points.n_rows;
+  std::vector<arma::rowvec> naive;
+  Sort(found_points);
+  for (int i = 0; i < num_rows; ++i) {
+      double dist = mathtools::computeDistance<1>(p1,points.row(i));
+      if (dist < .1*.1) {
+//          points.row(i).print("Naively found point!");
+//          std::cout << "Distance for naively found point is " << dist << "\n";
+          naive.push_back(points.row(i));
+      }
+  }
+ std::cout << "Num naive points = " << naive.size() << std::endl;
+  for (const arma::rowvec& p : naive) {
+      p.print("");
+  }
+}
