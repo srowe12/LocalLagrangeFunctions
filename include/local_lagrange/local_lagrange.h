@@ -1,9 +1,9 @@
 #ifndef LOCAL_LAGRANGE_HDR
 #define LOCAL_LAGRANGE_HDR
-#include <math_utils/math_tools.h>
 #include <armadillo>
 #include <array>
 #include <cmath>
+#include <math_utils/math_tools.h>
 #include <vector>
 
 namespace local_lagrange {
@@ -64,6 +64,7 @@ public:
   unsigned int index() const { return index_; }
   arma::uvec indices() const { return indices_; }
   arma::vec coefficients() const { return coefficients_; }
+  arma::mat centers() const { return centers_; }
 
   void setIndices(const arma::uvec &indices) { indices_ = indices; }
 
@@ -100,7 +101,7 @@ public:
     // form 1 + x + y
     const auto n_rows = coefficients_.n_rows;
 
-    ///@todo srowe: Make the polynomials more generic 
+    ///@todo srowe: Make the polynomials more generic
     ///@todo srowe: Those constant values are incorrect for dimension != 2
     double polynomial_term =
         coefficients_(n_rows - 3) +

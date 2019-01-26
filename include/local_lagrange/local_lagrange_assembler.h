@@ -22,16 +22,15 @@ namespace bgi = boost::geometry::index;
 
 namespace local_lagrange {
 
-
-
 template <size_t Dimension = 2> class LocalLagrangeAssembler {
 public:
   using Point = bg::model::point<double, Dimension, bg::cs::cartesian>;
   using Value = std::pair<Point, unsigned>;
 
   LocalLagrangeAssembler(const arma::mat &centers,
-                         const size_t num_local_centers)
-      : centers_(centers), num_local_centers_(num_local_centers) {
+                         const size_t num_local_centers, const double radius)
+      : centers_(centers), num_local_centers_(num_local_centers),
+        radius_(radius) {
     assembleTree(); // Build up R Tree of nearest neighbor points so we can find
                     // local indices
   }
@@ -84,18 +83,17 @@ public:
 
     // Let's query the data via kdtree
     const arma::rowvec local_point = centers_.row(index);
-
-    constexpr double radius_squared = 1e-1; ///@todo srowe: This should be a configurable parameter obviously
-    const std::vector<arma::rowvec> local_centers_v = RadiusQuery<Dimension>(kdtree_root_,local_point, radius_squared);
+    const std::vector<arma::rowvec> local_centers_v =
+        RadiusQuery<Dimension>(kdtree_root_, local_point, radius_);
     // Stupidly make an arma mat from this
     arma::mat local_centers(local_centers_v.size(), Dimension);
-
     int i = 0;
-    for (const auto& row : local_centers_v) {
-        local_centers.row(i) = row;
-        ++i;
+    for (const auto &row : local_centers_v) {
+      local_centers.row(i) = row;
+      ++i;
     }
-    const arma::uvec local_indices{0}; // Dud, this needs to be eliminated! ///@todo srowe
+    const arma::uvec local_indices{
+        0}; // Dud, this needs to be eliminated! ///@todo srowe
     const size_t local_index = findLocalIndex(local_centers, index);
     LocalLagrange<Dimension> llf(local_centers, local_indices, local_index);
 
@@ -165,14 +163,13 @@ private:
   unsigned int num_centers_;
   double scale_factor_; // We use ball_radius =
                         // scale_factor*mesh_norm*abs(log(mesh_norm));
+  arma::mat centers_;   // N x d, with N points and d dimensions.
+  unsigned int num_local_centers_; // How many local centers should we find?
+  double radius_;
   double mesh_norm_;
   double ball_radius_;
   bgi::rtree<Value, bgi::quadratic<16>> rt_; // R-tree for indexing points.
   std::shared_ptr<Node<Dimension>> kdtree_root_;
-
-  arma::mat centers_; // N x d, with N points and d dimensions.
-
-  unsigned int num_local_centers_; // How many local centers should we find?
 };
 
 } // namespace local_lagrange

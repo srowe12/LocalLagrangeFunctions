@@ -26,11 +26,12 @@ private:
 
 template <size_t Dimension>
 LocalLagrangeEnsemble<Dimension>
-buildLocalLagrangeFunctions(const arma::mat &centers,
-                            size_t num_local_centers) {
+buildLocalLagrangeFunctions(const arma::mat &centers, size_t num_local_centers,
+                            const double radius) {
   // Instantiate a LocalLagrangeAssembler
 
-  LocalLagrangeAssembler<Dimension> assembler(centers, num_local_centers);
+  LocalLagrangeAssembler<Dimension> assembler(centers, num_local_centers,
+                                              radius);
 
   std::vector<LocalLagrange<Dimension>> llfs;
   size_t num_centers = centers.n_rows;

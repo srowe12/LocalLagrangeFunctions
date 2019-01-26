@@ -49,7 +49,7 @@ TEST(MyTest, TreeTest) {
 TEST(MyTest, NearestNeighborTest) {
 
   arma::mat centers{{1, 0}, {2, 1}, {3, 2}};
-  LocalLagrangeAssembler<2> llc(centers, 2);
+  LocalLagrangeAssembler<2> llc(centers, 2, 1e-1);
 
   auto indices = llc.getNearestNeighbors(0);
   EXPECT_EQ(2, indices.n_elem);
@@ -95,7 +95,7 @@ TEST(MyTest, FindLocalIndexTest) {
 
   arma::mat centers{{1, 0}, {2, 1}, {3, 2}};
 
-  local_lagrange::LocalLagrangeAssembler<2> llc(centers, 2);
+  local_lagrange::LocalLagrangeAssembler<2> llc(centers, 2, 1);
 
   unsigned int index = 2;
 
@@ -113,7 +113,7 @@ TEST(MyTest, FindLocalCentersTest) {
     centers(i, 0) = i;
     centers(i, 1) = i + 1;
   }
-  local_lagrange::LocalLagrangeAssembler<2> llc(centers, 2);
+  local_lagrange::LocalLagrangeAssembler<2> llc(centers, 2, 1);
 
   unsigned int index = 5;
   auto local_indices = llc.getNearestNeighbors(index);
@@ -140,21 +140,21 @@ TEST(MyTest, BuildLocalLagrangeFunction) {
   auto xmesh = mathtools::linspace<double>(0, 1, num_points);
   auto centers = mathtools::meshgrid<double>(xmesh, xmesh);
 
-  local_lagrange::LocalLagrangeAssembler<2> llc(centers, 200);
+  local_lagrange::LocalLagrangeAssembler<2> llc(centers, 200, 1e-1);
 
   unsigned int index = 5;
   local_lagrange::LocalLagrange<2> llf =
       llc.generateLocalLagrangeFunction(index);
   arma::vec coefs = llf.coefficients();
-  EXPECT_NEAR(0, accu(coefs.subvec(0, 199)), 1e-10);
+  size_t num_coefs = coefs.n_rows - 3;
+  EXPECT_NEAR(0, accu(coefs.subvec(0, num_coefs - 1)), 1e-10);
   double x_eval = 0;
   double y_eval = 0;
-  arma::vec coef_tps = coefs.subvec(0, 199);
-  auto local_indices = llf.indices();
-
-  for (size_t iter = 0; iter < 200; iter++) {
-    x_eval += coef_tps(iter) * centers(local_indices(iter), 0);
-    y_eval += coef_tps(iter) * centers(local_indices(iter), 1);
+  arma::vec coef_tps = coefs.subvec(0, num_coefs);
+  const arma::mat local_centers = llf.centers();
+  for (size_t iter = 0; iter < num_coefs; iter++) {
+    x_eval += coef_tps(iter) * local_centers(iter, 0);
+    y_eval += coef_tps(iter) * local_centers(iter, 1);
   }
   EXPECT_NEAR(0, x_eval, 1e-12);
   EXPECT_NEAR(0, y_eval, 1e-12);
@@ -165,7 +165,7 @@ TEST(LocalLagrangeTests, EvaluateOperator) {
 
   arma::mat local_centers{{1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5},
                           {6, 6}, {7, 7}, {8, 8}, {9, 9}, {10, 10}};
-  LocalLagrangeAssembler<2> assembler(local_centers, 10);
+  LocalLagrangeAssembler<2> assembler(local_centers, 10, 100);
 
   auto llf = assembler.generateLocalLagrangeFunction(5);
   arma::vec expected_evaluations{0, 0, 0, 0, 0, 1, 0, 0, 0, 0};

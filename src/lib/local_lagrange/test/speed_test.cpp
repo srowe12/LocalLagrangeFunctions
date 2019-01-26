@@ -1,7 +1,7 @@
 #include <local_lagrange/local_lagrange_interpolant.h>
 
-#include <math_utils/math_tools.h>
 #include <gtest/gtest.h>
+#include <math_utils/math_tools.h>
 #include <stdio.h>
 #include <string>
 #include <utility>
@@ -24,11 +24,12 @@ int main() {
   auto start = std::chrono::steady_clock::now();
   size_t num_points = 50;
   std::vector<double> xmesh = mathtools::linspace<double>(0, 1, num_points);
-  auto centers = mathtools::meshgrid<double>(xmesh, xmesh); 
+  auto centers = mathtools::meshgrid<double>(xmesh, xmesh);
 
   size_t num_centers = centers.n_rows;
 
-  auto llfs = local_lagrange::buildLocalLagrangeFunctions<2>(centers, 200);
+  auto llfs =
+      local_lagrange::buildLocalLagrangeFunctions<2>(centers, 200, 1e-1);
 
   std::cout << "Run complete!" << std::endl;
   auto end = std::chrono::steady_clock::now();
