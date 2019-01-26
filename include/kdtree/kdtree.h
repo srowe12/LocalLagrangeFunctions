@@ -68,7 +68,7 @@ std::shared_ptr<Node<N>> BuildTree(const arma::mat &points,
   unsigned axis = depth % N;
   arma::mat sorted_points = SortOnColumnIndex(points, axis);
 
-  auto median_point = sorted_points.n_rows / 2; ///@todo srowe: Not really right
+  auto median_point = sorted_points.n_rows / 2;
   // https://en.wikipedia.org/wiki/K-d_tree
   arma::rowvec median_row = sorted_points.row(median_point);
 
@@ -82,9 +82,10 @@ std::shared_ptr<Node<N>> BuildTree(const arma::mat &points,
     left = BuildTree<N>(left_points, depth + 1);
   } else {
     // Leaf point
-
-    arma::rowvec left_point = sorted_points.row(0);
-    left = std::make_shared<Node<N>>(left_point, nullptr, nullptr);
+    if (left_length == 1) {
+      arma::rowvec left_point = sorted_points.row(0);
+      left = std::make_shared<Node<N>>(left_point, nullptr, nullptr);
+    }
   }
 
   int right_length = sorted_rows - median_point;
@@ -127,7 +128,6 @@ void RadiusQuery(std::shared_ptr<Node<N>> tree, const arma::rowvec &point,
   const double one_dim_diff = point(depth) - tree->point(depth);
 
   const double one_dim_diff_squared = one_dim_diff * one_dim_diff;
-
   // Is this point sufficiently close to the target point? If so, add it
   if (distance <= radius_squared) {
     neighbors.push_back(tree->point);
@@ -138,7 +138,7 @@ void RadiusQuery(std::shared_ptr<Node<N>> tree, const arma::rowvec &point,
 
   std::shared_ptr<Node<N>> next_node;
   std::shared_ptr<Node<N>> optional_node;
-  if (one_dim_diff > 0) {
+  if (one_dim_diff < 0) {
     next_node = tree->left;
     optional_node = tree->right;
   } else {

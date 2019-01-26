@@ -111,3 +111,54 @@ TEST(KdtreeTests, RadiusQueryMultiplePointsBigger) {
   EXPECT_TRUE(inVector(found_points, expected_third_point));
   EXPECT_TRUE(inVector(found_points, expected_fourth_point));
 }
+
+bool CompareSets(const std::vector<arma::rowvec> &a,
+                 const std::vector<arma::rowvec> &b) {
+  if (a.size() != b.size()) {
+    return false;
+  }
+  bool return_val = true;
+  for (size_t i = 0; i < a.size(); ++i) {
+    arma::rowvec p = a[i];
+    bool compare = false;
+    for (size_t j = 0; j < b.size(); ++j) {
+      if (arma::norm(p - b[j])) {
+        compare = true;
+      }
+    }
+    return_val &= compare;
+  }
+  return return_val;
+}
+
+TEST(KdTreeTest, RadiusQueryMultiplePointsBiggerIncludingPoint) {
+
+  size_t num_points = 50;
+
+  auto xmesh = mathtools::linspace<double>(0, 1, num_points);
+  auto points = mathtools::meshgrid<double>(xmesh, xmesh);
+  arma::rowvec p1 = points.row(0);
+  arma::rowvec p2 = points.row(1);
+  auto tree = BuildTree<2>(points);
+  if (!tree) {
+    std::cout << "Tree is nulL!" << std::endl;
+  }
+  const double radius = .1 * .1;
+
+  bool in_tree = search<2>(tree, p1);
+
+  const auto found_points = RadiusQuery<2>(tree, p1, radius);
+
+  int num_rows = points.n_rows;
+  std::vector<arma::rowvec> naive;
+  for (int i = 0; i < num_rows; ++i) {
+    double dist = mathtools::computeDistance<1>(p1, points.row(i));
+    if (dist <= .1 * .1) {
+      naive.push_back(points.row(i));
+    }
+  }
+
+  EXPECT_EQ(naive.size(), found_points.size());
+
+  EXPECT_TRUE(CompareSets(found_points, naive));
+}
