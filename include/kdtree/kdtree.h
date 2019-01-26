@@ -68,7 +68,7 @@ std::shared_ptr<Node<N>> BuildTree(const arma::mat &points,
   unsigned axis = depth % N;
   arma::mat sorted_points = SortOnColumnIndex(points, axis);
 
-  auto median_point = sorted_points.n_rows / 2; ///@todo srowe: Not really right
+  auto median_point = sorted_points.n_rows / 2;
   // https://en.wikipedia.org/wiki/K-d_tree
   arma::rowvec median_row = sorted_points.row(median_point);
 
@@ -82,9 +82,20 @@ std::shared_ptr<Node<N>> BuildTree(const arma::mat &points,
     left = BuildTree<N>(left_points, depth + 1);
   } else {
     // Leaf point
-
-    arma::rowvec left_point = sorted_points.row(0);
-    left = std::make_shared<Node<N>>(left_point, nullptr, nullptr);
+    if (left_length == 1) {
+      arma::rowvec left_point = sorted_points.row(0);
+      left = std::make_shared<Node<N>>(left_point, nullptr, nullptr);
+      left_point.print("The left point is");
+      median_row.print(
+          "The median point is this is it the same as the above one?");
+      std::cout << "The left length is " << left_length
+                << " and the total length is " << sorted_points.n_rows << "\n";
+      if (arma::norm(left_point - median_row) < 1e-8) {
+        std::cout << "HELP THEY MATCH" << std::endl;
+        sorted_points.print("BAD NEWS here are the sorted points");
+        std::cout << "END PRINTING" << std::endl;
+      }
+    }
   }
 
   int right_length = sorted_rows - median_point;
@@ -127,9 +138,10 @@ void RadiusQuery(std::shared_ptr<Node<N>> tree, const arma::rowvec &point,
   const double one_dim_diff = point(depth) - tree->point(depth);
 
   const double one_dim_diff_squared = one_dim_diff * one_dim_diff;
-
+  tree->point.print("Considering this point");
   // Is this point sufficiently close to the target point? If so, add it
   if (distance <= radius_squared) {
+    tree->point.print("adding point");
     neighbors.push_back(tree->point);
   }
 
@@ -139,9 +151,17 @@ void RadiusQuery(std::shared_ptr<Node<N>> tree, const arma::rowvec &point,
   std::shared_ptr<Node<N>> next_node;
   std::shared_ptr<Node<N>> optional_node;
   if (one_dim_diff < 0) {
+    std::cout << "less \n";
     next_node = tree->left;
     optional_node = tree->right;
+    if (next_node) {
+      next_node->point.print("Next node point");
+    }
+    if (optional_node) {
+      optional_node->point.print("Optional next node");
+    }
   } else {
+    std::cout << "greater or equal \n";
     next_node = tree->right;
     optional_node = tree->left;
   }
@@ -150,6 +170,7 @@ void RadiusQuery(std::shared_ptr<Node<N>> tree, const arma::rowvec &point,
   RadiusQuery(next_node, point, radius_squared, next_depth, neighbors);
 
   if (one_dim_diff_squared <= radius_squared) {
+    std::cout << "Going down one dimm diff route" << std::endl;
     RadiusQuery(optional_node, point, radius_squared, next_depth, neighbors);
   }
 }
