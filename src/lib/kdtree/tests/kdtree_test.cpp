@@ -112,6 +112,25 @@ TEST(KdtreeTests, RadiusQueryMultiplePointsBigger) {
   EXPECT_TRUE(inVector(found_points, expected_fourth_point));
 }
 
+bool CompareSets(const std::vector<arma::rowvec> &a,
+                 const std::vector<arma::rowvec> &b) {
+  if (a.size() != b.size()) {
+    return false;
+  }
+  bool return_val = true;
+  for (size_t i = 0; i < a.size(); ++i) {
+    arma::rowvec p = a[i];
+    bool compare = false;
+    for (size_t j = 0; j < b.size(); ++j) {
+      if (arma::norm(p - b[j])) {
+        compare = true;
+      }
+    }
+    return_val &= compare;
+  }
+  return return_val;
+}
+
 TEST(KdTreeTest, RadiusQueryMultiplePointsBiggerIncludingPoint) {
 
   size_t num_points = 50;
@@ -146,7 +165,7 @@ TEST(KdTreeTest, RadiusQueryMultiplePointsBiggerIncludingPoint) {
   std::vector<arma::rowvec> naive;
   for (int i = 0; i < num_rows; ++i) {
     double dist = mathtools::computeDistance<1>(p1, points.row(i));
-    if (dist < .1 * .1) {
+    if (dist <= .1 * .1) {
       naive.push_back(points.row(i));
     }
   }
@@ -155,4 +174,8 @@ TEST(KdTreeTest, RadiusQueryMultiplePointsBiggerIncludingPoint) {
   for (const auto &p : found_points) {
     p.print("");
   }
+
+  EXPECT_EQ(naive.size(), found_points.size());
+
+  EXPECT_TRUE(CompareSets(found_points, naive));
 }
