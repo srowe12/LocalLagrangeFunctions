@@ -139,10 +139,6 @@ TEST(KdTreeTest, RadiusQueryMultiplePointsBiggerIncludingPoint) {
   auto points = mathtools::meshgrid<double>(xmesh, xmesh);
   arma::rowvec p1 = points.row(0);
   arma::rowvec p2 = points.row(1);
-  p1.print("p1");
-  p2.print("p2");
-  std::cout << "The computed distance between p1 and p2 is"
-            << mathtools::computeDistance<1>(p1, p2) << "\n";
   auto tree = BuildTree<2>(points);
   if (!tree) {
     std::cout << "Tree is nulL!" << std::endl;
@@ -150,16 +146,8 @@ TEST(KdTreeTest, RadiusQueryMultiplePointsBiggerIncludingPoint) {
   const double radius = .1 * .1;
 
   bool in_tree = search<2>(tree, p1);
-  if (in_tree) {
-    std::cout << "p1 found "
-              << "\n";
-  } else {
-    std::cout << "p1 not found\n";
-  }
 
   const auto found_points = RadiusQuery<2>(tree, p1, radius);
-
-  std::cout << "Size of found_oints " << found_points.size() << "\n";
 
   int num_rows = points.n_rows;
   std::vector<arma::rowvec> naive;
@@ -168,11 +156,6 @@ TEST(KdTreeTest, RadiusQueryMultiplePointsBiggerIncludingPoint) {
     if (dist <= .1 * .1) {
       naive.push_back(points.row(i));
     }
-  }
-  std::cout << "Size of naive " << naive.size() << "\n";
-
-  for (const auto &p : found_points) {
-    p.print("");
   }
 
   EXPECT_EQ(naive.size(), found_points.size());
