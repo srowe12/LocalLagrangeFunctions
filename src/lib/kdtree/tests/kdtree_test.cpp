@@ -131,7 +131,7 @@ bool CompareSets(const std::vector<arma::rowvec> &a,
   return return_val;
 }
 
-TEST(KdTreeTest, RadiusQueryMultiplePointsBiggerIncludingPoint) {
+TEST(KdTreeTests, RadiusQueryMultiplePointsBiggerIncludingPoint) {
 
   size_t num_points = 50;
 
