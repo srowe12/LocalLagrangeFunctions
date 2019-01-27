@@ -59,8 +59,6 @@ public:
 
     // Let's query the data via kdtree
     const arma::rowvec local_point = centers_.row(index);
-    local_point.print("The local point is");
-    std::cout << "The radius is " << radius_ << "\n";
     const std::vector<arma::rowvec> local_centers_v =
         RadiusQuery<Dimension>(kdtree_root_, local_point, radius_);
     // Stupidly make an arma mat from this
@@ -73,7 +71,6 @@ public:
     const arma::uvec local_indices{
         0}; // Dud, this needs to be eliminated! ///@todo srowe
     const size_t local_index = findLocalIndex(local_centers, index);
-    local_centers.print("The local centers are");
     LocalLagrange<Dimension> llf(local_centers, local_indices, local_index);
 
     return llf;
