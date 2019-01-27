@@ -27,28 +27,10 @@ public:
   using Point = bg::model::point<double, Dimension, bg::cs::cartesian>;
   using Value = std::pair<Point, unsigned>;
 
-  LocalLagrangeAssembler(const arma::mat &centers,
-                         const size_t num_local_centers, const double radius)
-      : centers_(centers), num_local_centers_(num_local_centers),
-        radius_(radius) {
-    assembleTree(); // Build up R Tree of nearest neighbor points so we can find
-                    // local indices
-  }
+  LocalLagrangeAssembler(const arma::mat &centers, const double radius)
+      : centers_(centers), radius_(radius),
+        kdtree_root_(BuildTree<Dimension>(centers_)) {}
 
-  arma::mat findLocalCenters(const arma::uvec &local_indices) {
-    const size_t num_local_centers = local_indices.size();
-
-    ///@todo srowe: Make this 2 a template parameter on dimension size, or
-    // derive it dynamically at runtime
-    arma::mat local_centers(num_local_centers, Dimension);
-
-    ///@todo srowe: Is this simply a submatrix view we can easily extract via
-    /// armadillo?
-    for (size_t i = 0; i < num_local_centers; ++i) {
-      local_centers.row(i) = centers_.row(local_indices(i));
-    }
-    return local_centers;
-  }
   unsigned int findLocalIndex(const arma::mat &local_centers,
                               unsigned int index) {
 
@@ -75,14 +57,10 @@ public:
   LocalLagrange<Dimension>
   generateLocalLagrangeFunction(const unsigned int index) {
 
-    /*
-    auto local_indices = getNearestNeighbors(index);
-    auto local_centers = findLocalCenters(local_indices);
-    unsigned int local_index = findLocalIndex(local_centers, index);
-    */
-
     // Let's query the data via kdtree
     const arma::rowvec local_point = centers_.row(index);
+    local_point.print("The local point is");
+    std::cout << "The radius is " << radius_ << "\n";
     const std::vector<arma::rowvec> local_centers_v =
         RadiusQuery<Dimension>(kdtree_root_, local_point, radius_);
     // Stupidly make an arma mat from this
@@ -95,6 +73,7 @@ public:
     const arma::uvec local_indices{
         0}; // Dud, this needs to be eliminated! ///@todo srowe
     const size_t local_index = findLocalIndex(local_centers, index);
+    local_centers.print("The local centers are");
     LocalLagrange<Dimension> llf(local_centers, local_indices, local_index);
 
     return llf;
@@ -104,38 +83,6 @@ public:
   double scale_factor() const { return scale_factor_; }
   double mesh_norm() const { return mesh_norm_; }
   double ball_radius() const { return ball_radius_; }
-
-  void assembleTree() {
-    const size_t num_centers = centers_.n_rows;
-
-    std::vector<Value> points;
-    points.reserve(num_centers);
-
-    for (size_t iter = 0; iter < num_centers; ++iter) {
-      Point mypoint(centers_(iter, 0), centers_(iter, 1));
-      points.emplace_back(std::move(mypoint), iter);
-    }
-    rt_.insert(points.begin(), points.end());
-
-    kdtree_root_ = BuildTree<Dimension>(centers_);
-  }
-
-  arma::uvec getNearestNeighbors(const unsigned int index) {
-    // querying.
-    Point center(centers_(index, 0), centers_(index, 1));
-    Value center_value(center, index);
-    std::vector<Value> neighbors;
-    rt_.query(bgi::nearest(center, num_local_centers_),
-              std::back_inserter(neighbors));
-
-    size_t num_neighbors = neighbors.size();
-    arma::uvec indices(num_neighbors);
-
-    for (size_t i = 0; i < num_neighbors; ++i) {
-      indices(i) = std::get<1>(neighbors[i]);
-    }
-    return indices;
-  }
 
   void setScale_factor(double scale_factor) {
     scale_factor_ = scale_factor;

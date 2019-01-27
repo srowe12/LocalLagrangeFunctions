@@ -19,7 +19,7 @@ TEST(IntegrationTest, BuildAnLLF) {
   std::vector<double> xmesh = mathtools::linspace<double>(0, 1, num_points);
   auto centers = mathtools::meshgrid<double>(xmesh, xmesh);
 
-  local_lagrange::LocalLagrangeAssembler<2> llc(centers, 200, 2e0);
+  local_lagrange::LocalLagrangeAssembler<2> llc(centers, 2e0);
 
   size_t iter = 1341;
   std::cout << "The iteration is " << iter << std::endl;
