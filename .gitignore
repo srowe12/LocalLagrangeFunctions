@@ -7,4 +7,4 @@ build
 *.err
 *.sublime-workspace
 *.sublime-project
-
+.DS_Store
