@@ -112,7 +112,6 @@ private:
   double radius_;
   double mesh_norm_;
   double ball_radius_;
-  bgi::rtree<Value, bgi::quadratic<16>> rt_; // R-tree for indexing points.
   std::shared_ptr<Node<Dimension>> kdtree_root_;
 };
 
