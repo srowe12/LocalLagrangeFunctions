@@ -1,4 +1,5 @@
 #include <armadillo>
+#include <memory>
 
 #include <math_utils/math_tools.h>
 
