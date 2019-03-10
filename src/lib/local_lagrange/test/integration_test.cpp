@@ -1,18 +1,16 @@
+#define CATCH_CONFIG_MAIN
+#include <catch2/catch.hpp>
+
 #include <local_lagrange/local_lagrange.h>
 #include <local_lagrange/local_lagrange_assembler.h>
 
-#include <boost/geometry.hpp>
-#include <boost/geometry/geometries/box.hpp>
-#include <boost/geometry/geometries/point.hpp>
-#include <gtest/gtest.h>
 #include <stdio.h>
 #include <string>
 #include <utility>
 
-#include <boost/geometry/index/rtree.hpp>
 #include <math_utils/math_tools.h>
 
-TEST(IntegrationTest, BuildAnLLF) {
+TEST_CASE( "IntegrationTestBuildAnLLF") {
 
   size_t num_points = 50;
 
@@ -27,7 +25,7 @@ TEST(IntegrationTest, BuildAnLLF) {
       llc.generateLocalLagrangeFunction(iter);
   arma::vec coefs = llf.coefficients();
   size_t num_coefs = coefs.n_rows - 3 - 1;
-  EXPECT_NEAR(0, accu(coefs.subvec(0, num_coefs)), 1e-11);
+  REQUIRE(accu(coefs.subvec(0, num_coefs)) == Approx(0.0).margin(1e-10));
   double x_eval = 0;
   double y_eval = 0;
   arma::vec coef_tps = coefs.subvec(0, num_coefs);
@@ -36,13 +34,6 @@ TEST(IntegrationTest, BuildAnLLF) {
     x_eval += coef_tps(eval_iter) * local_centers(eval_iter, 0);
     y_eval += coef_tps(eval_iter) * local_centers(eval_iter, 1);
   }
-  EXPECT_LT(x_eval, 1e-8);
-  EXPECT_LT(y_eval, 1e-8);
-}
-
-int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  int return_value = RUN_ALL_TESTS();
-
-  return return_value;
+  REQUIRE(x_eval == Approx(0.0).margin(1e-8));
+  REQUIRE(y_eval == Approx(0.0).margin(-8));
 }
