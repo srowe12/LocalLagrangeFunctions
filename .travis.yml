@@ -4,7 +4,6 @@ compiler:
 dist: xenial
 addons:
   apt:
-    update: true
     sources:
       - ubuntu-toolchain-r-test
     packages:
@@ -12,6 +11,7 @@ addons:
       - g++-7
       - libarmadillo-dev
 script: 
+  - cmake --version
   - mkdir build
   - cd build
   - CC=gcc-7 CXX=g++-7 cmake ..
