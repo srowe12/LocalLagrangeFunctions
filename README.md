@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/srowe12/LocalLagrangeFunctions.svg?branch=master)](https://travis-ci.com/srowe12/LocalLagrangeFunctions)
+
 # LocalLagrangeFunctions
 C++ Library for generation of Local Lagrange Functions
 
