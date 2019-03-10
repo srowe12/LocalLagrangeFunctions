@@ -1,9 +1,10 @@
-#include <gtest/gtest.h>
+#define CATCH_CONFIG_MAIN
+#include <catch2/catch.hpp>
 #include <kdtree/kdtree.h>
 
 #include <math_utils/math_tools.h>
 
-TEST(KdtreeTests, SimpleTest) {
+TEST_CASE(" SimpleTest") {
 
   arma::mat points{{0, 0}, {1, 1}, {0, 1}, {1, 0}, {.5, .5}};
 
@@ -14,15 +15,15 @@ TEST(KdtreeTests, SimpleTest) {
     arma::rowvec point = points.row(i);
     bool in_tree = search<2>(tree, point);
 
-    EXPECT_TRUE(in_tree);
+    REQUIRE(in_tree);
   }
 
   arma::mat bad_point{{.3, .3}};
   bool in_tree = search<2>(tree, bad_point);
-  EXPECT_FALSE(in_tree);
+  REQUIRE(!in_tree);
 }
 
-TEST(KdtreeTests, EvenNumberPointsBuildTree) {
+TEST_CASE(" EvenNumberPointsBuildTree") {
 
   arma::mat points{{0, 0}, {1, 1}, {0, 1}, {1, 0}};
 
@@ -32,15 +33,15 @@ TEST(KdtreeTests, EvenNumberPointsBuildTree) {
     arma::rowvec point = points.row(i);
     bool in_tree = search<2>(tree, point);
 
-    EXPECT_TRUE(in_tree);
+    REQUIRE(in_tree);
   }
 
   arma::mat bad_point{{.3, .3}};
   bool in_tree = search<2>(tree, bad_point);
-  EXPECT_FALSE(in_tree);
+  REQUIRE(!in_tree);
 }
 
-TEST(KdtreeTests, RadiusQueryOnePoint) {
+TEST_CASE(" RadiusQueryOnePoint") {
 
   arma::mat points{{0, 0}, {1, 1}, {0, 1}, {1, 0}, {.5, .5}};
 
@@ -51,11 +52,11 @@ TEST(KdtreeTests, RadiusQueryOnePoint) {
   const std::vector<arma::rowvec> found_points =
       RadiusQuery<2>(tree, point, radius);
 
-  ASSERT_EQ(1, found_points.size());
+  REQUIRE(1 == found_points.size());
 
   const double error = arma::norm(found_points[0] - point);
 
-  EXPECT_NEAR(0.0, error, 1e-8);
+  REQUIRE(error == Approx(0.0));
 }
 
 bool inVector(const std::vector<arma::rowvec> &points,
@@ -70,7 +71,7 @@ bool inVector(const std::vector<arma::rowvec> &points,
 
   return min < 1e-13;
 }
-TEST(KdtreeTests, RadiusQueryMultiplePoints) {
+TEST_CASE(" RadiusQueryMultiplePoints") {
   arma::mat points{{0, 0}, {1, 1}, {0, 1}, {1, 0}, {.5, .5}};
 
   auto tree = BuildTree<2>(points);
@@ -80,16 +81,16 @@ TEST(KdtreeTests, RadiusQueryMultiplePoints) {
   const std::vector<arma::rowvec> found_points =
       RadiusQuery<2>(tree, point, radius);
 
-  ASSERT_EQ(2, found_points.size());
+  REQUIRE(2 == found_points.size());
 
   arma::rowvec expected_first_point{.5, .5};
   arma::rowvec expected_second_point{1, 1};
 
-  EXPECT_TRUE(inVector(found_points, expected_first_point));
-  EXPECT_TRUE(inVector(found_points, expected_second_point));
+  REQUIRE(inVector(found_points, expected_first_point));
+  REQUIRE(inVector(found_points, expected_second_point));
 }
 
-TEST(KdtreeTests, RadiusQueryMultiplePointsBigger) {
+TEST_CASE(" RadiusQueryMultiplePointsBigger") {
   arma::mat points{{0, 0}, {1, 1}, {0, 1}, {1, 0}, {.5, .5}};
 
   auto tree = BuildTree<2>(points);
@@ -99,17 +100,17 @@ TEST(KdtreeTests, RadiusQueryMultiplePointsBigger) {
   const std::vector<arma::rowvec> found_points =
       RadiusQuery<2>(tree, point, radius);
 
-  ASSERT_EQ(4, found_points.size());
+  REQUIRE(4 == found_points.size());
 
   arma::rowvec expected_first_point{.5, .5};
   arma::rowvec expected_second_point{1, 1};
   arma::rowvec expected_third_point{1, 0};
   arma::rowvec expected_fourth_point{0, 1};
 
-  EXPECT_TRUE(inVector(found_points, expected_first_point));
-  EXPECT_TRUE(inVector(found_points, expected_second_point));
-  EXPECT_TRUE(inVector(found_points, expected_third_point));
-  EXPECT_TRUE(inVector(found_points, expected_fourth_point));
+  REQUIRE(inVector(found_points, expected_first_point));
+  REQUIRE(inVector(found_points, expected_second_point));
+  REQUIRE(inVector(found_points, expected_third_point));
+  REQUIRE(inVector(found_points, expected_fourth_point));
 }
 
 bool CompareSets(const std::vector<arma::rowvec> &a,
@@ -131,7 +132,7 @@ bool CompareSets(const std::vector<arma::rowvec> &a,
   return return_val;
 }
 
-TEST(KdTreeTests, RadiusQueryMultiplePointsBiggerIncludingPoint) {
+TEST_CASE("RadiusQueryMultiplePointsBiggerIncludingPoint") {
 
   size_t num_points = 50;
 
@@ -158,7 +159,7 @@ TEST(KdTreeTests, RadiusQueryMultiplePointsBiggerIncludingPoint) {
     }
   }
 
-  EXPECT_EQ(naive.size(), found_points.size());
+  REQUIRE(naive.size() == found_points.size());
 
-  EXPECT_TRUE(CompareSets(found_points, naive));
+  REQUIRE(CompareSets(found_points, naive));
 }
