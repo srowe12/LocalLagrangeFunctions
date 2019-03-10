@@ -1,7 +1,7 @@
 language: cpp
 compiler:
  - gcc
-dist: trusty
+dist: xenial
 addons:
   apt:
     update: true
