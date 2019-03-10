@@ -1,14 +1,17 @@
 cmake_minimum_required (VERSION 2.6)
 project (locallagrange)
 enable_testing()
-find_package(GTest REQUIRED)
-#May need to export GTEST_ROOT=googletest/build
-#and put the include directory in the build also. This is a hack.
+
 #For Armadillo, you may need to export CMAKE_PREFIX_PATH=$YOUR_ARMADILLO_ROOT
 find_package(Threads)
 find_package(OpenMP)
 find_package(LAPACK)
 
+#TODO: I think we need 
+find_package(Armadillo)
+
+# Export compile commands for VS Code
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Set a default build type if none was specified
 set(default_build_type "RelWithDebInfo")
@@ -26,8 +29,8 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-include_directories(${GTEST_INCLUDE_DIRS})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/tps)
 SET(CMAKE_CXX_STANDARD 17)
 SET(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -Wno-unused")
 if (OPENMP_FOUND)

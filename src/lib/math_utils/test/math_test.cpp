@@ -1,28 +1,29 @@
-#include <gtest/gtest.h>
+#define CATCH_CONFIG_MAIN
+#include <catch2/catch.hpp>
 #include <math_utils/math_tools.h>
 #include <stdio.h>
 
-TEST(MathTest, TestComputeLength) {
+TEST_CASE("TestComputeLength") {
   arma::rowvec::fixed<3> v{1, 2, 3};
   const auto length = mathtools::computeLengthSquared<3>(v);
-  EXPECT_DOUBLE_EQ(14, length);
+  REQUIRE(14 == length);
 }
 
-TEST(MathTest, TestComputeLengthOneDim) {
+TEST_CASE("TestComputeLengthOneDim") {
   arma::rowvec::fixed<1> v{-2};
   const auto length = mathtools::computeLengthSquared<1>(v);
-  EXPECT_DOUBLE_EQ(4, length);
+  REQUIRE(4 == length);
 }
 
-TEST(MathTest, TestComputeSquaredDistance) {
+TEST_CASE("TestComputeSquaredDistance") {
   arma::rowvec::fixed<3> v1{1, 2, 3};
   arma::rowvec::fixed<3> v2{-3, -1, -2};
 
   const auto squared_distance = mathtools::computeSquaredDistance<3>(v1, v2);
-  EXPECT_DOUBLE_EQ(4 * 4 + 3 * 3 + 5 * 5, squared_distance);
+  REQUIRE(4 * 4 + 3 * 3 + 5 * 5== squared_distance);
 }
 
-TEST(MathTest, ComputeDistanceRowVecs) {
+TEST_CASE( "ComputeDistanceRowVecs") {
 
   arma::mat points{{0, 1, 2}, {3, 4, 5}};
 
@@ -31,10 +32,10 @@ TEST(MathTest, ComputeDistanceRowVecs) {
   double dist = mathtools::computeDistance<2>(p1, p2);
 
   double expected_dist = 3 * 3 + 3 * 3 + 3 * 3;
-  EXPECT_EQ(expected_dist, dist);
+  REQUIRE(expected_dist == dist);
 }
 
-TEST(MathTest, ComputeDistance) {
+TEST_CASE( "ComputeDistance") {
 
   arma::mat points{{0, 1, 2}, {3, 4, 5}};
 
@@ -43,10 +44,10 @@ TEST(MathTest, ComputeDistance) {
   double dist = mathtools::computeDistance<2>(row, col, points);
 
   double expected_dist = 3 * 3 + 3 * 3 + 3 * 3;
-  EXPECT_EQ(expected_dist, dist);
+  REQUIRE(expected_dist ==dist);
 }
 
-TEST(MathTest, ComputePointDistance) {
+TEST_CASE("ComputePointDistance") {
 
   arma::mat points{{0, 1, 2}, {3, 4, 5}};
   arma::mat other_points{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
@@ -57,29 +58,29 @@ TEST(MathTest, ComputePointDistance) {
       mathtools::computePointDistance<2>(row, col, points, other_points);
 
   double expected_dist = 3 * 3 + 3 * 3 + 3 * 3;
-  EXPECT_EQ(expected_dist, dist);
+  REQUIRE(expected_dist == dist);
 }
 
-TEST(MathTest, LinspaceTest) {
+TEST_CASE("LinspaceTest") {
   double a = 0;
   double b = 1;
   unsigned int num_points = 50;
   std::vector<double> points = mathtools::linspace<double>(a, b, num_points);
-  EXPECT_EQ(num_points + 1, points.size());
-  EXPECT_DOUBLE_EQ(a, points[0]);
-  EXPECT_DOUBLE_EQ(b, points[points.size() - 1]);
+  REQUIRE(num_points + 1 == points.size());
+  REQUIRE(a == points[0]);
+  REQUIRE(b == points[points.size() - 1]);
 
   a = 3;
   b = 4;
   num_points = 23;
   std::vector<double> points_odd =
       mathtools::linspace<double>(a, b, num_points);
-  EXPECT_EQ(num_points + 1, points_odd.size());
-  EXPECT_DOUBLE_EQ(a, points_odd[0]);
-  EXPECT_DOUBLE_EQ(b, points_odd[num_points]);
+  REQUIRE(num_points + 1 == points_odd.size());
+  REQUIRE(a == points_odd[0]);
+  REQUIRE(b == points_odd[num_points]);
 }
 
-TEST(MathTest, MeshgridTest) {
+TEST_CASE("MeshgridTest") {
   double ax = 3;
   double bx = 4;
   size_t num_x = 4;
@@ -95,20 +96,20 @@ TEST(MathTest, MeshgridTest) {
   auto yvals = pointset.col(1);
 
   size_t num_vals = (num_x + 1) * (num_y + 1);
-  EXPECT_EQ(num_vals, xvals.n_rows);
-  EXPECT_EQ(num_vals, yvals.n_rows);
+  REQUIRE(num_vals== xvals.n_rows);
+  REQUIRE(num_vals== yvals.n_rows);
 
-  EXPECT_DOUBLE_EQ(xvals[0], ax);
-  EXPECT_DOUBLE_EQ(xvals[num_vals - 1], bx);
-  EXPECT_DOUBLE_EQ(xvals[3], 3.25);
-  EXPECT_DOUBLE_EQ(xvals[num_vals - 4], 3.75);
-  EXPECT_DOUBLE_EQ(yvals[0], ay);
-  EXPECT_DOUBLE_EQ(yvals[num_vals - 1], by);
-  EXPECT_DOUBLE_EQ(yvals[3], 1);
-  EXPECT_DOUBLE_EQ(yvals[num_vals - 4], 2);
+  REQUIRE(xvals[0]== ax);
+  REQUIRE(xvals[num_vals - 1]== bx);
+  REQUIRE(xvals[3]== 3.25);
+  REQUIRE(xvals[num_vals - 4]== 3.75);
+  REQUIRE(yvals[0]== ay);
+  REQUIRE(yvals[num_vals - 1]== by);
+  REQUIRE(yvals[3]== 1);
+  REQUIRE(yvals[num_vals - 4]== 2);
 }
 
-TEST(MathTest, WriteVectorTest) {
+TEST_CASE("WriteVectorTest") {
   std::vector<double> double_vec{3, 4, 5};
   mathtools::write_vector<double>(double_vec, "./double_vec.dat");
   std::ifstream infile("./double_vec.dat");
@@ -117,9 +118,9 @@ TEST(MathTest, WriteVectorTest) {
   while (infile >> read_value) {
     read_double_vec.push_back(read_value);
   }
-  ASSERT_EQ(double_vec.size(), read_double_vec.size());
+  REQUIRE(double_vec.size()== read_double_vec.size());
   for (size_t iter = 0; iter < double_vec.size(); iter++) {
-    EXPECT_EQ(double_vec[iter], read_double_vec[iter]);
+    REQUIRE(double_vec[iter]== read_double_vec[iter]);
   }
   for (auto i = read_double_vec.begin(); i != read_double_vec.end(); ++i) {
     std::cout << *i << " " << std::endl;
@@ -134,19 +135,13 @@ TEST(MathTest, WriteVectorTest) {
   while (std::getline(infile_string, read_string)) {
     read_string_vec.push_back(read_string);
   }
-  ASSERT_EQ(string_vec.size(), read_string_vec.size());
+  REQUIRE(string_vec.size()== read_string_vec.size());
   for (size_t iter = 0; iter < string_vec.size(); iter++) {
-    EXPECT_EQ(string_vec[iter], read_string_vec[iter]);
+    REQUIRE(string_vec[iter]== read_string_vec[iter]);
   }
   for (auto i = read_string_vec.begin(); i != read_string_vec.end(); ++i) {
     std::cout << *i << " " << std::endl;
   }
 }
 
-int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
 
-  int return_value = RUN_ALL_TESTS();
-
-  return return_value;
-}

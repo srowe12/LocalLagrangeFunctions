@@ -1,4 +1,5 @@
-#include <gtest/gtest.h>
+#define CATCH_CONFIG_MAIN
+#include <catch2/catch.hpp>
 #include <local_lagrange/local_lagrange.h>
 #include <local_lagrange/local_lagrange_assembler.h>
 #include <local_lagrange/local_lagrange_interpolant.h>
@@ -6,15 +7,13 @@
 
 using namespace local_lagrange;
 
-class LocalLagrangeInterpolantTests : public ::testing::Test {
-protected:
-  void SetUp() override {
+std::pair<arma::mat, arma::vec> setupPoints() {
     std::vector<double> one_dim_points =
         mathtools::linspace<double>(0.0, 1.0, 10.0);
-    points = mathtools::meshgrid(one_dim_points, one_dim_points);
+    arma::mat points = mathtools::meshgrid(one_dim_points, one_dim_points);
 
     // Choose a function sampled on the same point set
-    num_points = points.n_rows;
+    auto num_points = points.n_rows;
     arma::vec sample_function(num_points);
 
     for (size_t i = 0; i < num_points; ++i) {
@@ -22,29 +21,26 @@ protected:
           std::sin(2 * M_PI * points(i, 0)) * std::cos(2 * M_PI * points(i, 1));
     }
 
-    sampled_function = sample_function;
-  }
+    return std::make_pair(points, sample_function);
+}
 
-  size_t num_points;
-  arma::mat points;
-
-  arma::vec sampled_function;
-};
-
-TEST_F(LocalLagrangeInterpolantTests, TestSimpleInterpolant) {
+TEST_CASE("TestSimpleInterpolant") {
+  auto [points, sampled_function] = setupPoints();
   LocalLagrangeEnsemble<2> local_lagrange_ensemble =
       buildLocalLagrangeFunctions<2>(points, 2e0);
 
   // Now that we have the function sampled, let's test it out on the ensemble
   LocalLagrangeInterpolant<2> interpolant(local_lagrange_ensemble,
                                           sampled_function);
-
+  auto num_points = points.n_rows;
   for (size_t i = 0; i < num_points; ++i) {
-    EXPECT_NEAR(sampled_function(i), interpolant(points.row(i)), 1e-13);
+    REQUIRE(interpolant(points.row(i)) == Approx(sampled_function(i)).margin( 1e-13));
   }
 }
 
-TEST_F(LocalLagrangeInterpolantTests, OffgridPointEvaluation) {
+TEST_CASE("OffgridPointEvaluation") {
+    auto [points, sampled_function] = setupPoints();
+
   LocalLagrangeEnsemble<2> local_lagrange_ensemble =
       buildLocalLagrangeFunctions<2>(points, 2e0);
 
@@ -61,5 +57,5 @@ TEST_F(LocalLagrangeInterpolantTests, OffgridPointEvaluation) {
 
   // We only have 10 sample points in the x and y direction, so I don't expect
   // it to be incredibly accurate
-  EXPECT_NEAR(expected_value, value_at_point, 2e-3);
+  REQUIRE(value_at_point == Approx(expected_value).margin( 2e-3));
 }

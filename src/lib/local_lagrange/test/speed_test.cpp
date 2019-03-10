@@ -1,15 +1,10 @@
 #include <local_lagrange/local_lagrange_interpolant.h>
 
-#include <gtest/gtest.h>
 #include <math_utils/math_tools.h>
 #include <stdio.h>
 #include <string>
 #include <utility>
 
-#include <boost/geometry.hpp>
-#include <boost/geometry/geometries/box.hpp>
-#include <boost/geometry/geometries/point.hpp>
-#include <boost/geometry/index/rtree.hpp>
 
 #include <algorithm>
 #include <chrono>
