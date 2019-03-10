@@ -7,25 +7,13 @@
 #include <stdio.h>
 #include <vector>
 
-#include <boost/geometry.hpp>
-#include <boost/geometry/geometries/box.hpp>
-#include <boost/geometry/geometries/point.hpp>
-
-#include <boost/geometry/index/rtree.hpp>
-
 #include "local_lagrange.h"
 #include <kdtree/kdtree.h>
-
-// Namespace aliases for Boost
-namespace bg = boost::geometry;
-namespace bgi = boost::geometry::index;
 
 namespace local_lagrange {
 
 template <size_t Dimension = 2> class LocalLagrangeAssembler {
 public:
-  using Point = bg::model::point<double, Dimension, bg::cs::cartesian>;
-  using Value = std::pair<Point, unsigned>;
 
   LocalLagrangeAssembler(const arma::mat &centers, const double radius)
       : centers_(centers), radius_(radius),

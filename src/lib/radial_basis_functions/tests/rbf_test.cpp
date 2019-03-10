@@ -108,7 +108,7 @@ TEST_CASE("ConstructoGaussianInterpolantConstant") {
   REQUIRE(N == interpolated_data.n_rows);
 
   for (size_t i = 0; i < N; ++i) {
-    REQUIRE(interpolated_data(i) == Approx(sampled_data(i)).margin(1e-7));
+    REQUIRE(interpolated_data(i) == Approx(sampled_data(i)).margin(1e-13));
   }
 }
 
