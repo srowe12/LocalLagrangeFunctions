@@ -14,5 +14,5 @@ script:
   - cmake --version
   - mkdir build
   - cd build
-  - CC=gcc-7 CXX=g++-7 cmake ..
+  - CC=gcc-8 CXX=g++-8 cmake ..
   - make -j4
