@@ -4,12 +4,13 @@ compiler:
 dist: trusty
 addons:
   apt:
+    update: true
     sources:
       - ubuntu-toolchain-r-test
     packages:
       - gcc-7
       - g++-7
-      - armadillo
+      - libarmadillo-dev
 script: 
   - mkdir build
   - cd build
