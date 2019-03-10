@@ -1,3 +1,4 @@
+message("The CXX flags used are ${CMAKE_CXX_FLAGS}")
 set(kdtree_test_src kdtree_test.cpp )
 
 add_executable(kdtree_test ${kdtree_test_src})
