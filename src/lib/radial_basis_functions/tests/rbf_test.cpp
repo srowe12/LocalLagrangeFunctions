@@ -1,22 +1,23 @@
+#define CATCH_CONFIG_MAIN
+#include <catch2/catch.hpp>
 #include <rbf/gaussian.h>
 #include <rbf/interpolate.h>
-#include <gtest/gtest.h>
 
 #include <math_utils/math_tools.h> 
 
 using namespace rbf;
 
-TEST(RbfTests, GaussianTest) {
+TEST_CASE("GaussianTest") {
 
   Gaussian<double> gaussian(1.0);
 
   const double val = gaussian(4.0);
 
   const double expected_val = std::exp(-1.0 * 4.0);
-  EXPECT_NEAR(expected_val, val, 1e-12);
+  REQUIRE( val == Approx(expecte_val).margin( 1e-12));
 }
 
-TEST(RbfTest, ConstructoGaussianInterpolant) {
+TEST_CASE("ConstructoGaussianInterpolant") {
   // We build up a Gaussian interpolant for 2D data
   const double a = 0.0;
   const double b = 1.0;
@@ -41,14 +42,14 @@ TEST(RbfTest, ConstructoGaussianInterpolant) {
 
   const arma::vec interpolated_data = interpolant.interpolate(data);
 
-  ASSERT_EQ(N, interpolated_data.n_rows);
+  REQUIRE(N ==interpolated_data.n_rows);
 
   for (size_t i = 0; i < N; ++i) {
-    EXPECT_NEAR(sampled_data(i), interpolated_data(i), 1e-7);
+    REQUIRE( interpolated_data(i) == Approx(sampled_data(i)).margin(1e-7));
   }
 }
 
-TEST(RbfTest, ConstructoGaussianInterpolantBigger) {
+TEST_CASE("ConstructoGaussianInterpolantBigger") {
   // We build up a Gaussian interpolant for 2D data
   const double a = 0.0;
   const double b = 1.0;
@@ -72,14 +73,14 @@ TEST(RbfTest, ConstructoGaussianInterpolantBigger) {
 
   const arma::vec interpolated_data = interpolant.interpolate(data);
 
-  ASSERT_EQ(N, interpolated_data.n_rows);
+  REQUIRE(N == interpolated_data.n_rows);
 
   for (size_t i = 0; i < N ; ++i) {
-    EXPECT_NEAR(sampled_data(i), interpolated_data(i), 1e-7);
+    REQUIRE( interpolated_data(i) == Approx(sampled_data(i)).margin( 1e-7));
   }
 }
 
-TEST(RbfTest, ConstructoGaussianInterpolantConstant) {
+TEST_CASE("ConstructoGaussianInterpolantConstant") {
   // We build up a Gaussian interpolant for 2D data
   const double a = 0.0;
   const double b = 1.0;
@@ -104,17 +105,10 @@ TEST(RbfTest, ConstructoGaussianInterpolantConstant) {
 
   const arma::vec interpolated_data = interpolant.interpolate(data);
 
-  ASSERT_EQ(N, interpolated_data.n_rows);
+  REQUIRE(N == interpolated_data.n_rows);
 
   for (size_t i = 0; i < N; ++i) {
-    EXPECT_NEAR(sampled_data(i), interpolated_data(i), 1e-7);
+    REQUIRE(interpolated_data(i) == Approx(sampled_data(i)).margin(1e-7));
   }
 }
 
-int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-
-  int return_value = RUN_ALL_TESTS();
-
-  return return_value;
-}
