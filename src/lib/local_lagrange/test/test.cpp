@@ -38,10 +38,10 @@ TEST_CASE("SolveForCoefficients") {
 
   arma::mat interp_matrix = llf.assembleInterpolationMatrix(centers);
   arma::vec rhs = interp_matrix * coefs;
-  REQIORE(rhs(local_index) == Approx(1.0).margin( 1e-13);
+  REQUIRE(rhs(local_index) == Approx(1.0).margin( 1e-13));
   rhs(local_index) = 0;
   for (auto it = rhs.begin(); it != rhs.end(); ++it) {
-    EXPECT_NEAR(*it == Approx(0.0).margin( 1e-13);
+    REQUIRE(*it == Approx(0.0).margin( 1e-13));
   }
 }
 
@@ -82,8 +82,8 @@ TEST_CASE("BuildLocalLagrangeFunction") {
     x_eval += coef_tps(iter) * local_centers(iter, 0);
     y_eval += coef_tps(iter) * local_centers(iter, 1);
   }
-  REQUIRE(x_eval == Approx(0.0).margin(-12));
-  REQUIRE(y_eval == Approx(0.0).margin(1e-12);
+  REQUIRE(x_eval == Approx(0.0).margin(1e-12));
+  REQUIRE(y_eval == Approx(0.0).margin(1e-12));
 }
 
 TEST_CASE("EvaluateOperator") {
@@ -105,4 +105,6 @@ TEST_CASE("EvaluateOperator") {
   }
 }
 
-TEST_CASE("BuildAllLocalLagrangeFunctions") {}
+TEST_CASE("BuildAllLocalLagrangeFunctions") {
+  // TODO: Add test for all Lagrange functions
+}

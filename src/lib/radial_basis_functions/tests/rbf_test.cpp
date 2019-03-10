@@ -14,7 +14,7 @@ TEST_CASE("GaussianTest") {
   const double val = gaussian(4.0);
 
   const double expected_val = std::exp(-1.0 * 4.0);
-  REQUIRE( val == Approx(expecte_val).margin( 1e-12));
+  REQUIRE( val == Approx(expected_val).margin( 1e-12));
 }
 
 TEST_CASE("ConstructoGaussianInterpolant") {

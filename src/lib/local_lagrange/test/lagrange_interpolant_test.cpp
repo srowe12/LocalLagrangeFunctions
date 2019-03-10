@@ -13,7 +13,7 @@ std::pair<arma::mat, arma::vec> setupPoints() {
     arma::mat points = mathtools::meshgrid(one_dim_points, one_dim_points);
 
     // Choose a function sampled on the same point set
-    num_points = points.n_rows;
+    auto num_points = points.n_rows;
     arma::vec sample_function(num_points);
 
     for (size_t i = 0; i < num_points; ++i) {
@@ -21,7 +21,7 @@ std::pair<arma::mat, arma::vec> setupPoints() {
           std::sin(2 * M_PI * points(i, 0)) * std::cos(2 * M_PI * points(i, 1));
     }
 
-    return std::make_pair(points, sampled_function);
+    return std::make_pair(points, sample_function);
 }
 
 TEST_CASE("TestSimpleInterpolant") {
@@ -34,7 +34,7 @@ TEST_CASE("TestSimpleInterpolant") {
                                           sampled_function);
   auto num_points = points.n_rows;
   for (size_t i = 0; i < num_points; ++i) {
-    REQUIRE(interpolant(points.row(i)) == Approx(0.0).margin( 1e-13));
+    REQUIRE(interpolant(points.row(i)) == Approx(sampled_function(i)).margin( 1e-13));
   }
 }
 

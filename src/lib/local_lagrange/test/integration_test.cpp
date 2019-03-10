@@ -35,5 +35,5 @@ TEST_CASE( "IntegrationTestBuildAnLLF") {
     y_eval += coef_tps(eval_iter) * local_centers(eval_iter, 1);
   }
   REQUIRE(x_eval == Approx(0.0).margin(1e-8));
-  REQUIRE(y_eval == Approx(0.0).margin(-8));
+  REQUIRE(y_eval == Approx(0.0).margin(1e-8));
 }
