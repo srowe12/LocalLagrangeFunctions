@@ -5,12 +5,10 @@
 
 struct ThinPlateSpline {
 
-    // r represents distance between points squared
-    inline double operator()(const double dist_squared) {
-      return .5 * dist_squared * std::log(dist_squared);
-    }
-
+  // r represents distance between points squared
+  inline double operator()(const double dist_squared) const {
+    return .5 * dist_squared * std::log(dist_squared);
+  }
 };
 
 #endif
-

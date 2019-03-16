@@ -41,11 +41,10 @@ public:
     }
 
     ///@todo srowe; If we're doing the sums above, we might as well just do the
-    ///matrix multiplication as well
-    return distance_matrix * coefficients_; 
+    /// matrix multiplication as well
+    return distance_matrix * coefficients_;
+  }
 
-    }
-    
 private:
   void buildCoefficients(const arma::vec &sampled_data) {
     // Build Interpolation Matrix
@@ -69,14 +68,12 @@ private:
 
     // Solve linear system
     coefficients_ = arma::solve(interpolation_matrix, sampled_data);
+  }
 
-    }
-
-    Kernel kernel_;
-    arma::mat centers_;
-    arma::vec coefficients_;
+  Kernel kernel_;
+  arma::mat centers_;
+  arma::vec coefficients_;
 };
 } // end namespace rbf
 
 #endif // LOCAL_LAGRANGE_INTERPOLATE_H
-
