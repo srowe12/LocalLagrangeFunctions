@@ -1,1 +1,1 @@
-subdirs(lib)
+add_subdirectory(lib)
