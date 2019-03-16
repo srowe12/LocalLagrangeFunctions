@@ -2,12 +2,10 @@ cmake_minimum_required (VERSION 2.6)
 project (locallagrange)
 enable_testing()
 
-#For Armadillo, you may need to export CMAKE_PREFIX_PATH=$YOUR_ARMADILLO_ROOT
 find_package(Threads)
 find_package(OpenMP)
 find_package(LAPACK)
 
-#TODO: I think we need 
 find_package(Armadillo)
 
 # Export compile commands for VS Code
