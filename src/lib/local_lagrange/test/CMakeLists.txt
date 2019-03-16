@@ -1,4 +1,4 @@
-set(lagrange_test_src test.cpp )
+set(lagrange_test_src lagrange_test.cpp )
 
 add_executable(lagrange_test ${lagrange_test_src})
 include_directories( ${CMAKE_LIB_DIR}/math_utils/ ${math_hdr} ${ARMADILLO_INCLUDE_DIRS})
