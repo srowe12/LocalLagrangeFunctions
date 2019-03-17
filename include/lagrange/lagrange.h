@@ -46,8 +46,12 @@ arma::mat computeLagrangeFunctions(const arma::mat &centers,
   arma::mat interpolation_matrix =
       computeInterpolationMatrix<Dimension, Kernel>(centers, kernel);
   const int num_points = centers.n_rows;
-  arma::mat coefficients =
-      arma::solve(interpolation_matrix, arma::eye(num_points, num_points));
+  arma::mat rhs = arma::eye(num_points + 3, num_points + 3);
+  // Zero out the diagonal for the polynomial terms.
+  rhs(num_points, num_points) = 0;
+  rhs(num_points + 1, num_points + 1) = 0;
+  rhs(num_points + 2, num_points + 2) = 0;
+  arma::mat coefficients = arma::solve(interpolation_matrix, rhs);
 
   return coefficients;
 }

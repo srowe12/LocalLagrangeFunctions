@@ -19,11 +19,24 @@ TEST_CASE("ComputeAllLagrangeFunctions") {
   const arma::mat coefficients =
       computeLagrangeFunctions<2, ThinPlateSpline>(centers, tps);
 
-  arma::mat expected = arma::eye(centers.n_rows, centers.n_rows);
+  // Coefficients in each col j satisfy
+  // \sum_i=1^n coefs(i,j)*\Phi(\|x_k - x_i) + Poly(x_k)  = \delta_{k,j}
 
-  const arma::mat result = coefficients * centers;
+  // Build Up Interpolation Matrix
 
-  const double error = arma::abs(result - expected).max();
+  const arma::mat interpolation_matrix =
+      computeInterpolationMatrix<2, ThinPlateSpline>(centers, tps);
+
+  const arma::mat result = interpolation_matrix * coefficients;
+
+  arma::mat expected = arma::eye(centers.n_rows + 3, centers.n_rows + 3);
+
+  const size_t n = centers.n_rows;
+  expected(n, n) = 0.0;
+  expected(n + 1, n + 1) = 0.0;
+  expected(n + 2, n + 2) = 0.0;
+
+  double error = arma::abs(expected - result).max();
 
   REQUIRE(error <= 1e-12);
 }
