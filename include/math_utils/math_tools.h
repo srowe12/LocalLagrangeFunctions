@@ -11,8 +11,30 @@
 
 namespace mathtools {
 
+constexpr size_t factorial(size_t n) {
+  if (n == 0) {
+    return 1;
+  } else {
+    return n * factorial(n - 1);
+  }
+}
+
+/**
+ * @brief Computes the size of a polynomial basis of given degree in in
+ * Dimension variables
+ * @param[in] degree is the desired upper degree of the polynomials
+ *
+ * @return Returns the number of monomials needed to build the polynomial basis
+ */
+template <size_t Dimension>
+constexpr inline size_t computePolynomialBasis(const size_t degree) {
+  return factorial(Dimension + degree) /
+         (factorial(degree) * factorial(Dimension));
+}
+
 template <size_t Dimension, size_t Coordinate>
-constexpr inline double computeLengthSquared(const arma::rowvec::fixed<Dimension> &v) {
+constexpr inline double
+computeLengthSquared(const arma::rowvec::fixed<Dimension> &v) {
   if constexpr (Coordinate == 0) {
     return v(0) * v(0);
   } else {
@@ -22,7 +44,8 @@ constexpr inline double computeLengthSquared(const arma::rowvec::fixed<Dimension
 }
 
 template <size_t Dimension>
-constexpr inline double computeLengthSquared(const arma::rowvec::fixed<Dimension> &v) {
+constexpr inline double
+computeLengthSquared(const arma::rowvec::fixed<Dimension> &v) {
   if constexpr (Dimension > 1) {
     return computeLengthSquared<Dimension, Dimension - 1>(v);
   } else {
@@ -32,8 +55,9 @@ constexpr inline double computeLengthSquared(const arma::rowvec::fixed<Dimension
 
 ///@todo srowe: These need to be marked constexpr I think
 template <size_t Dimension, size_t Coordinate>
-constexpr inline double computeSquaredDistance(const arma::rowvec::fixed<Dimension> &v1,
-                                     const arma::rowvec::fixed<Dimension> &v2) {
+constexpr inline double
+computeSquaredDistance(const arma::rowvec::fixed<Dimension> &v1,
+                       const arma::rowvec::fixed<Dimension> &v2) {
 
   if constexpr (Coordinate == 0) {
     return (v1(0) - v2(0)) * (v1(0) - v2(0));
@@ -45,8 +69,9 @@ constexpr inline double computeSquaredDistance(const arma::rowvec::fixed<Dimensi
 }
 
 template <size_t Dimension>
-constexpr inline double computeSquaredDistance(const arma::rowvec::fixed<Dimension> &v1,
-                                     const arma::rowvec::fixed<Dimension> &v2) {
+constexpr inline double
+computeSquaredDistance(const arma::rowvec::fixed<Dimension> &v1,
+                       const arma::rowvec::fixed<Dimension> &v2) {
   if constexpr (Dimension > 1) {
     return computeSquaredDistance<Dimension, Dimension - 1>(v1, v2);
   } else {

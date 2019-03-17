@@ -3,6 +3,23 @@
 #include <math_utils/math_tools.h>
 #include <stdio.h>
 
+using namespace mathtools;
+TEST_CASE("FactorialTestZero") {
+  size_t n = 0;
+  REQUIRE(1 == factorial(n));
+}
+
+TEST_CASE("FactorialTestOne") { REQUIRE(1 == factorial(1)); }
+
+TEST_CASE("FactorialTestLarger") { REQUIRE(4 * 3 * 2 == factorial(4)); }
+
+TEST_CASE("PolynomialSize") {
+  size_t degree = 3;
+  // basis is 1  ,x ,y, x2, xy, y2, x3 ,x2y, xy2, y3
+  size_t size_poly_basis = computePolynomialBasis<2>(degree);
+  REQUIRE(10 == size_poly_basis);
+}
+
 TEST_CASE("TestComputeLength") {
   arma::rowvec::fixed<3> v{1, 2, 3};
   const auto length = mathtools::computeLengthSquared<3>(v);
@@ -20,10 +37,10 @@ TEST_CASE("TestComputeSquaredDistance") {
   arma::rowvec::fixed<3> v2{-3, -1, -2};
 
   const auto squared_distance = mathtools::computeSquaredDistance<3>(v1, v2);
-  REQUIRE(4 * 4 + 3 * 3 + 5 * 5== squared_distance);
+  REQUIRE(4 * 4 + 3 * 3 + 5 * 5 == squared_distance);
 }
 
-TEST_CASE( "ComputeDistanceRowVecs") {
+TEST_CASE("ComputeDistanceRowVecs") {
 
   arma::mat points{{0, 1, 2}, {3, 4, 5}};
 
@@ -35,7 +52,7 @@ TEST_CASE( "ComputeDistanceRowVecs") {
   REQUIRE(expected_dist == dist);
 }
 
-TEST_CASE( "ComputeDistance") {
+TEST_CASE("ComputeDistance") {
 
   arma::mat points{{0, 1, 2}, {3, 4, 5}};
 
@@ -44,7 +61,7 @@ TEST_CASE( "ComputeDistance") {
   double dist = mathtools::computeDistance<2>(row, col, points);
 
   double expected_dist = 3 * 3 + 3 * 3 + 3 * 3;
-  REQUIRE(expected_dist ==dist);
+  REQUIRE(expected_dist == dist);
 }
 
 TEST_CASE("ComputePointDistance") {
@@ -96,17 +113,17 @@ TEST_CASE("MeshgridTest") {
   auto yvals = pointset.col(1);
 
   size_t num_vals = (num_x + 1) * (num_y + 1);
-  REQUIRE(num_vals== xvals.n_rows);
-  REQUIRE(num_vals== yvals.n_rows);
+  REQUIRE(num_vals == xvals.n_rows);
+  REQUIRE(num_vals == yvals.n_rows);
 
-  REQUIRE(xvals[0]== ax);
-  REQUIRE(xvals[num_vals - 1]== bx);
-  REQUIRE(xvals[3]== 3.25);
-  REQUIRE(xvals[num_vals - 4]== 3.75);
-  REQUIRE(yvals[0]== ay);
-  REQUIRE(yvals[num_vals - 1]== by);
-  REQUIRE(yvals[3]== 1);
-  REQUIRE(yvals[num_vals - 4]== 2);
+  REQUIRE(xvals[0] == ax);
+  REQUIRE(xvals[num_vals - 1] == bx);
+  REQUIRE(xvals[3] == 3.25);
+  REQUIRE(xvals[num_vals - 4] == 3.75);
+  REQUIRE(yvals[0] == ay);
+  REQUIRE(yvals[num_vals - 1] == by);
+  REQUIRE(yvals[3] == 1);
+  REQUIRE(yvals[num_vals - 4] == 2);
 }
 
 TEST_CASE("WriteVectorTest") {
@@ -118,9 +135,9 @@ TEST_CASE("WriteVectorTest") {
   while (infile >> read_value) {
     read_double_vec.push_back(read_value);
   }
-  REQUIRE(double_vec.size()== read_double_vec.size());
+  REQUIRE(double_vec.size() == read_double_vec.size());
   for (size_t iter = 0; iter < double_vec.size(); iter++) {
-    REQUIRE(double_vec[iter]== read_double_vec[iter]);
+    REQUIRE(double_vec[iter] == read_double_vec[iter]);
   }
   for (auto i = read_double_vec.begin(); i != read_double_vec.end(); ++i) {
     std::cout << *i << " " << std::endl;
@@ -135,13 +152,11 @@ TEST_CASE("WriteVectorTest") {
   while (std::getline(infile_string, read_string)) {
     read_string_vec.push_back(read_string);
   }
-  REQUIRE(string_vec.size()== read_string_vec.size());
+  REQUIRE(string_vec.size() == read_string_vec.size());
   for (size_t iter = 0; iter < string_vec.size(); iter++) {
-    REQUIRE(string_vec[iter]== read_string_vec[iter]);
+    REQUIRE(string_vec[iter] == read_string_vec[iter]);
   }
   for (auto i = read_string_vec.begin(); i != read_string_vec.end(); ++i) {
     std::cout << *i << " " << std::endl;
   }
 }
-
-
