@@ -30,7 +30,7 @@ public:
     // function?
     Kernel kernel; ///@todo srowe: This is pretty derpy here
     const arma::mat interp_matrix =
-        assembleInterpolationMatrix(local_centers, kernel);
+        computeInterpolationMatrix<Dimension, Kernel>(local_centers, kernel);
     arma::vec rhs(local_centers.n_rows + 3, arma::fill::zeros);
     rhs(local_index) = 1;
     coefficients_ = arma::solve(interp_matrix, rhs);
@@ -39,8 +39,6 @@ public:
   unsigned int index() const { return index_; }
   arma::vec coefficients() const { return coefficients_; }
   arma::mat centers() const { return centers_; }
-
-  void setIndices(const arma::uvec &indices) { indices_ = indices; }
 
   // Evaluates the Local Lagrange Function at a collection of points
   // The LLF evaluates via \sum_{i=1}^N c_i \|p -x_i\|^2 log(\|p - x_i\|)
@@ -92,7 +90,7 @@ public:
 private:
   unsigned int index_;
   arma::mat centers_; ///@todo srowe: Each LLF maintaing its centers is probably
-                      ///overkill
+                      /// overkill
   arma::vec coefficients_;
 };
 
