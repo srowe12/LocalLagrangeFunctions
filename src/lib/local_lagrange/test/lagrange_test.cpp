@@ -3,7 +3,6 @@
 #include <local_lagrange/local_lagrange.h>
 #include <local_lagrange/local_lagrange_assembler.h>
 
-
 #include <stdio.h>
 #include <utility>
 
@@ -16,16 +15,18 @@ TEST_CASE("AssembleInterpolationMatrix") {
   arma::mat centers{{1, 0}, {2, 1}, {3, 2}};
 
   local_lagrange::LocalLagrange<2> llf(0); // Index 0.
-  arma::mat interp_matrix = llf.assembleInterpolationMatrix(centers);
+  ThinPlateSpline tps;
+  arma::mat interp_matrix =
+      computeInterpolationMatrix<2, ThinPlateSpline>(centers, tps);
   for (size_t i = 0; i < 6; i++) {
     REQUIRE(0.0 == interp_matrix(i, i));
   }
-  REQUIRE(3== arma::accu(interp_matrix.col(3)));
-  REQUIRE(6== arma::accu(interp_matrix.col(4)));
-  REQUIRE(3==arma::accu(interp_matrix.col(5)));
-  REQUIRE(3==arma::accu(interp_matrix.row(3)));
-  REQUIRE(6==arma::accu(interp_matrix.row(4)));
-  REQUIRE(3==arma::accu(interp_matrix.row(5)));
+  REQUIRE(3 == arma::accu(interp_matrix.col(3)));
+  REQUIRE(6 == arma::accu(interp_matrix.col(4)));
+  REQUIRE(3 == arma::accu(interp_matrix.col(5)));
+  REQUIRE(3 == arma::accu(interp_matrix.row(3)));
+  REQUIRE(6 == arma::accu(interp_matrix.row(4)));
+  REQUIRE(3 == arma::accu(interp_matrix.row(5)));
 }
 
 TEST_CASE("SolveForCoefficients") {
@@ -36,12 +37,14 @@ TEST_CASE("SolveForCoefficients") {
   llf.buildCoefficients(centers, 0);
   arma::vec coefs = llf.coefficients();
 
-  arma::mat interp_matrix = llf.assembleInterpolationMatrix(centers);
+  ThinPlateSpline tps;
+  arma::mat interp_matrix =
+      computeInterpolationMatrix<2, ThinPlateSpline>(centers, tps);
   arma::vec rhs = interp_matrix * coefs;
-  REQUIRE(rhs(local_index) == Approx(1.0).margin( 1e-13));
+  REQUIRE(rhs(local_index) == Approx(1.0).margin(1e-13));
   rhs(local_index) = 0;
   for (auto it = rhs.begin(); it != rhs.end(); ++it) {
-    REQUIRE(*it == Approx(0.0).margin( 1e-13));
+    REQUIRE(*it == Approx(0.0).margin(1e-13));
   }
 }
 
@@ -56,7 +59,7 @@ TEST_CASE("FindLocalIndexTest") {
   arma::mat local_centers{{2, 1}, {3, 2}};
 
   unsigned int local_index = llc.findLocalIndex(local_centers, index);
-  REQUIRE(1== local_index);
+  REQUIRE(1 == local_index);
 }
 
 TEST_CASE("BuildLocalLagrangeFunction") {
@@ -73,7 +76,7 @@ TEST_CASE("BuildLocalLagrangeFunction") {
       llc.generateLocalLagrangeFunction(index);
   arma::vec coefs = llf.coefficients();
   size_t num_coefs = coefs.n_rows - 3;
-  REQUIRE( accu(coefs.subvec(0, num_coefs - 1)) == Approx(0.0).margin(1e-10));
+  REQUIRE(accu(coefs.subvec(0, num_coefs - 1)) == Approx(0.0).margin(1e-10));
   double x_eval = 0;
   double y_eval = 0;
   arma::vec coef_tps = coefs.subvec(0, num_coefs - 1);
@@ -101,7 +104,8 @@ TEST_CASE("EvaluateOperator") {
     local_centers.row(i).print("The compared local center is");
     std::cout << " The i is " << i << " and the eval is "
               << llf(local_centers.row(i)) << "\n";
-    REQUIRE(llf(local_centers.row(i)) == Approx(expected_evaluations(i)).margin(1e-13));
+    REQUIRE(llf(local_centers.row(i)) ==
+            Approx(expected_evaluations(i)).margin(1e-13));
   }
 }
 
