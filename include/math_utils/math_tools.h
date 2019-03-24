@@ -11,6 +11,37 @@
 
 namespace mathtools {
 
+
+ 
+template <size_t Dimension>
+void findtuples(std::vector<std::array<size_t, Dimension>>& results, size_t sumtotal, const size_t position,
+                                                      std::array<size_t, Dimension> currarray) {
+  if ((sumtotal == 0) || (position == Dimension)) {
+    return;
+  }
+
+  auto nextarray = currarray; // copy it for downstream use
+
+  currarray[position] = sumtotal; // e.g. 2
+  for (size_t pos = position; pos < Dimension; ++pos) {
+    currarray[pos] = 0;
+  }
+  results.push_back(currarray);
+
+  nextarray[position] = sumtotal -1;
+  findtuples(results, sumtotal - 1, position + 1, nextarray);
+
+  // Now decrement by 1, place it into that position, and move down
+  
+}
+
+template <size_t Dimension>
+void findtuples(std::vector<std::array<size_t, Dimension>>& results, size_t sumtotal, const size_t position) {
+    std::array<size_t, Dimension> array;
+    array.fill(0);
+    findtuples<Dimension>(results, sumtotal, position, array);
+}
+
 constexpr size_t factorial(size_t n) {
   if (n == 0) {
     return 1;
