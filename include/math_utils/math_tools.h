@@ -35,12 +35,59 @@ void findtuples(std::vector<std::array<size_t, Dimension>>& results, size_t sumt
   
 }
 
+
+// Inefficient approach: Make a {0,1,...degree}^dimension cube and iterate through them all.
 template <size_t Dimension>
-void findtuples(std::vector<std::array<size_t, Dimension>>& results, size_t sumtotal, const size_t position) {
-    std::array<size_t, Dimension> array;
-    array.fill(0);
-    findtuples<Dimension>(results, sumtotal, position, array);
+using Tuple = std::array<int, Dimension>;
+
+template <size_t Dimension>
+int sum(const Tuple<Dimension>& t) {
+  int result = 0;
+  for (size_t i = 0 ; i < Dimension; ++i) {
+    result += t[i];
+  }
+  return result;
 }
+
+template <size_t Dimension, size_t current_dimension>
+void findtuples(const int degree, Tuple<Dimension> tuple, std::vector<Tuple<Dimension>>& results) {
+    // Recursively walk back
+
+
+    for (int i = 0; i < degree; ++i) {
+        // If we are in the last position, we are done, so test it
+        if constexpr (Dimension == (current_dimension-1)) {
+          tuple[current_dimension] = i;
+          if (sum(tuple) == degree) {
+            results.push_back(tuple);
+          }
+        }
+          else {
+          Tuple<Dimension> candidate = tuple; // copy the current result thats filled, and place an i in Dimension slot
+          candidate[current_dimension] = i; 
+
+          findtuples<Dimension, current_dimension +1>(degree, candidate, results);
+          }
+    }
+
+}
+
+
+
+template <size_t Dimension>
+std::vector<Tuple<Dimension>> findtuples(const int degree) {
+  std::vector<Tuple<Dimension>> results;
+  for (int i = 0; i < degree; ++i)
+  {
+      Tuple<Dimension> candidate;
+      candidate.fill(0);
+      candidate[0] = i;
+      findtuples<Dimension, 1>(degree, candidate, results);
+  }
+
+  return results;
+}
+
 
 constexpr size_t factorial(size_t n) {
   if (n == 0) {

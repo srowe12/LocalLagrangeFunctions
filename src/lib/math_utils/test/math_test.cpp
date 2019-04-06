@@ -163,8 +163,8 @@ TEST_CASE("WriteVectorTest") {
 
 TEST_CASE("FindTuplesDim3Degree1") {
    // Expect (1,0,0), (0,1,0), (0,0,1)
-   std::vector<std::array<size_t, 3>> results;
-   findtuples<3>(results, 1,0);
+
+   auto results = findtuples<3>(1);
 
    std::cout << "The size of results is " << results.size() << "\n";
    for (auto& v: results) {
