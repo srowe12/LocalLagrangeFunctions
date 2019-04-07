@@ -25,14 +25,7 @@ arma::mat computeInterpolationMatrix(const arma::mat &centers,
     }
   }
 
-  ///@todo srowe: We need to modify this for different dimensions
-  for (size_t row = 0; row < num_centers; ++row) {
-    interp_matrix(num_centers, row) = interp_matrix(row, num_centers) = 1;
-    interp_matrix(num_centers + 1, row) = interp_matrix(row, num_centers + 1) =
-        centers(row, 0);
-    interp_matrix(num_centers + 2, row) = interp_matrix(row, num_centers + 2) =
-        centers(row, 1);
-  }
+  mathtools::buildPolynomialMatrix<Dimension, 1>(interp_matrix, centers); ///@todo srowe: Degree should be computable
 
   return interp_matrix;
 }

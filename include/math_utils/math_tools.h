@@ -35,7 +35,6 @@ void findtuples(const int degree, Tuple<Dimension> tuple,
     if constexpr (Dimension-1 == (current_dimension)) {
       tuple[current_dimension] = i;
       if (sum(tuple) == degree) {
-        std::cout << "Calling Push Back with i = " << i << " and current dim  = " << current_dimension << "\n";
         results.push_back(tuple);
       }
     } else {
@@ -71,11 +70,7 @@ void applyPower(arma::mat& matrix, const arma::mat& points, const Tuple<Dimensio
   }
   
   const size_t num_points = points.n_rows;
-  std::cout << "Applying to column offset\n";
-  p.print("P");
-  matrix.print("Matrix");
   matrix(arma::span(0,num_points-1), offset) = p;
-    std::cout << "Applying to row offset\n";
 
   matrix(offset, arma::span(0, num_points-1)) = p.t();
 }
