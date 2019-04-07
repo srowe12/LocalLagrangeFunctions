@@ -219,11 +219,16 @@ TEST_CASE("TestApplyPower") {
   const arma::vec& y = points.col(1);
   const arma::vec& z = points.col(2);
   const arma::vec expected = x % y %y % z % z % z;
-  const arma::vec computed = matrix.col(4);
-
+  const arma::vec computed = matrix.col(4).rows(0,3);
+  const arma::vec computed_row = matrix.row(4).cols(0,3).t();
+  
   const double error = arma::abs(expected - computed).max();
   REQUIRE(error <= 1e-8);
 
+  const double row_error = arma::abs(expected - computed_row).max();
+  REQUIRE(error <= 1e-8);
+
+  matrix.print("Matrix");
 
 
 }

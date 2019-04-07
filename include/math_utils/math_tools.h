@@ -69,10 +69,15 @@ void applyPower(arma::mat& matrix, const arma::mat& points, const Tuple<Dimensio
   for (size_t i = 1; i < Dimension; ++i) {
     p %= arma::pow(points.col(i), powers[i]);
   }
-
+  
   const size_t num_points = points.n_rows;
-  matrix(arma::span(0,num_points), offset) = p;
-  matrix(offset, arma::span(0, num_points)) = p;
+  std::cout << "Applying to column offset\n";
+  p.print("P");
+  matrix.print("Matrix");
+  matrix(arma::span(0,num_points-1), offset) = p;
+    std::cout << "Applying to row offset\n";
+
+  matrix(offset, arma::span(0, num_points-1)) = p.t();
 }
 
 
