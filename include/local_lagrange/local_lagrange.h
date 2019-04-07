@@ -11,7 +11,7 @@
 
 namespace local_lagrange {
 
-template <size_t Dimension = 2, typename Kernel = ThinPlateSpline>
+template <size_t Dimension = 2, typename Kernel = ThinPlateSpline<Dimension>>
 class LocalLagrange {
 public:
   LocalLagrange(const arma::mat &local_centers, const unsigned int local_index)

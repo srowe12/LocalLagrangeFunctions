@@ -12,7 +12,7 @@
 
 namespace local_lagrange {
 
-template <size_t Dimension = 2, typename Kernel = ThinPlateSpline>
+template <size_t Dimension = 2, typename Kernel = ThinPlateSpline<Dimension>>
 class LocalLagrangeAssembler {
 public:
   LocalLagrangeAssembler(const arma::mat &centers, const double radius)

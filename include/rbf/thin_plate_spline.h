@@ -2,7 +2,6 @@
 #define LOCAL_LAGRANGE_THIN_PLATE_SPLINE_H
 
 #include <armadillo>
-#include <math_tools.h>
 
 template <size_t Dimenion = 2, size_t Degree = 1>
 struct ThinPlateSpline {

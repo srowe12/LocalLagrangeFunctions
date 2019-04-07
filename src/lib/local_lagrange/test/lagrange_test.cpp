@@ -15,9 +15,9 @@ TEST_CASE("AssembleInterpolationMatrix") {
   arma::mat centers{{1, 0}, {2, 1}, {3, 2}};
 
   local_lagrange::LocalLagrange<2> llf(0); // Index 0.
-  ThinPlateSpline tps;
+  ThinPlateSpline<2> tps;
   arma::mat interp_matrix =
-      computeInterpolationMatrix<2, ThinPlateSpline>(centers, tps);
+      computeInterpolationMatrix<2, ThinPlateSpline<2>>(centers, tps);
   for (size_t i = 0; i < 6; i++) {
     REQUIRE(0.0 == interp_matrix(i, i));
   }
@@ -37,9 +37,9 @@ TEST_CASE("SolveForCoefficients") {
   llf.buildCoefficients(centers, 0);
   arma::vec coefs = llf.coefficients();
 
-  ThinPlateSpline tps;
+  ThinPlateSpline<2> tps;
   arma::mat interp_matrix =
-      computeInterpolationMatrix<2, ThinPlateSpline>(centers, tps);
+      computeInterpolationMatrix<2, ThinPlateSpline<2>>(centers, tps);
   arma::vec rhs = interp_matrix * coefs;
   REQUIRE(rhs(local_index) == Approx(1.0).margin(1e-13));
   rhs(local_index) = 0;
