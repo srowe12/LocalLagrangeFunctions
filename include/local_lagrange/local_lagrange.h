@@ -17,6 +17,7 @@ public:
   LocalLagrange(const arma::mat &local_centers, const unsigned int local_index)
       : index_(local_index), centers_(local_centers) {
     buildCoefficients(centers_, index_);
+
   }
 
   explicit LocalLagrange(unsigned int index) : index_(index) {}
@@ -28,9 +29,8 @@ public:
                          unsigned int local_index) {
     // Work needed here perhaps. Is this bad generating interp_matrix in this
     // function?
-    Kernel kernel; ///@todo srowe: This is pretty derpy here
     const arma::mat interp_matrix =
-        computeInterpolationMatrix<Dimension, Kernel>(local_centers, kernel);
+        computeInterpolationMatrix<Dimension, Kernel>(local_centers, kernel_);
     arma::vec rhs(local_centers.n_rows + 3, arma::fill::zeros);
     rhs(local_index) = 1;
     coefficients_ = arma::solve(interp_matrix, rhs);
@@ -57,18 +57,9 @@ public:
 
       // Safety check for distance = 0
       if (distance != 0.0) {
-
-        ///@todo srowe: Make the Kernel a parameter
-
-        //.5 r^2 log(r^2) = r^2 log(r), this way we don't need square root
-        ///@todo srowe: Would it be faster to convert this to std::log1p and use
-        /// a conversion factor?
-        ///@todo srowe: REPLACE THIS WITH KERNEL!!!
-        result += coefficients_(i) * distance * std::log(distance);
+        result += coefficients_(i) *kernel_(distance);
       }
     }
-    result *= .5; // Multiply in the 1/2 for the 1/2 * r^2 log(r^2)
-    // With distance vector, compute r^2 log(r)
 
     // Polynomial is last three coefficients_ vector points; These are of the
     // form 1 + x + y
@@ -89,6 +80,7 @@ public:
 
 private:
   unsigned int index_;
+  Kernel kernel_;
   arma::mat centers_; ///@todo srowe: Each LLF maintaing its centers is probably
                       /// overkill
   arma::vec coefficients_;
