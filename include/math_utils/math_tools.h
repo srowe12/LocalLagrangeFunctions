@@ -11,81 +11,68 @@
 
 namespace mathtools {
 
-
- 
-template <size_t Dimension>
-void findtuples(std::vector<std::array<size_t, Dimension>>& results, size_t sumtotal, const size_t position,
-                                                      std::array<size_t, Dimension> currarray) {
-  if ((sumtotal == 0) || (position == Dimension)) {
-    return;
-  }
-
-  auto nextarray = currarray; // copy it for downstream use
-
-  currarray[position] = sumtotal; // e.g. 2
-  for (size_t pos = position; pos < Dimension; ++pos) {
-    currarray[pos] = 0;
-  }
-  results.push_back(currarray);
-
-  nextarray[position] = sumtotal -1;
-  findtuples(results, sumtotal - 1, position + 1, nextarray);
-
-  // Now decrement by 1, place it into that position, and move down
-  
-}
-
-
-// Inefficient approach: Make a {0,1,...degree}^dimension cube and iterate through them all.
+// Inefficient approach: Make a {0,1,...degree}^dimension cube and iterate
+// through them all.
 template <size_t Dimension>
 using Tuple = std::array<int, Dimension>;
 
-template <size_t Dimension>
-int sum(const Tuple<Dimension>& t) {
+template <size_t Dimension> 
+int sum(const Tuple<Dimension> &t) {
   int result = 0;
-  for (size_t i = 0 ; i < Dimension; ++i) {
+  for (size_t i = 0; i < Dimension; ++i) {
     result += t[i];
   }
   return result;
 }
 
 template <size_t Dimension, size_t current_dimension>
-void findtuples(const int degree, Tuple<Dimension> tuple, std::vector<Tuple<Dimension>>& results) {
-    // Recursively walk back
+void findtuples(const int degree, Tuple<Dimension> tuple,
+                std::vector<Tuple<Dimension>> &results) {
+  // Recursively walk back
 
+  for (int i = 0; i <= degree; ++i) {
+    // If we are in the last position, we are done, so test it
+    if constexpr (Dimension-1 == (current_dimension)) {
+      tuple[current_dimension] = i;
+      if (sum(tuple) == degree) {
+        std::cout << "Calling Push Back with i = " << i << " and current dim  = " << current_dimension << "\n";
+        results.push_back(tuple);
+      }
+    } else {
+      Tuple<Dimension> candidate = tuple; // copy the current result thats
+                                          // filled, and place an i in Dimension
+                                          // slot
+      candidate[current_dimension] = i;
 
-    for (int i = 0; i < degree; ++i) {
-        // If we are in the last position, we are done, so test it
-        if constexpr (Dimension == (current_dimension-1)) {
-          tuple[current_dimension] = i;
-          if (sum(tuple) == degree) {
-            results.push_back(tuple);
-          }
-        }
-          else {
-          Tuple<Dimension> candidate = tuple; // copy the current result thats filled, and place an i in Dimension slot
-          candidate[current_dimension] = i; 
-
-          findtuples<Dimension, current_dimension +1>(degree, candidate, results);
-          }
+      findtuples<Dimension, current_dimension + 1>(degree, candidate, results);
     }
-
+  }
 }
-
-
 
 template <size_t Dimension>
 std::vector<Tuple<Dimension>> findtuples(const int degree) {
   std::vector<Tuple<Dimension>> results;
-  for (int i = 0; i < degree; ++i)
-  {
-      Tuple<Dimension> candidate;
-      candidate.fill(0);
-      candidate[0] = i;
-      findtuples<Dimension, 1>(degree, candidate, results);
+  for (int i = 0; i <= degree; ++i) {
+    Tuple<Dimension> candidate;
+    candidate.fill(0);
+    candidate[0] = i;
+    findtuples<Dimension, 1>(degree, candidate, results);
   }
 
   return results;
+}
+
+template <size_t Dimension=2>
+void applyPower(arma::mat& matrix, const arma::mat& points, const Tuple<Dimension>& powers, const int offset ) {
+  // Naively form the powers, refactor later as this is super inefficient
+  arma::vec p = arma::pow(points.col(0), powers[0]);
+  for (size_t i = 1; i < Dimension; ++i) {
+    p %= arma::pow(points.col(i), powers[i]);
+  }
+
+  const size_t num_points = points.n_rows;
+  matrix(arma::span(0,num_points), offset) = p;
+  matrix(offset, arma::span(0, num_points)) = p;
 }
 
 
@@ -109,6 +96,44 @@ constexpr inline size_t computePolynomialBasis(const size_t degree) {
   return factorial(Dimension + degree) /
          (factorial(degree) * factorial(Dimension));
 }
+
+
+template <size_t Dimension =2, int Degree =1>
+void buildPolynomialMatrix(arma::mat& interpolation_matrix, const arma::mat& points)  {
+    const size_t num_rows = interpolation_matrix.n_rows;
+    const size_t num_cols = interpolation_matrix.n_cols;
+    const size_t num_points = points.n_rows;
+
+    const size_t num_polynomials = computePolynomialBasis<Dimension>(Degree);
+
+    // Interpolation matrix for conditionally positive definite kernel is of the form [A P; P^T 0]. 
+    // Our goal is to fill in the matrix P. This form depends on the degree and basis;
+    // The form of the matrix will in ascending order from lowest degree constant polynomial
+    // to highest degree
+
+    if (num_points + num_polynomials != num_rows) {
+      throw std::runtime_error("The size of the interpolation matrix is not equal to the number of points plus number of polynomial terms");
+    }
+
+    interpolation_matrix(arma::span(0,num_points-1), num_points) = 1.0; 
+    int column_offset = num_points;
+    for (size_t degree = 0; degree < Degree; ++degree) {
+        // Given dim, and deg, find all subsets (x_1,x_2...x_dim) sums to deg
+        // For degree we have x^i*y^degree-i
+        // xyz poly would be for degree 1: x y z
+        // For degree 2 we would have x^2 + xy + xz + y^2 + yz + z^2;
+        // For degree 3 we would have x^3 + x^2 y + x^2z + x
+        // (3,0,0), (2,1,0), (2,0,1), (1,2,0), (1,1,1), (0,3,0), (0,2,1), (0,1,2), (0,)
+        auto exponent_tuples = findtuples<Dimension>(degree);
+
+        // Loop over exponent tuples placing them into the matrix
+        for (const auto& tuple: exponent_tuples) {
+          applyPower(interpolation_matrix, points, tuple, column_offset);
+          ++column_offset;
+        }
+    }
+  }
+
 
 template <size_t Dimension, size_t Coordinate>
 constexpr inline double

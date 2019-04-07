@@ -161,6 +161,20 @@ TEST_CASE("WriteVectorTest") {
   }
 }
 
+template <size_t Dimension>
+bool compareTuples(const std::vector<Tuple<Dimension>>& t1, const std::vector<Tuple<Dimension>>& t2) {
+    if (t1.size() != t2.size()) {
+      return false;
+    }
+
+    bool success = true;
+    for (const auto& i : t1) {
+      // Check that i is in t2;
+      success &= std::find(t2.begin(), t2.end(), i);
+    }
+
+    return success;
+}
 TEST_CASE("FindTuplesDim3Degree1") {
    // Expect (1,0,0), (0,1,0), (0,0,1)
 
@@ -170,10 +184,46 @@ TEST_CASE("FindTuplesDim3Degree1") {
    for (auto& v: results) {
      std::cout << v[0] << " , " << v[1] << " , " << v[2] << "\n";
    }
+   Tuple<3> expected0 = {0,0,1};
+   Tuple<3> expected1 = {0, 1, 0};
+   Tuple<3> expected2 = {1, 0, 0};
+
+   std::vector<Tuple<3>> expected{expected0, expected1, expected2};
+   REQUIRE(expected == results);
+   REQUIRE(results.size() == 3); 
 }
 
 TEST_CASE("FindtuplesDim3Degree2") {
   // Expect (2,0,0), (1,1,0), (1,0,1), (0,2,0), (0,1,1), (0,2,0)
+   auto results = findtuples<3>(2);
+   std::vector<Tuple<3>> expected{ {0,0,2},{0, 1, 1},  {0, 2, 0},  {1,0,1}, {1,1,0},  {2, 0, 0}};
+   std::cout << "The size of results is " << results.size() << "\n";
+   for (auto& v: results) {
+     std::cout << v[0] << " , " << v[1] << " , " << v[2] << "\n";
+   }
+
+   REQUIRE(results.size() == expected.size());
+   REQUIRE(expected == results);
+
+}
+
+TEST_CASE("TestApplyPower") {
+  Tuple<3> tuple{1,2,3};
+
+  const arma::mat points{{2 , 2, 2}, {1, 1, 1}, { 1, 2, 3}, {2 ,3 , 1}};
+  int num_polys = 1;
+  arma::mat matrix = arma::zeros(4+num_polys, 4 + num_polys);
+  int offset = 4;
+  applyPower<3>(matrix, points, tuple, offset);
+  const arma::vec& x = points.col(0);
+  const arma::vec& y = points.col(1);
+  const arma::vec& z = points.col(2);
+  const arma::vec expected = x % y %y % z % z % z;
+  const arma::vec computed = matrix.col(4);
+
+  const double error = arma::abs(expected - computed).max();
+  REQUIRE(error <= 1e-8);
+
 
 
 }
