@@ -11,8 +11,138 @@
 
 namespace mathtools {
 
+// Inefficient approach: Make a {0,1,...degree}^dimension cube and iterate
+// through them all.
+template <size_t Dimension>
+using Tuple = std::array<int, Dimension>;
+
+template <size_t Dimension> 
+int sum(const Tuple<Dimension> &t) {
+  int result = 0;
+  for (size_t i = 0; i < Dimension; ++i) {
+    result += t[i];
+  }
+  return result;
+}
+
+template <size_t Dimension, size_t current_dimension>
+void findtuples(const int degree, Tuple<Dimension> tuple,
+                std::vector<Tuple<Dimension>> &results) {
+  // Recursively walk back
+
+  for (int i = 0; i <= degree; ++i) {
+    // If we are in the last position, we are done, so test it
+    if constexpr (Dimension-1 == (current_dimension)) {
+      tuple[current_dimension] = i;
+      if (sum(tuple) == degree) {
+        std::cout << "Calling Push Back with i = " << i << " and current dim  = " << current_dimension << "\n";
+        results.push_back(tuple);
+      }
+    } else {
+      Tuple<Dimension> candidate = tuple; // copy the current result thats
+                                          // filled, and place an i in Dimension
+                                          // slot
+      candidate[current_dimension] = i;
+
+      findtuples<Dimension, current_dimension + 1>(degree, candidate, results);
+    }
+  }
+}
+
+template <size_t Dimension>
+std::vector<Tuple<Dimension>> findtuples(const int degree) {
+  std::vector<Tuple<Dimension>> results;
+  for (int i = 0; i <= degree; ++i) {
+    Tuple<Dimension> candidate;
+    candidate.fill(0);
+    candidate[0] = i;
+    findtuples<Dimension, 1>(degree, candidate, results);
+  }
+
+  return results;
+}
+
+template <size_t Dimension=2>
+void applyPower(arma::mat& matrix, const arma::mat& points, const Tuple<Dimension>& powers, const int offset ) {
+  // Naively form the powers, refactor later as this is super inefficient
+  arma::vec p = arma::pow(points.col(0), powers[0]);
+  for (size_t i = 1; i < Dimension; ++i) {
+    p %= arma::pow(points.col(i), powers[i]);
+  }
+  
+  const size_t num_points = points.n_rows;
+  std::cout << "Applying to column offset\n";
+  p.print("P");
+  matrix.print("Matrix");
+  matrix(arma::span(0,num_points-1), offset) = p;
+    std::cout << "Applying to row offset\n";
+
+  matrix(offset, arma::span(0, num_points-1)) = p.t();
+}
+
+
+constexpr size_t factorial(size_t n) {
+  if (n == 0) {
+    return 1;
+  } else {
+    return n * factorial(n - 1);
+  }
+}
+
+/**
+ * @brief Computes the size of a polynomial basis of given degree in in
+ * Dimension variables
+ * @param[in] degree is the desired upper degree of the polynomials
+ *
+ * @return Returns the number of monomials needed to build the polynomial basis
+ */
+template <size_t Dimension>
+constexpr inline size_t computePolynomialBasis(const size_t degree) {
+  return factorial(Dimension + degree) /
+         (factorial(degree) * factorial(Dimension));
+}
+
+
+template <size_t Dimension =2, int Degree =1>
+void buildPolynomialMatrix(arma::mat& interpolation_matrix, const arma::mat& points)  {
+    const size_t num_rows = interpolation_matrix.n_rows;
+    const size_t num_cols = interpolation_matrix.n_cols;
+    const size_t num_points = points.n_rows;
+
+    const size_t num_polynomials = computePolynomialBasis<Dimension>(Degree);
+
+    // Interpolation matrix for conditionally positive definite kernel is of the form [A P; P^T 0]. 
+    // Our goal is to fill in the matrix P. This form depends on the degree and basis;
+    // The form of the matrix will in ascending order from lowest degree constant polynomial
+    // to highest degree
+
+    if (num_points + num_polynomials != num_rows) {
+      throw std::runtime_error("The size of the interpolation matrix is not equal to the number of points plus number of polynomial terms");
+    }
+
+    interpolation_matrix(arma::span(0,num_points-1), num_points) = 1.0; 
+    int column_offset = num_points;
+    for (size_t degree = 0; degree < Degree; ++degree) {
+        // Given dim, and deg, find all subsets (x_1,x_2...x_dim) sums to deg
+        // For degree we have x^i*y^degree-i
+        // xyz poly would be for degree 1: x y z
+        // For degree 2 we would have x^2 + xy + xz + y^2 + yz + z^2;
+        // For degree 3 we would have x^3 + x^2 y + x^2z + x
+        // (3,0,0), (2,1,0), (2,0,1), (1,2,0), (1,1,1), (0,3,0), (0,2,1), (0,1,2), (0,)
+        auto exponent_tuples = findtuples<Dimension>(degree);
+
+        // Loop over exponent tuples placing them into the matrix
+        for (const auto& tuple: exponent_tuples) {
+          applyPower(interpolation_matrix, points, tuple, column_offset);
+          ++column_offset;
+        }
+    }
+  }
+
+
 template <size_t Dimension, size_t Coordinate>
-constexpr inline double computeLengthSquared(const arma::rowvec::fixed<Dimension> &v) {
+constexpr inline double
+computeLengthSquared(const arma::rowvec::fixed<Dimension> &v) {
   if constexpr (Coordinate == 0) {
     return v(0) * v(0);
   } else {
@@ -22,7 +152,8 @@ constexpr inline double computeLengthSquared(const arma::rowvec::fixed<Dimension
 }
 
 template <size_t Dimension>
-constexpr inline double computeLengthSquared(const arma::rowvec::fixed<Dimension> &v) {
+constexpr inline double
+computeLengthSquared(const arma::rowvec::fixed<Dimension> &v) {
   if constexpr (Dimension > 1) {
     return computeLengthSquared<Dimension, Dimension - 1>(v);
   } else {
@@ -32,8 +163,9 @@ constexpr inline double computeLengthSquared(const arma::rowvec::fixed<Dimension
 
 ///@todo srowe: These need to be marked constexpr I think
 template <size_t Dimension, size_t Coordinate>
-constexpr inline double computeSquaredDistance(const arma::rowvec::fixed<Dimension> &v1,
-                                     const arma::rowvec::fixed<Dimension> &v2) {
+constexpr inline double
+computeSquaredDistance(const arma::rowvec::fixed<Dimension> &v1,
+                       const arma::rowvec::fixed<Dimension> &v2) {
 
   if constexpr (Coordinate == 0) {
     return (v1(0) - v2(0)) * (v1(0) - v2(0));
@@ -45,8 +177,9 @@ constexpr inline double computeSquaredDistance(const arma::rowvec::fixed<Dimensi
 }
 
 template <size_t Dimension>
-constexpr inline double computeSquaredDistance(const arma::rowvec::fixed<Dimension> &v1,
-                                     const arma::rowvec::fixed<Dimension> &v2) {
+constexpr inline double
+computeSquaredDistance(const arma::rowvec::fixed<Dimension> &v1,
+                       const arma::rowvec::fixed<Dimension> &v2) {
   if constexpr (Dimension > 1) {
     return computeSquaredDistance<Dimension, Dimension - 1>(v1, v2);
   } else {

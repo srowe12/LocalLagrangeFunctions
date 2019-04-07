@@ -7,7 +7,8 @@
 namespace local_lagrange {
 // Provides ability to interpolate functions with a collection of Local Lagrange
 // Functions
-template <size_t Dimension> class LocalLagrangeEnsemble {
+template <size_t Dimension, typename Kernel = ThinPlateSpline<Dimension>>
+class LocalLagrangeEnsemble {
 public:
   LocalLagrangeEnsemble(const std::vector<LocalLagrange<Dimension>> &llfs)
       : m_llfs(llfs) {}
@@ -24,7 +25,7 @@ private:
       m_llfs; // Vector of Local Lagrange Functions
 };
 
-template <size_t Dimension>
+template <size_t Dimension, typename Kernel = ThinPlateSpline<Dimension>>
 LocalLagrangeEnsemble<Dimension>
 buildLocalLagrangeFunctions(const arma::mat &centers, const double radius) {
   // Instantiate a LocalLagrangeAssembler
@@ -42,7 +43,8 @@ buildLocalLagrangeFunctions(const arma::mat &centers, const double radius) {
   return LocalLagrangeEnsemble<Dimension>(llfs);
 }
 
-template <size_t Dimension> class LocalLagrangeInterpolant {
+template <size_t Dimension, typename Kernel = ThinPlateSpline<Dimension>>
+class LocalLagrangeInterpolant {
 public:
   LocalLagrangeInterpolant(const LocalLagrangeEnsemble<Dimension> &lle,
                            const arma::vec &sampled_function)
@@ -68,7 +70,7 @@ public:
   }
 
 private:
-  std::vector<LocalLagrange<Dimension>> m_llfs;
+  std::vector<LocalLagrange<Dimension, Kernel>> m_llfs;
   arma::vec m_sampled_function;
 };
 

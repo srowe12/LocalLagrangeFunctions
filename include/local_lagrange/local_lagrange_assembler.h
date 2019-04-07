@@ -12,9 +12,9 @@
 
 namespace local_lagrange {
 
-template <size_t Dimension = 2> class LocalLagrangeAssembler {
+template <size_t Dimension = 2, typename Kernel = ThinPlateSpline<Dimension>>
+class LocalLagrangeAssembler {
 public:
-
   LocalLagrangeAssembler(const arma::mat &centers, const double radius)
       : centers_(centers), radius_(radius),
         kdtree_root_(BuildTree<Dimension>(centers_)) {}
@@ -56,10 +56,9 @@ public:
       local_centers.row(i) = row;
       ++i;
     }
-    const arma::uvec local_indices{
-        0}; // Dud, this needs to be eliminated! ///@todo srowe
+
     const size_t local_index = findLocalIndex(local_centers, index);
-    LocalLagrange<Dimension> llf(local_centers, local_indices, local_index);
+    LocalLagrange<Dimension, Kernel> llf(local_centers, local_index);
 
     return llf;
   }

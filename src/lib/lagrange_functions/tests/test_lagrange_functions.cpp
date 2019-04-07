@@ -15,9 +15,9 @@ TEST_CASE("ComputeAllLagrangeFunctions") {
   const std::vector<double> xmesh =
       mathtools::linspace<double>(0, 1, num_points);
   const arma::mat centers = mathtools::meshgrid<double>(xmesh, xmesh);
-  const ThinPlateSpline tps;
+  const ThinPlateSpline<2> tps;
   const arma::mat coefficients =
-      computeLagrangeFunctions<2, ThinPlateSpline>(centers, tps);
+      computeLagrangeFunctions<2, ThinPlateSpline<2>>(centers, tps);
 
   // Coefficients in each col j satisfy
   // \sum_i=1^n coefs(i,j)*\Phi(\|x_k - x_i) + Poly(x_k)  = \delta_{k,j}
@@ -25,7 +25,7 @@ TEST_CASE("ComputeAllLagrangeFunctions") {
   // Build Up Interpolation Matrix
 
   const arma::mat interpolation_matrix =
-      computeInterpolationMatrix<2, ThinPlateSpline>(centers, tps);
+      computeInterpolationMatrix<2, ThinPlateSpline<2>>(centers, tps);
 
   const arma::mat result = interpolation_matrix * coefficients;
 

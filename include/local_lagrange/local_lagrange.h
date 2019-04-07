@@ -6,67 +6,39 @@
 #include <math_utils/math_tools.h>
 #include <vector>
 
+#include <lagrange/lagrange.h>
+#include <rbf/thin_plate_spline.h>
+
 namespace local_lagrange {
 
-template <size_t Dimension = 2> class LocalLagrange {
+template <size_t Dimension = 2, typename Kernel = ThinPlateSpline<Dimension>>
+class LocalLagrange {
 public:
-  LocalLagrange(const arma::mat &local_centers, const arma::uvec &local_indices,
-                const unsigned int local_index)
-      : index_(local_index), indices_(local_indices), centers_(local_centers) {
+  LocalLagrange(const arma::mat &local_centers, const unsigned int local_index)
+      : index_(local_index), centers_(local_centers) {
     buildCoefficients(centers_, index_);
+
   }
 
   explicit LocalLagrange(unsigned int index) : index_(index) {}
 
-  LocalLagrange(unsigned int index, const arma::uvec &indices,
-                const arma::vec &coefs)
-      : index_(index), indices_(indices), coefficients_(coefs) {}
-
-  arma::mat assembleInterpolationMatrix(const arma::mat &local_centers) {
-    // Initialize matrix to all zeros.
-
-    const size_t n_rows = local_centers.n_rows;
-    arma::mat interp_matrix(n_rows + 3, n_rows + 3, arma::fill::zeros);
-    double dist = 0.0;
-    size_t num_centers = local_centers.n_rows;
-    for (size_t row = 0; row < num_centers; ++row) {
-      for (size_t col = row + 1; col < num_centers; ++col) {
-        dist =
-            mathtools::computeDistance<Dimension - 1>(row, col, local_centers);
-
-        interp_matrix(row, col) = interp_matrix(col, row) =
-            .5 * dist * std::log(dist);
-      }
-    }
-
-    ///@todo srowe: We need to modify this for different dimensions
-    for (size_t row = 0; row < num_centers; ++row) {
-      interp_matrix(num_centers, row) = interp_matrix(row, num_centers) = 1;
-      interp_matrix(num_centers + 1, row) =
-          interp_matrix(row, num_centers + 1) = local_centers(row, 0);
-      interp_matrix(num_centers + 2, row) =
-          interp_matrix(row, num_centers + 2) = local_centers(row, 1);
-    }
-
-    return interp_matrix;
-  }
+  LocalLagrange(unsigned int index, const arma::vec &coefs)
+      : index_(index), coefficients_(coefs) {}
 
   void buildCoefficients(const arma::mat &local_centers,
                          unsigned int local_index) {
     // Work needed here perhaps. Is this bad generating interp_matrix in this
     // function?
-    const arma::mat interp_matrix = assembleInterpolationMatrix(local_centers);
+    const arma::mat interp_matrix =
+        computeInterpolationMatrix<Dimension, Kernel>(local_centers, kernel_);
     arma::vec rhs(local_centers.n_rows + 3, arma::fill::zeros);
     rhs(local_index) = 1;
     coefficients_ = arma::solve(interp_matrix, rhs);
   }
 
   unsigned int index() const { return index_; }
-  arma::uvec indices() const { return indices_; }
   arma::vec coefficients() const { return coefficients_; }
   arma::mat centers() const { return centers_; }
-
-  void setIndices(const arma::uvec &indices) { indices_ = indices; }
 
   // Evaluates the Local Lagrange Function at a collection of points
   // The LLF evaluates via \sum_{i=1}^N c_i \|p -x_i\|^2 log(\|p - x_i\|)
@@ -85,17 +57,9 @@ public:
 
       // Safety check for distance = 0
       if (distance != 0.0) {
-
-        ///@todo srowe: Make the Kernel a parameter
-
-        //.5 r^2 log(r^2) = r^2 log(r), this way we don't need square root
-        ///@todo srowe: Would it be faster to convert this to std::log1p and use
-        /// a conversion factor?
-        result += coefficients_(i) * distance * std::log(distance);
+        result += coefficients_(i) *kernel_(distance);
       }
     }
-    result *= .5; // Multiply in the 1/2 for the 1/2 * r^2 log(r^2)
-    // With distance vector, compute r^2 log(r)
 
     // Polynomial is last three coefficients_ vector points; These are of the
     // form 1 + x + y
@@ -116,8 +80,9 @@ public:
 
 private:
   unsigned int index_;
-  arma::uvec indices_;
-  arma::mat centers_;
+  Kernel kernel_;
+  arma::mat centers_; ///@todo srowe: Each LLF maintaing its centers is probably
+                      /// overkill
   arma::vec coefficients_;
 };
 
