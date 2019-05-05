@@ -68,7 +68,7 @@ void applyPower(arma::mat& matrix, const arma::mat& points, const Tuple<Dimensio
   for (size_t i = 1; i < Dimension; ++i) {
     p %= arma::pow(points.col(i), powers[i]);
   }
-  
+  p.print("The applied polynomial power is ");
   const size_t num_points = points.n_rows;
   matrix(arma::span(0,num_points-1), offset) = p;
 
@@ -114,10 +114,10 @@ void buildPolynomialMatrix(arma::mat& interpolation_matrix, const arma::mat& poi
     if (num_points + num_polynomials != num_rows) {
       throw std::runtime_error("The size of the interpolation matrix is not equal to the number of points plus number of polynomial terms");
     }
-
-    interpolation_matrix(arma::span(0,num_points-1), num_points) = 1.0; 
+    interpolation_matrix(arma::span(0,num_points-1), num_points).fill(1.0); 
     int column_offset = num_points;
-    for (size_t degree = 0; degree < Degree; ++degree) {
+    ///@todo srowe: Should degree = 0 or 1? Should we shift colun offset?
+    for (size_t degree = 0; degree <= Degree; ++degree) {
         // Given dim, and deg, find all subsets (x_1,x_2...x_dim) sums to deg
         // For degree we have x^i*y^degree-i
         // xyz poly would be for degree 1: x y z
@@ -125,9 +125,10 @@ void buildPolynomialMatrix(arma::mat& interpolation_matrix, const arma::mat& poi
         // For degree 3 we would have x^3 + x^2 y + x^2z + x
         // (3,0,0), (2,1,0), (2,0,1), (1,2,0), (1,1,1), (0,3,0), (0,2,1), (0,1,2), (0,)
         auto exponent_tuples = findtuples<Dimension>(degree);
-
+        std::cout << "On Degree " << degree << "\n";
         // Loop over exponent tuples placing them into the matrix
         for (const auto& tuple: exponent_tuples) {
+          std::cout << "Applying power to column " << column_offset << "\n";
           applyPower(interpolation_matrix, points, tuple, column_offset);
           ++column_offset;
         }

@@ -156,9 +156,7 @@ TEST_CASE("WriteVectorTest") {
   for (size_t iter = 0; iter < string_vec.size(); iter++) {
     REQUIRE(string_vec[iter] == read_string_vec[iter]);
   }
-  for (auto i = read_string_vec.begin(); i != read_string_vec.end(); ++i) {
-    std::cout << *i << " " << std::endl;
-  }
+
 }
 
 template <size_t Dimension>
@@ -180,7 +178,6 @@ TEST_CASE("FindTuplesDim3Degree1") {
 
    auto results = findtuples<3>(1);
 
-   std::cout << "The size of results is " << results.size() << "\n";
    for (auto& v: results) {
      std::cout << v[0] << " , " << v[1] << " , " << v[2] << "\n";
    }
@@ -197,7 +194,6 @@ TEST_CASE("FindtuplesDim3Degree2") {
   // Expect (2,0,0), (1,1,0), (1,0,1), (0,2,0), (0,1,1), (0,2,0)
    auto results = findtuples<3>(2);
    std::vector<Tuple<3>> expected{ {0,0,2},{0, 1, 1},  {0, 2, 0},  {1,0,1}, {1,1,0},  {2, 0, 0}};
-   std::cout << "The size of results is " << results.size() << "\n";
    for (auto& v: results) {
      std::cout << v[0] << " , " << v[1] << " , " << v[2] << "\n";
    }
@@ -228,7 +224,40 @@ TEST_CASE("TestApplyPower") {
   const double row_error = arma::abs(expected - computed_row).max();
   REQUIRE(error <= 1e-8);
 
+}
+
+TEST_CASE("TestBuildPolyMatrix") {
+
+  const arma::mat points{{2 , 2, 2}, {1, 1, 1}, { 1, 2, 3}, {2 ,3 , 1}};
+  points.print("The points are");
+  int num_polys = 4;
+  arma::mat matrix = arma::zeros(4+num_polys, 4 + num_polys);
+  int offset = 4;
+  buildPolynomialMatrix<3,1>(matrix, points);
+  const arma::vec& z = points.col(0);
+  const arma::vec& y = points.col(1);
+  const arma::vec& x = points.col(2);
+
   matrix.print("Matrix");
 
+  arma::mat expected = arma::ones(4,4);
+  expected.col(1) = x;
+  expected.col(2) = y;
+  expected.col(3) = z;
+
+  // Form should be [A P ; P^T 0] so check P upper part should match expected
+  const arma::mat upper_right = matrix(arma::span(0,3), arma::span(4,7));
+  expected.print("Expected");
+  upper_right.print("Upper right");
+  const double error = (expected - upper_right).max();
+  REQUIRE(error <= 1e-8);
+  // Then we shoudl have P^T in bottom left
+  const arma::mat lower_left = matrix(arma::span(4,7), arma::span(0,3));
+  const double error_lower_left = (expected.t() - lower_left).max();
+  REQUIRE(error_lower_left <= 1e-8);
+  // Then zeros in lower right block
+  const arma::mat lower_right = matrix(arma::span(4,7), arma::span(4,7));
+  const double error_lower_right = (lower_right).max();
+  REQUIRE(error_lower_right <= 1e-8);
 
 }
