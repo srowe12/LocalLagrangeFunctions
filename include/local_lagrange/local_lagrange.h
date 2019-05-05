@@ -67,9 +67,10 @@ public:
 
     ///@todo srowe: Make the polynomials more generic
     ///@todo srowe: Those constant values are incorrect for dimension != 2
-    double polynomial_term =
-        coefficients_(n_rows - 3) +
-        arma::dot(coefficients_.rows(n_rows - 2, n_rows - 1), point);
+    double polynomial_term = coefficients_(n_rows - 3) + point(0)*coefficients_(n_rows-1) + point(1)*coefficients_(n_rows -2);
+    //double polynomial_term =
+    //   coefficients_(n_rows - 3) +
+    //    arma::dot(coefficients_.rows(n_rows - 2, n_rows - 1), point);
 
     return result + polynomial_term;
   }
@@ -84,6 +85,7 @@ private:
   arma::mat centers_; ///@todo srowe: Each LLF maintaing its centers is probably
                       /// overkill
   arma::vec coefficients_;
+  //Tuples polynomial_powers_;
 };
 
 } // namespace local_lagrange

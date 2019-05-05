@@ -34,6 +34,7 @@ TEST_CASE("TestSimpleInterpolant") {
                                           sampled_function);
   auto num_points = points.n_rows;
   for (size_t i = 0; i < num_points; ++i) {
+    std::cout << "i = " << i << " interpolant() " << interpolant(points.row(i)) << " and sampled is " << sampled_function(i) << "\n";
     REQUIRE(interpolant(points.row(i)) == Approx(sampled_function(i)).margin( 1e-13));
   }
 }

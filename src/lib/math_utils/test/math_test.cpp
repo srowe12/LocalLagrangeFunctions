@@ -249,3 +249,8 @@ TEST_CASE("TestBuildPolyMatrix") {
   const double error_lower_right = (lower_right).max();
   REQUIRE(error_lower_right <= 1e-8);
 }
+
+TEST_CASE("TestApplyPolynomial") {
+  polynomialApply();
+  REQUIRE(1==0); ///@todo srowe: Later when I get a chance, fix up and implement and add it where this is needed elsewhere in code
+}
