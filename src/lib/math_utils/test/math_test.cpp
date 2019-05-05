@@ -156,108 +156,96 @@ TEST_CASE("WriteVectorTest") {
   for (size_t iter = 0; iter < string_vec.size(); iter++) {
     REQUIRE(string_vec[iter] == read_string_vec[iter]);
   }
-
 }
 
 template <size_t Dimension>
-bool compareTuples(const std::vector<Tuple<Dimension>>& t1, const std::vector<Tuple<Dimension>>& t2) {
-    if (t1.size() != t2.size()) {
-      return false;
-    }
+bool compareTuples(const std::vector<Tuple<Dimension>> &t1,
+                   const std::vector<Tuple<Dimension>> &t2) {
+  if (t1.size() != t2.size()) {
+    return false;
+  }
 
-    bool success = true;
-    for (const auto& i : t1) {
-      // Check that i is in t2;
-      success &= std::find(t2.begin(), t2.end(), i);
-    }
+  bool success = true;
+  for (const auto &i : t1) {
+    // Check that i is in t2;
+    success &= std::find(t2.begin(), t2.end(), i);
+  }
 
-    return success;
+  return success;
 }
 TEST_CASE("FindTuplesDim3Degree1") {
-   // Expect (1,0,0), (0,1,0), (0,0,1)
+  // Expect (1,0,0), (0,1,0), (0,0,1)
 
-   auto results = findtuples<3>(1);
+  auto results = findtuples<3>(1);
 
-   for (auto& v: results) {
-     std::cout << v[0] << " , " << v[1] << " , " << v[2] << "\n";
-   }
-   Tuple<3> expected0 = {0,0,1};
-   Tuple<3> expected1 = {0, 1, 0};
-   Tuple<3> expected2 = {1, 0, 0};
+  Tuple<3> expected0 = {0, 0, 1};
+  Tuple<3> expected1 = {0, 1, 0};
+  Tuple<3> expected2 = {1, 0, 0};
 
-   std::vector<Tuple<3>> expected{expected0, expected1, expected2};
-   REQUIRE(expected == results);
-   REQUIRE(results.size() == 3); 
+  std::vector<Tuple<3>> expected{expected0, expected1, expected2};
+  REQUIRE(expected == results);
+  REQUIRE(results.size() == 3);
 }
 
 TEST_CASE("FindtuplesDim3Degree2") {
   // Expect (2,0,0), (1,1,0), (1,0,1), (0,2,0), (0,1,1), (0,2,0)
-   auto results = findtuples<3>(2);
-   std::vector<Tuple<3>> expected{ {0,0,2},{0, 1, 1},  {0, 2, 0},  {1,0,1}, {1,1,0},  {2, 0, 0}};
-   for (auto& v: results) {
-     std::cout << v[0] << " , " << v[1] << " , " << v[2] << "\n";
-   }
+  auto results = findtuples<3>(2);
+  std::vector<Tuple<3>> expected{{0, 0, 2}, {0, 1, 1}, {0, 2, 0},
+                                 {1, 0, 1}, {1, 1, 0}, {2, 0, 0}};
 
-   REQUIRE(results.size() == expected.size());
-   REQUIRE(expected == results);
-
+  REQUIRE(results.size() == expected.size());
+  REQUIRE(expected == results);
 }
 
 TEST_CASE("TestApplyPower") {
-  Tuple<3> tuple{1,2,3};
+  Tuple<3> tuple{1, 2, 3};
 
-  const arma::mat points{{2 , 2, 2}, {1, 1, 1}, { 1, 2, 3}, {2 ,3 , 1}};
+  const arma::mat points{{2, 2, 2}, {1, 1, 1}, {1, 2, 3}, {2, 3, 1}};
   int num_polys = 1;
-  arma::mat matrix = arma::zeros(4+num_polys, 4 + num_polys);
+  arma::mat matrix = arma::zeros(4 + num_polys, 4 + num_polys);
   int offset = 4;
   applyPower<3>(matrix, points, tuple, offset);
-  const arma::vec& x = points.col(0);
-  const arma::vec& y = points.col(1);
-  const arma::vec& z = points.col(2);
-  const arma::vec expected = x % y %y % z % z % z;
-  const arma::vec computed = matrix.col(4).rows(0,3);
-  const arma::vec computed_row = matrix.row(4).cols(0,3).t();
-  
+  const arma::vec &x = points.col(0);
+  const arma::vec &y = points.col(1);
+  const arma::vec &z = points.col(2);
+  const arma::vec expected = x % y % y % z % z % z;
+  const arma::vec computed = matrix.col(4).rows(0, 3);
+  const arma::vec computed_row = matrix.row(4).cols(0, 3).t();
+
   const double error = arma::abs(expected - computed).max();
   REQUIRE(error <= 1e-8);
 
   const double row_error = arma::abs(expected - computed_row).max();
   REQUIRE(error <= 1e-8);
-
 }
 
 TEST_CASE("TestBuildPolyMatrix") {
 
-  const arma::mat points{{2 , 2, 2}, {1, 1, 1}, { 1, 2, 3}, {2 ,3 , 1}};
-  points.print("The points are");
+  const arma::mat points{{2, 2, 2}, {1, 1, 1}, {1, 2, 3}, {2, 3, 1}};
   int num_polys = 4;
-  arma::mat matrix = arma::zeros(4+num_polys, 4 + num_polys);
+  arma::mat matrix = arma::zeros(4 + num_polys, 4 + num_polys);
   int offset = 4;
-  buildPolynomialMatrix<3,1>(matrix, points);
-  const arma::vec& z = points.col(0);
-  const arma::vec& y = points.col(1);
-  const arma::vec& x = points.col(2);
+  buildPolynomialMatrix<3, 1>(matrix, points);
+  const arma::vec &z = points.col(0);
+  const arma::vec &y = points.col(1);
+  const arma::vec &x = points.col(2);
 
-  matrix.print("Matrix");
-
-  arma::mat expected = arma::ones(4,4);
+  arma::mat expected = arma::ones(4, 4);
   expected.col(1) = x;
   expected.col(2) = y;
   expected.col(3) = z;
 
   // Form should be [A P ; P^T 0] so check P upper part should match expected
-  const arma::mat upper_right = matrix(arma::span(0,3), arma::span(4,7));
-  expected.print("Expected");
-  upper_right.print("Upper right");
+  const arma::mat upper_right = matrix(arma::span(0, 3), arma::span(4, 7));
+
   const double error = (expected - upper_right).max();
   REQUIRE(error <= 1e-8);
   // Then we shoudl have P^T in bottom left
-  const arma::mat lower_left = matrix(arma::span(4,7), arma::span(0,3));
+  const arma::mat lower_left = matrix(arma::span(4, 7), arma::span(0, 3));
   const double error_lower_left = (expected.t() - lower_left).max();
   REQUIRE(error_lower_left <= 1e-8);
   // Then zeros in lower right block
-  const arma::mat lower_right = matrix(arma::span(4,7), arma::span(4,7));
+  const arma::mat lower_right = matrix(arma::span(4, 7), arma::span(4, 7));
   const double error_lower_right = (lower_right).max();
   REQUIRE(error_lower_right <= 1e-8);
-
 }
