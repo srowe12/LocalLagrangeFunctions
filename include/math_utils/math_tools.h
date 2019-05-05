@@ -113,7 +113,7 @@ void buildPolynomialMatrix(arma::mat &interpolation_matrix,
                              "equal to the number of points plus number of "
                              "polynomial terms");
   }
-  interpolation_matrix(arma::span(0, num_points - 1), num_points).fill(1.0);
+
   int column_offset = num_points;
   ///@todo srowe: Should degree = 0 or 1? Should we shift colun offset?
   for (size_t degree = 0; degree <= Degree; ++degree) {
@@ -124,7 +124,7 @@ void buildPolynomialMatrix(arma::mat &interpolation_matrix,
     // For degree 3 we would have x^3 + x^2 y + x^2z + x
     // (3,0,0), (2,1,0), (2,0,1), (1,2,0), (1,1,1), (0,3,0), (0,2,1), (0,1,2),
     // (0,)
-    auto exponent_tuples = findtuples<Dimension>(degree);
+    const auto exponent_tuples = findtuples<Dimension>(degree);
     // Loop over exponent tuples placing them into the matrix
     for (const auto &tuple : exponent_tuples) {
       applyPower(interpolation_matrix, points, tuple, column_offset);
