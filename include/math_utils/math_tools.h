@@ -74,18 +74,21 @@ void applyPower(arma::mat &matrix, const arma::mat &points,
 }
 
 template <size_t Dimension = 2>
-double polynomialApply(const arma::vec& coefficients, const arma::rowvec::fixed<Dimension>& p,
-                     const std::vector<Tuple<Dimension>>& powers, const int offset) {
+double polynomialApply(const arma::vec &coefficients,
+                       const arma::rowvec::fixed<Dimension> &p,
+                       const std::vector<Tuple<Dimension>> &powers) {
   // Naively form the powers, refactor later as this is super inefficient
   double result = 0.0;
-  for (const auto& tuple : powers) {
-      double local_result = 1.0;
-      for (size_t i = 1; i < Dimension; ++i) {
-          local_result *= arma::pow(p.col(i), tuple[i]);
-      }
-      result += local_result;
+  int count = 0;
+  for (const auto &tuple : powers) {
+    double local_result = 1.0;
+    for (size_t i = 0; i < Dimension; ++i) {
+      local_result *= std::pow(p(i), tuple[i]);
+    }
+    result += coefficients(count) * local_result;
+    ++count;
   }
-  
+
   return result;
 }
 

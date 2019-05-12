@@ -251,6 +251,28 @@ TEST_CASE("TestBuildPolyMatrix") {
 }
 
 TEST_CASE("TestApplyPolynomial") {
-  polynomialApply();
-  REQUIRE(1==0); ///@todo srowe: Later when I get a chance, fix up and implement and add it where this is needed elsewhere in code
+
+  // Define polynomial 1 + 2x + 3y + 4z + 5x^2 + 6xy + 7xz + 8y^2 + 9yz + 10z^2;
+  // x = 1, y =2 , z = 3;
+  // p(x,y,z) = 1 + 2 + 6 + 12 + 5 + 12 + 21 + 32 + 54 + 90
+
+  std::vector<Tuple<3>> powers;
+  powers.push_back({0, 0, 0});
+  powers.push_back({1, 0, 0});
+  powers.push_back({0, 1, 0});
+  powers.push_back({0, 0, 1});
+  powers.push_back({2, 0, 0});
+  powers.push_back({1, 1, 0});
+  powers.push_back({1, 0, 1});
+  powers.push_back({0, 2, 0});
+  powers.push_back({0, 1, 1});
+  powers.push_back({0, 0, 2});
+
+  arma::vec coefficients{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  arma::rowvec::fixed<3> p{1, 2, 3};
+  const double result = polynomialApply<3>(coefficients, p, powers);
+  const double expected = 1 + 2 + 6 + 12 + 5 + 12 + 21 + 32 + 54 + 90;
+  REQUIRE(expected == result); ///@todo srowe: Later when I get a chance, fix up
+                               ///and implement and add it where this is needed
+                               ///elsewhere in code
 }
