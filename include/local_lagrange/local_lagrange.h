@@ -10,13 +10,14 @@
 #include <rbf/thin_plate_spline.h>
 
 namespace local_lagrange {
+
 template <size_t Dimension = 2, typename Kernel = ThinPlateSpline<Dimension>>
 class LocalLagrange {
 public:
   LocalLagrange(const arma::mat &local_centers, const unsigned int local_index)
       : index_(local_index), centers_(local_centers) {
 
-    int degree = 2; ///@todo srowe: Make this flexible
+    int degree = 1; ///@todo srowe: Make this flexible
     polynomial_powers_ = mathtools::findtuples<Dimension>(degree);
     buildCoefficients(centers_, index_);
   }
@@ -66,16 +67,11 @@ public:
     // form 1 + x + y
     const auto n_rows = coefficients_.n_rows;
 
-    ///@todo srowe: Make the polynomials more generic
-    ///@todo srowe: Those constant values are incorrect for dimension != 2
-    double polynomial_term = coefficients_(n_rows - 3) +
-                             point(0) * coefficients_(n_rows - 1) +
-                             point(1) * coefficients_(n_rows - 2);
-    // double polynomial_term =
-    //   coefficients_(n_rows - 3) +
-    //    arma::dot(coefficients_.rows(n_rows - 2, n_rows - 1), point);
+    double polynomial_term = mathtools::polynomialApply<Dimension>(
+        coefficients_.rows(n_rows - 2, n_rows - 1), point, polynomial_powers_);
 
-    return result + polynomial_term;
+    ///@todo srowe: polynomial term is missing 0,0,0 power
+    return result + coefficients_(n_rows - 3) + polynomial_term;
   }
 
   void scaleCoefficients(const double scale_factor) {
