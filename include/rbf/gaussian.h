@@ -3,7 +3,8 @@
 
 #include <cmath>
 
-template <typename T> struct Gaussian {
+template <typename T>
+struct Gaussian {
   Gaussian(const T val) : ScaleParameter(val) {}
 
   inline T operator()(const T r_squared) const {

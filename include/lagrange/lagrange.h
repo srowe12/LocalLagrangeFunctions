@@ -25,7 +25,8 @@ arma::mat computeInterpolationMatrix(const arma::mat &centers,
     }
   }
 
-  mathtools::buildPolynomialMatrix<Dimension, 1>(interp_matrix, centers); ///@todo srowe: Degree should be computable
+  mathtools::buildPolynomialMatrix<Dimension, 1>(
+      interp_matrix, centers); ///@todo srowe: Degree should be computable
 
   return interp_matrix;
 }

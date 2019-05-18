@@ -10,7 +10,6 @@ struct ThinPlateSpline {
   inline double operator()(const double dist_squared) const {
     return .5 * dist_squared * std::log(dist_squared);
   }
-
 };
 
 #endif

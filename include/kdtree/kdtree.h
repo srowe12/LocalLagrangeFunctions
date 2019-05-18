@@ -8,7 +8,8 @@
 // and for radius query and building from:
 // https://github.com/crvs/KDTree/
 
-template <size_t N> struct Node {
+template <size_t N>
+struct Node {
 
   explicit Node(arma::rowvec &point)
       : point(point), left(nullptr), right(nullptr) {}

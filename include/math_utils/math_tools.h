@@ -13,9 +13,11 @@ namespace mathtools {
 
 // Inefficient approach: Make a {0,1,...degree}^dimension cube and iterate
 // through them all.
-template <size_t Dimension> using Tuple = std::array<int, Dimension>;
+template <size_t Dimension>
+using Tuple = std::array<int, Dimension>;
 
-template <size_t Dimension> int sum(const Tuple<Dimension> &t) {
+template <size_t Dimension>
+int sum(const Tuple<Dimension> &t) {
   int result = 0;
   for (size_t i = 0; i < Dimension; ++i) {
     result += t[i];
