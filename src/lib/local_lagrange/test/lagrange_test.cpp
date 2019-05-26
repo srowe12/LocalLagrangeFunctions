@@ -20,7 +20,6 @@ double distance(const arma::rowvec& p1, const arma::rowvec& p2) {
 TEST_CASE("AssembleInterpolationMatrix") {
   arma::mat centers{{1, 0}, {2, 1}, {3, 2}};
 
-  local_lagrange::LocalLagrange<2> llf(0);  // Index 0.
   ThinPlateSpline<2> tps;
   arma::mat interp_matrix =
       computeInterpolationMatrix<2, ThinPlateSpline<2>>(centers, tps);
@@ -62,7 +61,7 @@ TEST_CASE("AssembleInterpolationMatrix") {
 TEST_CASE("SolveForCoefficients") {
   arma::mat centers{{1, 0}, {2, 1}, {3, 2}};
   unsigned int local_index = 0;
-  local_lagrange::LocalLagrange<2> llf(0);  // Index 0.
+  local_lagrange::LocalLagrange<2> llf(centers, 0);  // Index 0.
   llf.buildCoefficients(centers, 0);
   arma::vec coefs = llf.coefficients();
 
