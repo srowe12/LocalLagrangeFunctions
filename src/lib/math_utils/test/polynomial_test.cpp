@@ -1,8 +1,7 @@
 
 #define CATCH_CONFIG_MAIN
-#include <catch2/catch.hpp>
 #include <math_utils/polynomials.h>
-
+#include <catch2/catch.hpp>
 
 TEST_CASE("BuildTuples") {
   const auto results = buildTuples<3, 4>();
