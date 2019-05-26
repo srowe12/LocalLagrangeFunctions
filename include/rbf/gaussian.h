@@ -3,7 +3,8 @@
 
 #include <cmath>
 
-template <typename T> struct Gaussian {
+template <typename T>
+struct Gaussian {
   Gaussian(const T val) : ScaleParameter(val) {}
 
   inline T operator()(const T r_squared) const {
@@ -12,4 +13,4 @@ template <typename T> struct Gaussian {
 
   T ScaleParameter;
 };
-#endif // LOCAL_LAGRANGE_GAUSSIAN_H
+#endif  // LOCAL_LAGRANGE_GAUSSIAN_H

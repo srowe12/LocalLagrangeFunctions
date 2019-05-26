@@ -10,10 +10,10 @@ namespace local_lagrange {
 template <size_t Dimension, typename Kernel = ThinPlateSpline<Dimension>>
 class LocalLagrangeEnsemble {
 public:
-  LocalLagrangeEnsemble(const std::vector<LocalLagrange<Dimension>> &llfs)
+  LocalLagrangeEnsemble(const std::vector<LocalLagrange<Dimension>>& llfs)
       : m_llfs(llfs) {}
 
-  LocalLagrangeEnsemble(std::vector<LocalLagrange<Dimension>> &&llfs)
+  LocalLagrangeEnsemble(std::vector<LocalLagrange<Dimension>>&& llfs)
       : m_llfs(std::move(llfs)) {}
 
   std::vector<LocalLagrange<Dimension>> localLagrangeFunctions() const {
@@ -22,12 +22,13 @@ public:
 
 private:
   std::vector<LocalLagrange<Dimension>>
-      m_llfs; // Vector of Local Lagrange Functions
+      m_llfs;  // Vector of Local Lagrange Functions
 };
 
 template <size_t Dimension, typename Kernel = ThinPlateSpline<Dimension>>
-LocalLagrangeEnsemble<Dimension>
-buildLocalLagrangeFunctions(const arma::mat &centers, const double radius) {
+LocalLagrangeEnsemble<Dimension> buildLocalLagrangeFunctions(
+    const arma::mat& centers,
+    const double radius) {
   // Instantiate a LocalLagrangeAssembler
 
   LocalLagrangeAssembler<Dimension> assembler(centers, radius);
@@ -46,23 +47,22 @@ buildLocalLagrangeFunctions(const arma::mat &centers, const double radius) {
 template <size_t Dimension, typename Kernel = ThinPlateSpline<Dimension>>
 class LocalLagrangeInterpolant {
 public:
-  LocalLagrangeInterpolant(const LocalLagrangeEnsemble<Dimension> &lle,
-                           const arma::vec &sampled_function)
+  LocalLagrangeInterpolant(const LocalLagrangeEnsemble<Dimension>& lle,
+                           const arma::vec& sampled_function)
       : m_llfs(lle.localLagrangeFunctions()),
         m_sampled_function(sampled_function) {
-
     for (size_t i = 0; i < sampled_function.size(); ++i) {
-      m_llfs[i].scaleCoefficients(sampled_function(i)); // Multiply each LLF
-                                                        // by the sampled
-                                                        // center value
-                                                        // corresponding to
-                                                        // it
+      m_llfs[i].scaleCoefficients(sampled_function(i));  // Multiply each LLF
+                                                         // by the sampled
+                                                         // center value
+                                                         // corresponding to
+                                                         // it
     }
   }
 
-  double operator()(const arma::rowvec &point) const {
+  double operator()(const arma::rowvec& point) const {
     double result = 0.0;
-    for (const auto &llf : m_llfs) {
+    for (const auto& llf : m_llfs) {
       result += llf(point);
     }
 
@@ -74,6 +74,6 @@ private:
   arma::vec m_sampled_function;
 };
 
-} // end namespace local_lagrange
+}  // end namespace local_lagrange
 
-#endif // LOCAL_LAGRANGE_INTERPOLANT_H
+#endif  // LOCAL_LAGRANGE_INTERPOLANT_H

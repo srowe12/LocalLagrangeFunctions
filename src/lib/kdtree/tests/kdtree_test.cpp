@@ -1,11 +1,10 @@
 #define CATCH_CONFIG_MAIN
-#include <catch2/catch.hpp>
 #include <kdtree/kdtree.h>
+#include <catch2/catch.hpp>
 
 #include <math_utils/math_tools.h>
 
 TEST_CASE(" SimpleTest") {
-
   arma::mat points{{0, 0}, {1, 1}, {0, 1}, {1, 0}, {.5, .5}};
 
   auto tree = BuildTree<2>(points);
@@ -24,7 +23,6 @@ TEST_CASE(" SimpleTest") {
 }
 
 TEST_CASE(" EvenNumberPointsBuildTree") {
-
   arma::mat points{{0, 0}, {1, 1}, {0, 1}, {1, 0}};
 
   auto tree = BuildTree<2>(points);
@@ -42,7 +40,6 @@ TEST_CASE(" EvenNumberPointsBuildTree") {
 }
 
 TEST_CASE(" RadiusQueryOnePoint") {
-
   arma::mat points{{0, 0}, {1, 1}, {0, 1}, {1, 0}, {.5, .5}};
 
   auto tree = BuildTree<2>(points);
@@ -59,10 +56,10 @@ TEST_CASE(" RadiusQueryOnePoint") {
   REQUIRE(error == Approx(0.0));
 }
 
-bool inVector(const std::vector<arma::rowvec> &points,
-              const arma::rowvec &point) {
+bool inVector(const std::vector<arma::rowvec>& points,
+              const arma::rowvec& point) {
   double min = 1000.0;
-  for (const auto &p : points) {
+  for (const auto& p : points) {
     double diff = arma::norm(p - point);
     if (diff < min) {
       min = diff;
@@ -113,8 +110,8 @@ TEST_CASE(" RadiusQueryMultiplePointsBigger") {
   REQUIRE(inVector(found_points, expected_fourth_point));
 }
 
-bool CompareSets(const std::vector<arma::rowvec> &a,
-                 const std::vector<arma::rowvec> &b) {
+bool CompareSets(const std::vector<arma::rowvec>& a,
+                 const std::vector<arma::rowvec>& b) {
   if (a.size() != b.size()) {
     return false;
   }
@@ -133,7 +130,6 @@ bool CompareSets(const std::vector<arma::rowvec> &a,
 }
 
 TEST_CASE("RadiusQueryMultiplePointsBiggerIncludingPoint") {
-
   size_t num_points = 50;
 
   auto xmesh = mathtools::linspace<double>(0, 1, num_points);

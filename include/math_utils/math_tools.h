@@ -1,11 +1,11 @@
 #ifndef MATH_UTILS_HDR
 #define MATH_UTILS_HDR
 
+#include <math.h>
 #include <armadillo>
 #include <array>
 #include <fstream>
 #include <iterator>
-#include <math.h>
 #include <string>
 #include <vector>
 
@@ -13,9 +13,11 @@ namespace mathtools {
 
 // Inefficient approach: Make a {0,1,...degree}^dimension cube and iterate
 // through them all.
-template <size_t Dimension> using Tuple = std::array<int, Dimension>;
+template <size_t Dimension>
+using Tuple = std::array<int, Dimension>;
 
-template <size_t Dimension> int sum(const Tuple<Dimension> &t) {
+template <size_t Dimension>
+int sum(const Tuple<Dimension>& t) {
   int result = 0;
   for (size_t i = 0; i < Dimension; ++i) {
     result += t[i];
@@ -24,8 +26,9 @@ template <size_t Dimension> int sum(const Tuple<Dimension> &t) {
 }
 
 template <size_t Dimension, size_t current_dimension>
-void findtuples(const int degree, Tuple<Dimension> tuple,
-                std::vector<Tuple<Dimension>> &results) {
+void findtuples(const int degree,
+                Tuple<Dimension> tuple,
+                std::vector<Tuple<Dimension>>& results) {
   // Recursively walk back
 
   for (int i = 0; i <= degree; ++i) {
@@ -36,9 +39,10 @@ void findtuples(const int degree, Tuple<Dimension> tuple,
         results.push_back(tuple);
       }
     } else {
-      Tuple<Dimension> candidate = tuple; // copy the current result thats
-                                          // filled, and place an i in Dimension
-                                          // slot
+      Tuple<Dimension> candidate =
+          tuple;  // copy the current result thats
+                  // filled, and place an i in Dimension
+                  // slot
       candidate[current_dimension] = i;
 
       findtuples<Dimension, current_dimension + 1>(degree, candidate, results);
@@ -60,8 +64,10 @@ std::vector<Tuple<Dimension>> findtuples(const int degree) {
 }
 
 template <size_t Dimension = 2>
-void applyPower(arma::mat &matrix, const arma::mat &points,
-                const Tuple<Dimension> &powers, const int offset) {
+void applyPower(arma::mat& matrix,
+                const arma::mat& points,
+                const Tuple<Dimension>& powers,
+                const int offset) {
   // Naively form the powers, refactor later as this is super inefficient
   arma::vec p = arma::pow(points.col(0), powers[0]);
   for (size_t i = 1; i < Dimension; ++i) {
@@ -74,13 +80,13 @@ void applyPower(arma::mat &matrix, const arma::mat &points,
 }
 
 template <size_t Dimension = 2>
-double polynomialApply(const arma::vec &coefficients,
-                       const arma::rowvec::fixed<Dimension> &p,
-                       const std::vector<Tuple<Dimension>> &powers) {
+double polynomialApply(const arma::vec& coefficients,
+                       const arma::rowvec::fixed<Dimension>& p,
+                       const std::vector<Tuple<Dimension>>& powers) {
   // Naively form the powers, refactor later as this is super inefficient
   double result = 0.0;
   int count = 0;
-  for (const auto &tuple : powers) {
+  for (const auto& tuple : powers) {
     double local_result = 1.0;
     for (size_t i = 0; i < Dimension; ++i) {
       local_result *= std::pow(p(i), tuple[i]);
@@ -114,8 +120,8 @@ constexpr inline size_t computePolynomialBasis(const size_t degree) {
 }
 
 template <size_t Dimension = 2, int Degree = 1>
-void buildPolynomialMatrix(arma::mat &interpolation_matrix,
-                           const arma::mat &points) {
+void buildPolynomialMatrix(arma::mat& interpolation_matrix,
+                           const arma::mat& points) {
   const size_t num_rows = interpolation_matrix.n_rows;
   const size_t num_cols = interpolation_matrix.n_cols;
   const size_t num_points = points.n_rows;
@@ -128,9 +134,10 @@ void buildPolynomialMatrix(arma::mat &interpolation_matrix,
   // from lowest degree constant polynomial to highest degree
 
   if (num_points + num_polynomials != num_rows) {
-    throw std::runtime_error("The size of the interpolation matrix is not "
-                             "equal to the number of points plus number of "
-                             "polynomial terms");
+    throw std::runtime_error(
+        "The size of the interpolation matrix is not "
+        "equal to the number of points plus number of "
+        "polynomial terms");
   }
 
   int column_offset = num_points;
@@ -145,7 +152,7 @@ void buildPolynomialMatrix(arma::mat &interpolation_matrix,
     // (0,)
     const auto exponent_tuples = findtuples<Dimension>(degree);
     // Loop over exponent tuples placing them into the matrix
-    for (const auto &tuple : exponent_tuples) {
+    for (const auto& tuple : exponent_tuples) {
       applyPower(interpolation_matrix, points, tuple, column_offset);
       ++column_offset;
     }
@@ -153,8 +160,8 @@ void buildPolynomialMatrix(arma::mat &interpolation_matrix,
 }
 
 template <size_t Dimension, size_t Coordinate>
-constexpr inline double
-computeLengthSquared(const arma::rowvec::fixed<Dimension> &v) {
+constexpr inline double computeLengthSquared(
+    const arma::rowvec::fixed<Dimension>& v) {
   if constexpr (Coordinate == 0) {
     return v(0) * v(0);
   } else {
@@ -164,8 +171,8 @@ computeLengthSquared(const arma::rowvec::fixed<Dimension> &v) {
 }
 
 template <size_t Dimension>
-constexpr inline double
-computeLengthSquared(const arma::rowvec::fixed<Dimension> &v) {
+constexpr inline double computeLengthSquared(
+    const arma::rowvec::fixed<Dimension>& v) {
   if constexpr (Dimension > 1) {
     return computeLengthSquared<Dimension, Dimension - 1>(v);
   } else {
@@ -175,10 +182,9 @@ computeLengthSquared(const arma::rowvec::fixed<Dimension> &v) {
 
 ///@todo srowe: These need to be marked constexpr I think
 template <size_t Dimension, size_t Coordinate>
-constexpr inline double
-computeSquaredDistance(const arma::rowvec::fixed<Dimension> &v1,
-                       const arma::rowvec::fixed<Dimension> &v2) {
-
+constexpr inline double computeSquaredDistance(
+    const arma::rowvec::fixed<Dimension>& v1,
+    const arma::rowvec::fixed<Dimension>& v2) {
   if constexpr (Coordinate == 0) {
     return (v1(0) - v2(0)) * (v1(0) - v2(0));
   } else {
@@ -189,9 +195,9 @@ computeSquaredDistance(const arma::rowvec::fixed<Dimension> &v1,
 }
 
 template <size_t Dimension>
-constexpr inline double
-computeSquaredDistance(const arma::rowvec::fixed<Dimension> &v1,
-                       const arma::rowvec::fixed<Dimension> &v2) {
+constexpr inline double computeSquaredDistance(
+    const arma::rowvec::fixed<Dimension>& v1,
+    const arma::rowvec::fixed<Dimension>& v2) {
   if constexpr (Dimension > 1) {
     return computeSquaredDistance<Dimension, Dimension - 1>(v1, v2);
   } else {
@@ -200,43 +206,47 @@ computeSquaredDistance(const arma::rowvec::fixed<Dimension> &v1,
 }
 
 template <size_t Coordinate>
-double computeDistance(const arma::rowvec &p1, const arma::rowvec &p2) {
+double computeDistance(const arma::rowvec& p1, const arma::rowvec& p2) {
   return computeDistance<Coordinate - 1>(p1, p2) +
          (p1(Coordinate) - p2(Coordinate)) * (p1(Coordinate) - p2(Coordinate));
 }
 
 template <>
-double computeDistance<0>(const arma::rowvec &p1, const arma::rowvec &p2) {
+double computeDistance<0>(const arma::rowvec& p1, const arma::rowvec& p2) {
   return (p1(0) - p2(0)) * (p1(0) - p2(0));
 }
 
 template <size_t Coordinate>
-inline double computeDistance(const size_t row, const size_t col,
-                              const arma::mat &points) {
+inline double computeDistance(const size_t row,
+                              const size_t col,
+                              const arma::mat& points) {
   return (points(row, Coordinate) - points(col, Coordinate)) *
              (points(row, Coordinate) - points(col, Coordinate)) +
          computeDistance<Coordinate - 1>(row, col, points);
 }
 
 template <>
-inline double computeDistance<0>(const size_t row, const size_t col,
-                                 const arma::mat &points) {
+inline double computeDistance<0>(const size_t row,
+                                 const size_t col,
+                                 const arma::mat& points) {
   return (points(row, 0) - points(col, 0)) * (points(row, 0) - points(col, 0));
 }
 
 template <size_t Coordinate>
-inline double computePointDistance(const size_t i, const size_t j,
-                                   const arma::mat &points,
-                                   const arma::mat &other_points) {
+inline double computePointDistance(const size_t i,
+                                   const size_t j,
+                                   const arma::mat& points,
+                                   const arma::mat& other_points) {
   return (points(i, Coordinate) - other_points(j, Coordinate)) *
              (points(i, Coordinate) - other_points(j, Coordinate)) +
          computePointDistance<Coordinate - 1>(i, j, points, other_points);
 }
 
 template <>
-inline double computePointDistance<0>(const size_t i, const size_t j,
-                                      const arma::mat &points,
-                                      const arma::mat &other_points) {
+inline double computePointDistance<0>(const size_t i,
+                                      const size_t j,
+                                      const arma::mat& points,
+                                      const arma::mat& other_points) {
   return (points(i, 0) - other_points(j, 0)) *
          (points(i, 0) - other_points(j, 0));
 }
@@ -246,7 +256,7 @@ inline double computePointDistance<0>(const size_t i, const size_t j,
 template <typename T>
 std::vector<T> linspace(T a, T b, unsigned int num_points) {
   T step_size = (b - a) / num_points;
-  std::vector<T> points(num_points + 1); // One extra point to get last value.
+  std::vector<T> points(num_points + 1);  // One extra point to get last value.
   size_t counter = 0;
   for (auto it = points.begin(); it != points.end(); ++it) {
     *it = a + step_size * counter;
@@ -256,9 +266,8 @@ std::vector<T> linspace(T a, T b, unsigned int num_points) {
 }
 
 template <typename T>
-arma::mat meshgrid(const std::vector<T> &xpoints,
-                   const std::vector<T> &ypoints) {
-
+arma::mat meshgrid(const std::vector<T>& xpoints,
+                   const std::vector<T>& ypoints) {
   size_t num_points_x = xpoints.size();
   size_t num_points_y = ypoints.size();
   size_t num_points = num_points_x * num_points_y;
@@ -281,10 +290,10 @@ arma::mat meshgrid(const std::vector<T> &xpoints,
 }
 
 template <typename T>
-void write_vector(std::vector<T> &vec, std::string file_name) {
+void write_vector(std::vector<T>& vec, std::string file_name) {
   std::ofstream output_file(file_name);
   std::ostream_iterator<T> output_iterator(output_file, "\n");
   std::copy(vec.begin(), vec.end(), output_iterator);
 }
-} // namespace mathtools
-#endif // MATH_UTILS_HDR
+}  // namespace mathtools
+#endif  // MATH_UTILS_HDR

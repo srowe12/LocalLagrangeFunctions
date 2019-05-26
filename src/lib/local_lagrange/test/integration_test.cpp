@@ -10,8 +10,7 @@
 
 #include <math_utils/math_tools.h>
 
-TEST_CASE( "IntegrationTestBuildAnLLF") {
-
+TEST_CASE("IntegrationTestBuildAnLLF") {
   size_t num_points = 50;
 
   std::vector<double> xmesh = mathtools::linspace<double>(0, 1, num_points);

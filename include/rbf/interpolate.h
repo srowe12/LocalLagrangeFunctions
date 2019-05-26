@@ -10,15 +10,14 @@ namespace rbf {
 template <typename Kernel, size_t Dimension>
 class RadialBasisFunctionInterpolant {
 public:
-  RadialBasisFunctionInterpolant(const Kernel &kernel, const arma::mat &centers,
-                                 const arma::vec &sampled_data)
+  RadialBasisFunctionInterpolant(const Kernel& kernel,
+                                 const arma::mat& centers,
+                                 const arma::vec& sampled_data)
       : kernel_(kernel), centers_(centers) {
-
     buildCoefficients(sampled_data);
   }
 
-  arma::vec interpolate(const arma::mat &data_points) {
-
+  arma::vec interpolate(const arma::mat& data_points) {
     // Interpolation is given by sum_{i=1}^N c_i Phi(data, x)
     // These kernels usually are related by Phi(data, x) = phi(||data - x||)
 
@@ -33,7 +32,6 @@ public:
     ///@todo srowe: Dimensionality mismatch???
     for (size_t i = 0; i < num_data_points; ++i) {
       for (size_t j = 0; j < num_centers; ++j) {
-
         distance_matrix(i, j) =
             kernel_(mathtools::computePointDistance<Dimension>(
                 i, j, data_points, centers_));
@@ -46,7 +44,7 @@ public:
   }
 
 private:
-  void buildCoefficients(const arma::vec &sampled_data) {
+  void buildCoefficients(const arma::vec& sampled_data) {
     // Build Interpolation Matrix
     const size_t num_centers = centers_.n_rows;
 
@@ -74,6 +72,6 @@ private:
   arma::mat centers_;
   arma::vec coefficients_;
 };
-} // end namespace rbf
+}  // end namespace rbf
 
-#endif // LOCAL_LAGRANGE_INTERPOLATE_H
+#endif  // LOCAL_LAGRANGE_INTERPOLATE_H

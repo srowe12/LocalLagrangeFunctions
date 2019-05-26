@@ -40,7 +40,7 @@ double timeResults(const size_t num_points) {
   size_t min = 999999;
   size_t max = 0;
   size_t mean = 0;
-  for (const auto &llf : llfset) {
+  for (const auto& llf : llfset) {
     int num = llf.centers().n_rows;
     num_centers.push_back(num);
     mean += num;

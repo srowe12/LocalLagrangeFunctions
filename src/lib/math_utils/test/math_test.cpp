@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_MAIN
-#include <catch2/catch.hpp>
 #include <math_utils/math_tools.h>
 #include <stdio.h>
+#include <catch2/catch.hpp>
 
 using namespace mathtools;
 TEST_CASE("FactorialTestZero") {
@@ -9,9 +9,13 @@ TEST_CASE("FactorialTestZero") {
   REQUIRE(1 == factorial(n));
 }
 
-TEST_CASE("FactorialTestOne") { REQUIRE(1 == factorial(1)); }
+TEST_CASE("FactorialTestOne") {
+  REQUIRE(1 == factorial(1));
+}
 
-TEST_CASE("FactorialTestLarger") { REQUIRE(4 * 3 * 2 == factorial(4)); }
+TEST_CASE("FactorialTestLarger") {
+  REQUIRE(4 * 3 * 2 == factorial(4));
+}
 
 TEST_CASE("PolynomialSize") {
   size_t degree = 3;
@@ -41,7 +45,6 @@ TEST_CASE("TestComputeSquaredDistance") {
 }
 
 TEST_CASE("ComputeDistanceRowVecs") {
-
   arma::mat points{{0, 1, 2}, {3, 4, 5}};
 
   const arma::rowvec p1{0, 1, 2};
@@ -53,7 +56,6 @@ TEST_CASE("ComputeDistanceRowVecs") {
 }
 
 TEST_CASE("ComputeDistance") {
-
   arma::mat points{{0, 1, 2}, {3, 4, 5}};
 
   size_t row = 0;
@@ -65,7 +67,6 @@ TEST_CASE("ComputeDistance") {
 }
 
 TEST_CASE("ComputePointDistance") {
-
   arma::mat points{{0, 1, 2}, {3, 4, 5}};
   arma::mat other_points{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
 
@@ -159,14 +160,14 @@ TEST_CASE("WriteVectorTest") {
 }
 
 template <size_t Dimension>
-bool compareTuples(const std::vector<Tuple<Dimension>> &t1,
-                   const std::vector<Tuple<Dimension>> &t2) {
+bool compareTuples(const std::vector<Tuple<Dimension>>& t1,
+                   const std::vector<Tuple<Dimension>>& t2) {
   if (t1.size() != t2.size()) {
     return false;
   }
 
   bool success = true;
-  for (const auto &i : t1) {
+  for (const auto& i : t1) {
     // Check that i is in t2;
     success &= std::find(t2.begin(), t2.end(), i);
   }
@@ -205,9 +206,9 @@ TEST_CASE("TestApplyPower") {
   arma::mat matrix = arma::zeros(4 + num_polys, 4 + num_polys);
   int offset = 4;
   applyPower<3>(matrix, points, tuple, offset);
-  const arma::vec &x = points.col(0);
-  const arma::vec &y = points.col(1);
-  const arma::vec &z = points.col(2);
+  const arma::vec& x = points.col(0);
+  const arma::vec& y = points.col(1);
+  const arma::vec& z = points.col(2);
   const arma::vec expected = x % y % y % z % z % z;
   const arma::vec computed = matrix.col(4).rows(0, 3);
   const arma::vec computed_row = matrix.row(4).cols(0, 3).t();
@@ -220,15 +221,14 @@ TEST_CASE("TestApplyPower") {
 }
 
 TEST_CASE("TestBuildPolyMatrix") {
-
   const arma::mat points{{2, 2, 2}, {1, 1, 1}, {1, 2, 3}, {2, 3, 1}};
   int num_polys = 4;
   arma::mat matrix = arma::zeros(4 + num_polys, 4 + num_polys);
   int offset = 4;
   buildPolynomialMatrix<3, 1>(matrix, points);
-  const arma::vec &z = points.col(0);
-  const arma::vec &y = points.col(1);
-  const arma::vec &x = points.col(2);
+  const arma::vec& z = points.col(0);
+  const arma::vec& y = points.col(1);
+  const arma::vec& x = points.col(2);
 
   arma::mat expected = arma::ones(4, 4);
   expected.col(1) = x;
@@ -251,7 +251,6 @@ TEST_CASE("TestBuildPolyMatrix") {
 }
 
 TEST_CASE("TestApplyPolynomial") {
-
   // Define polynomial 1 + 2x + 3y + 4z + 5x^2 + 6xy + 7xz + 8y^2 + 9yz + 10z^2;
   // x = 1, y =2 , z = 3;
   // p(x,y,z) = 1 + 2 + 6 + 12 + 5 + 12 + 21 + 32 + 54 + 90
@@ -272,7 +271,8 @@ TEST_CASE("TestApplyPolynomial") {
   arma::rowvec::fixed<3> p{1, 2, 3};
   const double result = polynomialApply<3>(coefficients, p, powers);
   const double expected = 1 + 2 + 6 + 12 + 5 + 12 + 21 + 32 + 54 + 90;
-  REQUIRE(expected == result); ///@todo srowe: Later when I get a chance, fix up
-                               ///and implement and add it where this is needed
-                               ///elsewhere in code
+  REQUIRE(expected ==
+          result);  ///@todo srowe: Later when I get a chance, fix up
+                    /// and implement and add it where this is needed
+                    /// elsewhere in code
 }

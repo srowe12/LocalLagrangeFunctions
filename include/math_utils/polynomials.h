@@ -2,19 +2,22 @@
 #define LOCAL_LAGRANGE_POLYNOMIALS_H
 #include <array>
 #include <vector>
-template <size_t N> using Tuple = std::array<double, N>;
+template <size_t N>
+using Tuple = std::array<double, N>;
 
-template <size_t N> using Tuples = std::vector<Tuple<N>>;
+template <size_t N>
+using Tuples = std::vector<Tuple<N>>;
 
 // Strategy: Lexicographic ordering implies we need to decrement iteratively
 // down and shift
-template <size_t Dimension, int TotalDegree, size_t Position, int CurrentTotal,
+template <size_t Dimension,
+          int TotalDegree,
+          size_t Position,
+          int CurrentTotal,
           int Value>
-void decrement(Tuples<Dimension> &v, Tuple<Dimension> t) {
-
+void decrement(Tuples<Dimension>& v, Tuple<Dimension> t) {
   if constexpr (Position == Dimension - 1) {
-
-    t[Position] = TotalDegree - CurrentTotal; // Grab what is left
+    t[Position] = TotalDegree - CurrentTotal;  // Grab what is left
 
     v.push_back(t);
     return;
@@ -38,7 +41,8 @@ void decrement(Tuples<Dimension> &v, Tuple<Dimension> t) {
   }
 }
 
-template <size_t N, int TotalDegree> Tuples<N> buildTuples() {
+template <size_t N, int TotalDegree>
+Tuples<N> buildTuples() {
   Tuples<N> v;
   Tuple<N> t;
   t.fill(0);
@@ -46,4 +50,4 @@ template <size_t N, int TotalDegree> Tuples<N> buildTuples() {
   return v;
 }
 
-#endif // LOCAL_LAGRANGE_POLYNOMIALS_H
+#endif  // LOCAL_LAGRANGE_POLYNOMIALS_H
