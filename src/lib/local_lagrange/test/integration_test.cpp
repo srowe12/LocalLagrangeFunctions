@@ -1,12 +1,10 @@
-#define CATCH_CONFIG_MAIN
-#include <catch2/catch.hpp>
-
 #include <local_lagrange/local_lagrange.h>
 #include <local_lagrange/local_lagrange_assembler.h>
 
 #include <stdio.h>
 #include <string>
 #include <utility>
+#include <catch2/catch.hpp>
 
 #include <math_utils/math_tools.h>
 

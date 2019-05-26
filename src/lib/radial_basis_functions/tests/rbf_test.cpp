@@ -1,10 +1,8 @@
-#define CATCH_CONFIG_MAIN
 #include <rbf/gaussian.h>
 #include <rbf/interpolate.h>
-#include <catch2/catch.hpp>
 
 #include <math_utils/math_tools.h>
-
+#include <catch2/catch.hpp>
 using namespace rbf;
 
 TEST_CASE("GaussianTest") {
