@@ -43,8 +43,7 @@ public:
     return local_index;
   }
 
-  LocalLagrange<Dimension> generateLocalLagrangeFunction(
-      const unsigned int index) {
+  LocalLagrange<Dimension> generateLocalLagrangeFunction(const unsigned int index) {
     // Let's query the data via kdtree
     const arma::rowvec local_point = centers_.row(index);
     const std::vector<arma::rowvec> local_centers_v =

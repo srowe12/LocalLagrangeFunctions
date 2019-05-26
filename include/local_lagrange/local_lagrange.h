@@ -26,6 +26,8 @@ public:
     buildCoefficients(centers_, index_);
   }
 
+  LocalLagrange() = default;
+
   void buildCoefficients(const arma::mat& local_centers,
                          unsigned int local_index) {
 
