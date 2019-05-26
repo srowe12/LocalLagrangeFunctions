@@ -2,6 +2,7 @@
 #define LOCAL_LAGRANGE_LAGRANGE_H
 
 #include <math_utils/math_tools.h>
+#include <math_utils/polynomials.h>
 #include <armadillo>
 #include <array>
 #include <cmath>
@@ -25,8 +26,8 @@ arma::mat computeInterpolationMatrix(const arma::mat& centers,
     }
   }
 
-  mathtools::buildPolynomialMatrix<Dimension, 1>(
-      interp_matrix, centers);  ///@todo srowe: Degree should be computable
+  ///@todo srowe: Degree should be computable
+  buildPolynomialMatrix<Dimension, 1>(interp_matrix, centers);
 
   return interp_matrix;
 }

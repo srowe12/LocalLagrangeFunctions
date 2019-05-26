@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <lagrange/lagrange.h>
+#include <math_utils/polynomials.h>
 #include <rbf/thin_plate_spline.h>
 
 namespace local_lagrange {
@@ -16,8 +17,7 @@ class LocalLagrange {
 public:
   LocalLagrange(const arma::mat& local_centers, const unsigned int local_index)
       : index_(local_index), centers_(local_centers) {
-    int degree = 1;  ///@todo srowe: Make this flexible
-    polynomial_powers_ = mathtools::findtuples<Dimension>(degree);
+    polynomial_powers_ = buildTuples<Dimension, 1>();
     buildCoefficients(centers_, index_);
   }
 
@@ -65,11 +65,11 @@ public:
     // form 1 + x + y
     const auto n_rows = coefficients_.n_rows;
 
-    double polynomial_term = mathtools::polynomialApply<Dimension>(
-        coefficients_.rows(n_rows - 2, n_rows - 1), point, polynomial_powers_);
+    double polynomial_term = polynomialApply<Dimension>(
+        coefficients_.rows(n_rows - 3, n_rows - 2), point, polynomial_powers_);
 
     ///@todo srowe: polynomial term is missing 0,0,0 power
-    return result + coefficients_(n_rows - 3) + polynomial_term;
+    return result + coefficients_(n_rows - 1) + polynomial_term;
   }
 
   void scaleCoefficients(const double scale_factor) {
@@ -77,13 +77,12 @@ public:
   }
 
 private:
-  using Tuples = std::vector<mathtools::Tuple<Dimension>>;
+  using Tuples = std::vector<Tuple<Dimension>>;
 
   unsigned int index_;
   Kernel kernel_;
-  arma::mat
-      centers_;  ///@todo srowe: Each LLF maintaing its centers is probably
-                 /// overkill
+  ///@todo srowe: Each LLF maintaing its centers is probably overkill
+  arma::mat centers_;
   arma::vec coefficients_;
   Tuples polynomial_powers_;
 };
