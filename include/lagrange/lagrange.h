@@ -2,11 +2,11 @@
 #define LOCAL_LAGRANGE_LAGRANGE_H
 
 #include <math_utils/math_tools.h>
+#include <math_utils/polynomials.h>
 #include <armadillo>
 #include <array>
 #include <cmath>
 #include <vector>
-#include <math_utils/polynomials.h>
 
 namespace local_lagrange {
 
@@ -25,9 +25,9 @@ arma::mat computeInterpolationMatrix(const arma::mat& centers,
       interp_matrix(row, col) = interp_matrix(col, row) = kernel(dist);
     }
   }
-  
+
   ///@todo srowe: Degree should be computable
-  buildPolynomialMatrix<Dimension, 1>(interp_matrix, centers); 
+  buildPolynomialMatrix<Dimension, 1>(interp_matrix, centers);
 
   return interp_matrix;
 }

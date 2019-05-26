@@ -7,8 +7,8 @@
 #include <vector>
 
 #include <lagrange/lagrange.h>
-#include <rbf/thin_plate_spline.h>
 #include <math_utils/polynomials.h>
+#include <rbf/thin_plate_spline.h>
 
 namespace local_lagrange {
 
@@ -82,7 +82,7 @@ private:
   unsigned int index_;
   Kernel kernel_;
   ///@todo srowe: Each LLF maintaing its centers is probably overkill
-  arma::mat centers_;  
+  arma::mat centers_;
   arma::vec coefficients_;
   Tuples polynomial_powers_;
 };

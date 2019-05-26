@@ -60,13 +60,12 @@ void buildTuples(Tuples<N>& tuples) {
 
 template <size_t N, int TotalDegree>
 void findPolynomialsUpToDegree(Tuples<N>& polynomials) {
-        buildTuples<N, TotalDegree>(polynomials);
-        if constexpr (TotalDegree >= 1) {
-            findPolynomialsUpToDegree<N, TotalDegree-1>(polynomials);
-        }
-        else {
-            return;
-        }
+  buildTuples<N, TotalDegree>(polynomials);
+  if constexpr (TotalDegree >= 1) {
+    findPolynomialsUpToDegree<N, TotalDegree - 1>(polynomials);
+  } else {
+    return;
+  }
 }
 
 template <size_t Dimension = 2>
@@ -150,19 +149,19 @@ void buildPolynomialMatrix(arma::mat& interpolation_matrix,
   ///@todo srowe: Should degree = 0 or 1? Should we shift colun offset?
   // Given dim, and deg, find all subsets (x_1,x_2...x_dim) sums to deg
   // For degree we have x^i*y^degree-i
-    // xyz poly would be for degree 1: x y z
-    // For degree 2 we would have x^2 + xy + xz + y^2 + yz + z^2;
-    // For degree 3 we would have x^3 + x^2 y + x^2z + x
-    // (3,0,0), (2,1,0), (2,0,1), (1,2,0), (1,1,1), (0,3,0), (0,2,1), (0,1,2),
-    // (0,)
-    Tuples<Dimension> exponent_tuples;
-    findPolynomialsUpToDegree<Dimension, Degree>(exponent_tuples);    // Loop over exponent tuples placing them into the matrix
-    for (const auto& tuple : exponent_tuples) {
-      applyPower(interpolation_matrix, points, tuple, column_offset);
-      ++column_offset;
-    }
-  
+  // xyz poly would be for degree 1: x y z
+  // For degree 2 we would have x^2 + xy + xz + y^2 + yz + z^2;
+  // For degree 3 we would have x^3 + x^2 y + x^2z + x
+  // (3,0,0), (2,1,0), (2,0,1), (1,2,0), (1,1,1), (0,3,0), (0,2,1), (0,1,2),
+  // (0,)
+  Tuples<Dimension> exponent_tuples;
+  findPolynomialsUpToDegree<Dimension, Degree>(
+      exponent_tuples);  // Loop over exponent tuples placing them into the
+                         // matrix
+  for (const auto& tuple : exponent_tuples) {
+    applyPower(interpolation_matrix, points, tuple, column_offset);
+    ++column_offset;
+  }
 }
-
 
 #endif  // LOCAL_LAGRANGE_POLYNOMIALS_H
