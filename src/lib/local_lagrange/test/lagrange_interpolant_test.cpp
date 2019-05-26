@@ -1,9 +1,9 @@
-#define CATCH_CONFIG_MAIN
 #include <local_lagrange/local_lagrange.h>
 #include <local_lagrange/local_lagrange_assembler.h>
 #include <local_lagrange/local_lagrange_interpolant.h>
 #include <math_utils/math_tools.h>
 #include <catch2/catch.hpp>
+
 
 using namespace local_lagrange;
 
