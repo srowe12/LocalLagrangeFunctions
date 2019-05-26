@@ -1,8 +1,6 @@
-#define CATCH_CONFIG_MAIN
-#include <catch2/catch.hpp>
-
 #include <lagrange/lagrange.h>
 #include <rbf/thin_plate_spline.h>
+#include <catch2/catch.hpp>
 
 #include <math_utils/math_tools.h>
 

@@ -1,5 +1,4 @@
 
-#define CATCH_CONFIG_MAIN
 #include <math_utils/polynomials.h>
 #include <catch2/catch.hpp>
 

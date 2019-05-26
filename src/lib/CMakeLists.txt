@@ -1,3 +1,4 @@
+add_subdirectory(catch2)
 add_subdirectory(kdtree)
 add_subdirectory(lagrange_functions)
 add_subdirectory(local_lagrange)

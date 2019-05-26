@@ -1,4 +1,3 @@
-#define CATCH_CONFIG_MAIN
 #include <local_lagrange/local_lagrange.h>
 #include <local_lagrange/local_lagrange_assembler.h>
 #include <catch2/catch.hpp>

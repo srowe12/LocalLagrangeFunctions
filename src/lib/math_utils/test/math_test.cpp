@@ -1,6 +1,4 @@
-#define CATCH_CONFIG_MAIN
 #include <math_utils/math_tools.h>
-#include <stdio.h>
 #include <catch2/catch.hpp>
 
 using namespace mathtools;
