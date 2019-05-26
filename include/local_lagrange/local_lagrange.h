@@ -1,9 +1,9 @@
 #ifndef LOCAL_LAGRANGE_HDR
 #define LOCAL_LAGRANGE_HDR
+#include <math_utils/math_tools.h>
 #include <armadillo>
 #include <array>
 #include <cmath>
-#include <math_utils/math_tools.h>
 #include <vector>
 
 #include <lagrange/lagrange.h>
@@ -14,20 +14,19 @@ namespace local_lagrange {
 template <size_t Dimension = 2, typename Kernel = ThinPlateSpline<Dimension>>
 class LocalLagrange {
 public:
-  LocalLagrange(const arma::mat &local_centers, const unsigned int local_index)
+  LocalLagrange(const arma::mat& local_centers, const unsigned int local_index)
       : index_(local_index), centers_(local_centers) {
-
-    int degree = 1; ///@todo srowe: Make this flexible
+    int degree = 1;  ///@todo srowe: Make this flexible
     polynomial_powers_ = mathtools::findtuples<Dimension>(degree);
     buildCoefficients(centers_, index_);
   }
 
   explicit LocalLagrange(unsigned int index) : index_(index) {}
 
-  LocalLagrange(unsigned int index, const arma::vec &coefs)
+  LocalLagrange(unsigned int index, const arma::vec& coefs)
       : index_(index), coefficients_(coefs) {}
 
-  void buildCoefficients(const arma::mat &local_centers,
+  void buildCoefficients(const arma::mat& local_centers,
                          unsigned int local_index) {
     // Work needed here perhaps. Is this bad generating interp_matrix in this
     // function?
@@ -46,14 +45,13 @@ public:
   // The LLF evaluates via \sum_{i=1}^N c_i \|p -x_i\|^2 log(\|p - x_i\|)
   // where c_i are the coefficients in the vector coefficients_ and
   // x_i are the local_centers associated with the vector
-  double operator()(const arma::rowvec::fixed<Dimension> &point) const {
+  double operator()(const arma::rowvec::fixed<Dimension>& point) const {
     // Compute distance from points to position
 
     ///@todo srowe Naive implementation for now, improve on in the future
     double result = 0.0;
     const size_t num_centers = centers_.n_rows;
     for (size_t i = 0; i < num_centers; ++i) {
-
       const double distance =
           mathtools::computeSquaredDistance<Dimension>(centers_.row(i), point);
 
@@ -83,11 +81,12 @@ private:
 
   unsigned int index_;
   Kernel kernel_;
-  arma::mat centers_; ///@todo srowe: Each LLF maintaing its centers is probably
-                      /// overkill
+  arma::mat
+      centers_;  ///@todo srowe: Each LLF maintaing its centers is probably
+                 /// overkill
   arma::vec coefficients_;
   Tuples polynomial_powers_;
 };
 
-} // namespace local_lagrange
-#endif // LOCAL_LAGRANGE_HDR
+}  // namespace local_lagrange
+#endif  // LOCAL_LAGRANGE_HDR

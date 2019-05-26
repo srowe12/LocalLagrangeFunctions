@@ -1,20 +1,19 @@
 #define CATCH_CONFIG_MAIN
-#include <catch2/catch.hpp>
 #include <rbf/gaussian.h>
 #include <rbf/interpolate.h>
+#include <catch2/catch.hpp>
 
-#include <math_utils/math_tools.h> 
+#include <math_utils/math_tools.h>
 
 using namespace rbf;
 
 TEST_CASE("GaussianTest") {
-
   Gaussian<double> gaussian(1.0);
 
   const double val = gaussian(4.0);
 
   const double expected_val = std::exp(-1.0 * 4.0);
-  REQUIRE( val == Approx(expected_val).margin( 1e-12));
+  REQUIRE(val == Approx(expected_val).margin(1e-12));
 }
 
 TEST_CASE("ConstructoGaussianInterpolant") {
@@ -42,10 +41,10 @@ TEST_CASE("ConstructoGaussianInterpolant") {
 
   const arma::vec interpolated_data = interpolant.interpolate(data);
 
-  REQUIRE(N ==interpolated_data.n_rows);
+  REQUIRE(N == interpolated_data.n_rows);
 
   for (size_t i = 0; i < N; ++i) {
-    REQUIRE( interpolated_data(i) == Approx(sampled_data(i)).margin(1e-7));
+    REQUIRE(interpolated_data(i) == Approx(sampled_data(i)).margin(1e-7));
   }
 }
 
@@ -66,17 +65,18 @@ TEST_CASE("ConstructoGaussianInterpolantBigger") {
     sampled_data(i) = std::sin(data(i, 0)) * std::cos(data(i, 1));
   }
 
-  RadialBasisFunctionInterpolant<Gaussian<double>, 1> interpolant(gaussian, data,
-                                                      sampled_data);
+  RadialBasisFunctionInterpolant<Gaussian<double>, 1> interpolant(
+      gaussian, data, sampled_data);
 
-  // Compute on the same dataset and see how well we do! We should get zeros back
+  // Compute on the same dataset and see how well we do! We should get zeros
+  // back
 
   const arma::vec interpolated_data = interpolant.interpolate(data);
 
   REQUIRE(N == interpolated_data.n_rows);
 
-  for (size_t i = 0; i < N ; ++i) {
-    REQUIRE( interpolated_data(i) == Approx(sampled_data(i)).margin( 1e-7));
+  for (size_t i = 0; i < N; ++i) {
+    REQUIRE(interpolated_data(i) == Approx(sampled_data(i)).margin(1e-7));
   }
 }
 
@@ -111,4 +111,3 @@ TEST_CASE("ConstructoGaussianInterpolantConstant") {
     REQUIRE(interpolated_data(i) == Approx(sampled_data(i)).margin(1e-13));
   }
 }
-

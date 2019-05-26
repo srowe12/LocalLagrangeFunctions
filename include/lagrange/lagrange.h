@@ -1,17 +1,17 @@
 #ifndef LOCAL_LAGRANGE_LAGRANGE_H
 #define LOCAL_LAGRANGE_LAGRANGE_H
 
+#include <math_utils/math_tools.h>
 #include <armadillo>
 #include <array>
 #include <cmath>
-#include <math_utils/math_tools.h>
 #include <vector>
 
 namespace local_lagrange {
 
 template <size_t Dimension, typename Kernel>
-arma::mat computeInterpolationMatrix(const arma::mat &centers,
-                                     const Kernel &kernel) {
+arma::mat computeInterpolationMatrix(const arma::mat& centers,
+                                     const Kernel& kernel) {
   const size_t num_centers = centers.n_rows;
 
   ///@todo srowe: The 3 is not super right
@@ -26,14 +26,14 @@ arma::mat computeInterpolationMatrix(const arma::mat &centers,
   }
 
   mathtools::buildPolynomialMatrix<Dimension, 1>(
-      interp_matrix, centers); ///@todo srowe: Degree should be computable
+      interp_matrix, centers);  ///@todo srowe: Degree should be computable
 
   return interp_matrix;
 }
 
 template <size_t Dimension, typename Kernel>
-arma::mat computeLagrangeFunctions(const arma::mat &centers,
-                                   const Kernel &kernel) {
+arma::mat computeLagrangeFunctions(const arma::mat& centers,
+                                   const Kernel& kernel) {
   // The Lagrange Functions are computed by forming a full distance matrix
   // applying the kernel to it, and solving Ax = b where b is a diagonal matrix.
 
@@ -49,5 +49,5 @@ arma::mat computeLagrangeFunctions(const arma::mat &centers,
 
   return coefficients;
 }
-} // namespace local_lagrange
-#endif // LOCAL_LAGRANGE_LAGRANGE_H
+}  // namespace local_lagrange
+#endif  // LOCAL_LAGRANGE_LAGRANGE_H

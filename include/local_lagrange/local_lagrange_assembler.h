@@ -1,27 +1,27 @@
 #ifndef LOCAL_LAGRANGE_ASSEMBLER_HDR
 #define LOCAL_LAGRANGE_ASSEMBLER_HDR
 
-#include <armadillo>
-#include <array>
 #include <math.h>
 #include <stdio.h>
+#include <armadillo>
+#include <array>
 #include <vector>
 
-#include "local_lagrange.h"
 #include <kdtree/kdtree.h>
+#include "local_lagrange.h"
 
 namespace local_lagrange {
 
 template <size_t Dimension = 2, typename Kernel = ThinPlateSpline<Dimension>>
 class LocalLagrangeAssembler {
 public:
-  LocalLagrangeAssembler(const arma::mat &centers, const double radius)
-      : centers_(centers), radius_(radius),
+  LocalLagrangeAssembler(const arma::mat& centers, const double radius)
+      : centers_(centers),
+        radius_(radius),
         kdtree_root_(BuildTree<Dimension>(centers_)) {}
 
-  unsigned int findLocalIndex(const arma::mat &local_centers,
+  unsigned int findLocalIndex(const arma::mat& local_centers,
                               unsigned int index) {
-
     const arma::rowvec center = centers_.row(index);
 
     // Implement naive algorithm here. Upgrade later.
@@ -42,9 +42,8 @@ public:
     return local_index;
   }
 
-  LocalLagrange<Dimension>
-  generateLocalLagrangeFunction(const unsigned int index) {
-
+  LocalLagrange<Dimension> generateLocalLagrangeFunction(
+      const unsigned int index) {
     // Let's query the data via kdtree
     const arma::rowvec local_point = centers_.row(index);
     const std::vector<arma::rowvec> local_centers_v =
@@ -52,7 +51,7 @@ public:
     // Stupidly make an arma mat from this
     arma::mat local_centers(local_centers_v.size(), Dimension);
     int i = 0;
-    for (const auto &row : local_centers_v) {
+    for (const auto& row : local_centers_v) {
       local_centers.row(i) = row;
       ++i;
     }
@@ -76,7 +75,7 @@ public:
     mesh_norm_ = mesh_norm;
     updateBallRadius();
   }
-  void setCenters(const arma::mat &centers) {
+  void setCenters(const arma::mat& centers) {
     // Assumes size of centers_x and centers_y are the same
     centers_ = centers;
     num_centers_ = centers_.n_rows;
@@ -92,15 +91,15 @@ private:
   }
 
   unsigned int num_centers_;
-  double scale_factor_; // We use ball_radius =
-                        // scale_factor*mesh_norm*abs(log(mesh_norm));
-  arma::mat centers_;   // N x d, with N points and d dimensions.
-  unsigned int num_local_centers_; // How many local centers should we find?
+  double scale_factor_;  // We use ball_radius =
+                         // scale_factor*mesh_norm*abs(log(mesh_norm));
+  arma::mat centers_;    // N x d, with N points and d dimensions.
+  unsigned int num_local_centers_;  // How many local centers should we find?
   double radius_;
   double mesh_norm_;
   double ball_radius_;
   std::shared_ptr<Node<Dimension>> kdtree_root_;
 };
 
-} // namespace local_lagrange
-#endif // LOCAL_LAGRANGE_ASSEMBLER_HDR
+}  // namespace local_lagrange
+#endif  // LOCAL_LAGRANGE_ASSEMBLER_HDR

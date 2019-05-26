@@ -10,10 +10,10 @@
 
 template <size_t N>
 struct Node {
-
-  explicit Node(arma::rowvec &point)
+  explicit Node(arma::rowvec& point)
       : point(point), left(nullptr), right(nullptr) {}
-  Node(arma::rowvec &point, std::shared_ptr<Node<N>> l,
+  Node(arma::rowvec& point,
+       std::shared_ptr<Node<N>> l,
        std::shared_ptr<Node<N>> r)
       : point(point), left(l), right(r) {}
   arma::rowvec point;
@@ -22,15 +22,15 @@ struct Node {
 };
 
 template <size_t N>
-inline bool ComparePoints(const arma::rowvec &p1, const arma::rowvec &p2) {
-
+inline bool ComparePoints(const arma::rowvec& p1, const arma::rowvec& p2) {
   return mathtools::computeDistance<N - 1>(p1, p2) < 1e-13;
 }
 
 // Searches a point in the KD tree the parameter depth is used to determine
 // current axis
 template <size_t N>
-bool searchRec(std::shared_ptr<Node<N>> root, const arma::rowvec &point,
+bool searchRec(std::shared_ptr<Node<N>> root,
+               const arma::rowvec& point,
                unsigned depth = 0) {
   // Base cases
   if (root == nullptr) {
@@ -52,11 +52,11 @@ bool searchRec(std::shared_ptr<Node<N>> root, const arma::rowvec &point,
 }
 
 template <size_t N>
-bool search(std::shared_ptr<Node<N>> root, const arma::rowvec &point) {
+bool search(std::shared_ptr<Node<N>> root, const arma::rowvec& point) {
   return searchRec<N>(root, point, 0);
 }
 
-inline arma::mat SortOnColumnIndex(const arma::mat &points,
+inline arma::mat SortOnColumnIndex(const arma::mat& points,
                                    const unsigned dimension) {
   // Slice down the column
   arma::uvec indices = arma::sort_index(points.col(dimension));
@@ -65,7 +65,7 @@ inline arma::mat SortOnColumnIndex(const arma::mat &points,
 }
 
 template <size_t N>
-std::shared_ptr<Node<N>> BuildTree(const arma::mat &points,
+std::shared_ptr<Node<N>> BuildTree(const arma::mat& points,
                                    const unsigned int depth = 0) {
   unsigned axis = depth % N;
   arma::mat sorted_points = SortOnColumnIndex(points, axis);
@@ -103,7 +103,7 @@ std::shared_ptr<Node<N>> BuildTree(const arma::mat &points,
 
 template <size_t N>
 std::vector<arma::rowvec> RadiusQuery(std::shared_ptr<Node<N>> tree,
-                                      const arma::rowvec &point,
+                                      const arma::rowvec& point,
                                       const double radius_squared) {
   std::vector<arma::rowvec> neighbors;
 
@@ -118,9 +118,11 @@ std::vector<arma::rowvec> RadiusQuery(std::shared_ptr<Node<N>> tree,
 }
 
 template <size_t N>
-void RadiusQuery(std::shared_ptr<Node<N>> tree, const arma::rowvec &point,
-                 const double radius_squared, unsigned int depth,
-                 std::vector<arma::rowvec> &neighbors) {
+void RadiusQuery(std::shared_ptr<Node<N>> tree,
+                 const arma::rowvec& point,
+                 const double radius_squared,
+                 unsigned int depth,
+                 std::vector<arma::rowvec>& neighbors) {
   if (!tree) {
     return;
   }

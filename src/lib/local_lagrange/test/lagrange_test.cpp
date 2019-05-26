@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_MAIN
-#include <catch2/catch.hpp>
 #include <local_lagrange/local_lagrange.h>
 #include <local_lagrange/local_lagrange_assembler.h>
+#include <catch2/catch.hpp>
 
 #include <stdio.h>
 #include <utility>
@@ -10,7 +10,7 @@
 
 using namespace local_lagrange;
 
-double distance(const arma::rowvec &p1, const arma::rowvec &p2) {
+double distance(const arma::rowvec& p1, const arma::rowvec& p2) {
   double dist = 0.0;
   for (size_t i = 0; i < p1.n_elem; ++i) {
     dist += (p1(i) - p2(i)) * (p1(i) - p2(i));
@@ -19,10 +19,9 @@ double distance(const arma::rowvec &p1, const arma::rowvec &p2) {
 }
 
 TEST_CASE("AssembleInterpolationMatrix") {
-
   arma::mat centers{{1, 0}, {2, 1}, {3, 2}};
 
-  local_lagrange::LocalLagrange<2> llf(0); // Index 0.
+  local_lagrange::LocalLagrange<2> llf(0);  // Index 0.
   ThinPlateSpline<2> tps;
   arma::mat interp_matrix =
       computeInterpolationMatrix<2, ThinPlateSpline<2>>(centers, tps);
@@ -62,10 +61,9 @@ TEST_CASE("AssembleInterpolationMatrix") {
 }
 
 TEST_CASE("SolveForCoefficients") {
-
   arma::mat centers{{1, 0}, {2, 1}, {3, 2}};
   unsigned int local_index = 0;
-  local_lagrange::LocalLagrange<2> llf(0); // Index 0.
+  local_lagrange::LocalLagrange<2> llf(0);  // Index 0.
   llf.buildCoefficients(centers, 0);
   arma::vec coefs = llf.coefficients();
 
@@ -81,7 +79,6 @@ TEST_CASE("SolveForCoefficients") {
 }
 
 TEST_CASE("FindLocalIndexTest") {
-
   arma::mat centers{{1, 0}, {2, 1}, {3, 2}};
 
   local_lagrange::LocalLagrangeAssembler<2> llc(centers, 1);
@@ -95,7 +92,6 @@ TEST_CASE("FindLocalIndexTest") {
 }
 
 TEST_CASE("BuildLocalLagrangeFunction") {
-
   size_t num_points = 50;
 
   auto xmesh = mathtools::linspace<double>(0, 1, num_points);

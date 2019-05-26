@@ -13,4 +13,4 @@ struct Gaussian {
 
   T ScaleParameter;
 };
-#endif // LOCAL_LAGRANGE_GAUSSIAN_H
+#endif  // LOCAL_LAGRANGE_GAUSSIAN_H
