@@ -21,6 +21,10 @@ public:
     buildCoefficients(centers_, index_);
   }
 
+  LocalLagrange(const arma::mat& local_centers, const unsigned int local_index, const Tuples<Dimension>& polynomial_powers)
+      : index_(local_index), centers_(local_centers), polynomial_powers_(polynomial_powers) {
+    buildCoefficients(centers_, index_);
+  }
   explicit LocalLagrange(unsigned int index) : index_(index) {}
 
   LocalLagrange(unsigned int index, const arma::vec& coefs)
@@ -77,14 +81,12 @@ public:
   }
 
 private:
-  using Tuples = std::vector<Tuple<Dimension>>;
-
   unsigned int index_;
   Kernel kernel_;
   ///@todo srowe: Each LLF maintaing its centers is probably overkill
   arma::mat centers_;
   arma::vec coefficients_;
-  Tuples polynomial_powers_;
+  Tuples<Dimension> polynomial_powers_;
 };
 
 }  // namespace local_lagrange

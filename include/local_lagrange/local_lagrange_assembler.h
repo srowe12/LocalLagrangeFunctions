@@ -18,7 +18,8 @@ public:
   LocalLagrangeAssembler(const arma::mat& centers, const double radius)
       : centers_(centers),
         radius_(radius),
-        kdtree_root_(BuildTree<Dimension>(centers_)) {}
+        kdtree_root_(BuildTree<Dimension>(centers_)),
+        polynomial_powers_(buildTuples<Dimension, 1>()) {}
 
   unsigned int findLocalIndex(const arma::mat& local_centers,
                               unsigned int index) {
@@ -57,7 +58,7 @@ public:
     }
 
     const size_t local_index = findLocalIndex(local_centers, index);
-    LocalLagrange<Dimension, Kernel> llf(local_centers, local_index);
+    LocalLagrange<Dimension, Kernel> llf(local_centers, local_index, polynomial_powers_);
 
     return llf;
   }
@@ -89,6 +90,7 @@ private:
   void updateBallRadius() {
     ball_radius_ = scale_factor_ * mesh_norm_ * abs(log(mesh_norm_));
   }
+  using Tuples = std::vector<Tuple<Dimension>>;
 
   unsigned int num_centers_;
   double scale_factor_;  // We use ball_radius =
@@ -99,6 +101,7 @@ private:
   double mesh_norm_;
   double ball_radius_;
   std::shared_ptr<Node<Dimension>> kdtree_root_;
+  Tuples polynomial_powers_;
 };
 
 }  // namespace local_lagrange
