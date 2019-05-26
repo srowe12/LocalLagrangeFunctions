@@ -47,9 +47,9 @@ TEST_CASE("AssembleInterpolationMatrix") {
   const arma::mat upper_right =
       interp_matrix(arma::span(0, 2), arma::span(3, 5));
   arma::mat expected_upper_right = arma::zeros(3, 3);
-  expected_upper_right.col(0).fill(1.0);
+  expected_upper_right.col(2).fill(1.0);
+  expected_upper_right.col(0) = x;
   expected_upper_right.col(1) = y;
-  expected_upper_right.col(2) = x;
 
   const double upper_right_error = (expected_upper_right - upper_right).max();
   REQUIRE(upper_right_error <= 1e-8);
