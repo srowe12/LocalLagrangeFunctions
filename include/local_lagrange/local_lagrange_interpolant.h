@@ -22,8 +22,7 @@ public:
   }
 
 private:
-  std::vector<LocalLagrange<Dimension>>
-      m_llfs;  // Vector of Local Lagrange Functions
+  std::vector<LocalLagrange<Dimension>> m_llfs;  
 };
 
 template <size_t Dimension, typename Kernel = ThinPlateSpline<Dimension>>
