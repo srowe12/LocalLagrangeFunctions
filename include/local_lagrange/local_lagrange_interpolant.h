@@ -1,9 +1,9 @@
 #ifndef LOCAL_LAGRANGE_INTERPOLANT_H
 #define LOCAL_LAGRANGE_INTERPOLANT_H
 
+#include <omp.h>
 #include "local_lagrange.h"
 #include "local_lagrange_assembler.h"
-#include <omp.h>
 
 namespace local_lagrange {
 // Provides ability to interpolate functions with a collection of Local Lagrange
@@ -22,7 +22,7 @@ public:
   }
 
 private:
-  std::vector<LocalLagrange<Dimension>> m_llfs;  
+  std::vector<LocalLagrange<Dimension>> m_llfs;
 };
 
 template <size_t Dimension, typename Kernel = ThinPlateSpline<Dimension>>
@@ -35,16 +35,13 @@ LocalLagrangeEnsemble<Dimension> buildLocalLagrangeFunctions(
   size_t num_centers = centers.n_rows;
 
   std::vector<LocalLagrange<Dimension>> llfs(num_centers);
-  //llfs.reserve(num_centers);
 
 #pragma omp parallel for
   for (size_t i = 0; i < num_centers; ++i) {
     const auto llf = assembler.generateLocalLagrangeFunction(i);
 
-#pragma omp critical 
-    {
-    llfs[i] = (std::move(llf));
-    }
+#pragma omp critical
+    { llfs[i] = (std::move(llf)); }
   }
 
   return LocalLagrangeEnsemble<Dimension>(std::move(llfs));
