@@ -20,16 +20,17 @@ public:
     polynomial_powers_ = buildTuples<Dimension, 1>();
     buildCoefficients(centers_, index_);
   }
+  
+  LocalLagrange(const arma::mat& local_centers, const unsigned int local_index, const Tuples<Dimension>& polynomial_powers)
+      : index_(local_index), centers_(local_centers), polynomial_powers_(polynomial_powers) {
+    buildCoefficients(centers_, index_);
+  }
 
-  explicit LocalLagrange(unsigned int index) : index_(index) {}
-
-  LocalLagrange(unsigned int index, const arma::vec& coefs)
-      : index_(index), coefficients_(coefs) {}
+  LocalLagrange() = default;
 
   void buildCoefficients(const arma::mat& local_centers,
                          unsigned int local_index) {
-    // Work needed here perhaps. Is this bad generating interp_matrix in this
-    // function?
+
     const arma::mat interp_matrix =
         computeInterpolationMatrix<Dimension, Kernel>(local_centers, kernel_);
     arma::vec rhs(local_centers.n_rows + 3, arma::fill::zeros);
@@ -77,14 +78,12 @@ public:
   }
 
 private:
-  using Tuples = std::vector<Tuple<Dimension>>;
-
   unsigned int index_;
   Kernel kernel_;
   ///@todo srowe: Each LLF maintaing its centers is probably overkill
   arma::mat centers_;
   arma::vec coefficients_;
-  Tuples polynomial_powers_;
+  Tuples<Dimension> polynomial_powers_;
 };
 
 }  // namespace local_lagrange
