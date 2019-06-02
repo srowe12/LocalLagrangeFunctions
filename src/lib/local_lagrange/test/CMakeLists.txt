@@ -1,23 +1,36 @@
-set(lagrange_test_src lagrange_test.cpp )
+set(test_name lagrange_test)
+set(test_sources lagrange_test.cpp)
 
-add_executable(lagrange_test ${lagrange_test_src})
-target_link_libraries(lagrange_test test_main ${math_lib} ${lagrange_lib} ${ARMADILLO_LIBRARIES})
+add_executable(${test_name} ${test_sources})
+target_link_libraries(${test_name} test_main ${math_lib} ${ARMADILLO_LIBRARIES})
 
-add_test(NAME lagrange_test COMMAND lagrange_test)
+add_test(NAME ${test_name} COMMAND ${test_name})
+set_target_properties( ${test_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/testbin )
 
-set(lagrange_interpolant_test_src lagrange_interpolant_test.cpp )
 
-add_executable(lagrange_interpolant_test ${lagrange_interpolant_test_src})
-target_link_libraries(lagrange_interpolant_test test_main ${math_lib} ${lagrange_lib} ${ARMADILLO_LIBRARIES})
+#================
+set(test_name lagrange_interpolant_test)
+set(test_sources lagrange_interpolant_test.cpp)
 
-add_test(NAME lagrange_interpolant_test COMMAND lagrange_interpolant_test)
+add_executable(${test_name} ${test_sources})
+target_link_libraries(${test_name} test_main ${math_lib} ${ARMADILLO_LIBRARIES})
 
-set(lagrange_int_test_src integration_test.cpp)
-add_executable(lagrange_int_test ${lagrange_int_test_src})
-target_link_libraries(lagrange_int_test test_main ${math_lib} ${lagrange_lib} ${ARMADILLO_LIBRARIES})
+add_test(NAME ${test_name} COMMAND ${test_name})
+set_target_properties( ${test_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/testbin )
 
-add_test(NAME lagrange_int_test COMMAND lagrange_int_test)
 
+
+#================
+set(test_name lagrange_int_test)
+set(test_sources integration_test.cpp)
+
+add_executable(${test_name} ${test_sources})
+target_link_libraries(${test_name} test_main ${math_lib} ${ARMADILLO_LIBRARIES})
+
+add_test(NAME ${test_name} COMMAND ${test_name})
+set_target_properties( ${test_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/testbin )
+
+#================
 set(lagrange_speed_test_src speed_test.cpp)
 add_executable(lagrange_speed_test ${lagrange_speed_test_src})
 target_link_libraries(lagrange_speed_test test_main ${math_lib} ${lagrange_lib} ${ARMADILLO_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
