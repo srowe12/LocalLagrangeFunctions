@@ -1,7 +1,8 @@
-set(rbf_test_src rbf_test.cpp )
+set(test_name rbf_test)
+set(test_sources rbf_test.cpp)
 
-add_executable(rbf_test ${rbf_test_src})
-target_link_libraries(rbf_test test_main ${math_lib} ${rbf_lib} ${ARMADILLO_LIBRARIES})
+add_executable(${test_name} ${test_sources})
+target_link_libraries(${test_name} test_main ${math_lib} ${ARMADILLO_LIBRARIES})
 
-add_test(NAME rbf_test COMMAND rbf_test)
-
+add_test(NAME ${test_name} COMMAND ${test_name})
+set_target_properties( ${test_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/testbin )

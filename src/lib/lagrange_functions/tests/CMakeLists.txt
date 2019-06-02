@@ -1,5 +1,9 @@
 
-add_executable(lagrange_functions_test test_lagrange_functions.cpp)
-target_link_libraries(lagrange_functions_test test_main ${math_lib} ${ARMADILLO_LIBRARIES})
+set(test_name lagrange_functions_test)
+set(test_sources test_lagrange_functions.cpp)
 
-add_test(NAME lagrange_functions_test COMMAND lagrange_functions_test)
+add_executable(${test_name} ${test_sources})
+target_link_libraries(${test_name} test_main ${math_lib} ${ARMADILLO_LIBRARIES})
+
+add_test(NAME ${test_name} COMMAND ${test_name})
+set_target_properties( ${test_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/testbin )

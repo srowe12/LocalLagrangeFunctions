@@ -1,16 +1,21 @@
-set(math_test_src math_test.cpp)
-add_executable(math_test ${math_test_src})
-include_directories(${math_tools_hdr})
-target_link_libraries(math_test test_main ${math_tools_lib})
+set(test_name math_test)
+set(test_sources math_test.cpp)
 
-#Test name then test exectuables. 
-add_test(NAME math_tests COMMAND math_test)
+add_executable(${test_name} ${test_sources})
+target_link_libraries(${test_name} test_main ${math_lib} ${ARMADILLO_LIBRARIES})
+
+add_test(NAME ${test_name} COMMAND ${test_name})
+set_target_properties( ${test_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/testbin )
 
 
-set(polynomial_test_src polynomial_test.cpp)
-add_executable(polynomial_test ${polynomial_test_src})
+#================
+set(test_name polynomial_test)
+set(test_sources polynomial_test.cpp)
 
-target_link_libraries(polynomial_test test_main ${math_tools_lib})
+add_executable(${test_name} ${test_sources})
+target_link_libraries(${test_name} test_main ${math_lib} ${ARMADILLO_LIBRARIES})
 
-#Test name then test exectuables. 
-add_test(NAME polynomial_test COMMAND polynomial_test)
+add_test(NAME ${test_name} COMMAND ${test_name})
+set_target_properties( ${test_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/testbin )
+
+
