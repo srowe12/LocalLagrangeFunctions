@@ -7,6 +7,7 @@
 #include <array>
 #include <cmath>
 #include <vector>
+#include <omp.h>
 
 namespace local_lagrange {
 
@@ -17,10 +18,10 @@ arma::mat computeInterpolationMatrix(const arma::mat& centers,
 
   ///@todo srowe: The 3 is not super right
   arma::mat interp_matrix(num_centers + 3, num_centers + 3, arma::fill::zeros);
-  double dist = 0.0;
+#pragma omp parallel for 
   for (size_t row = 0; row < num_centers; ++row) {
     for (size_t col = row + 1; col < num_centers; ++col) {
-      dist = mathtools::computeDistance<Dimension - 1>(row, col, centers);
+      const double dist = mathtools::computeDistance<Dimension - 1>(row, col, centers);
 
       interp_matrix(row, col) = interp_matrix(col, row) = kernel(dist);
     }
