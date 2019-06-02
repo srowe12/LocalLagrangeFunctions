@@ -58,8 +58,7 @@ int main() {
   // LLF's.
 
   // Build some centers; say 2601 of them.
-  size_t num_points = 50;
-  std::vector<size_t> num_points_list{50}; //75, 100, 125};
+  std::vector<size_t> num_points_list{50, 75}; // 100, 125};
   std::vector<double> results_list;
   for (auto num_points : num_points_list) {
     results_list.push_back(timeResults(num_points));
