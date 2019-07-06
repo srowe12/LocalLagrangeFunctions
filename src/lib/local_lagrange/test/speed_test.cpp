@@ -16,9 +16,12 @@ double timeResults(const size_t num_points) {
   size_t numcenters = centers.n_rows;
   // (np.log(h))**2 / 10
   double h = std::sqrt(2) / 2.0 * 1.0 / num_points;
-  double scale = 1.0 / 600.0;
-  double mesh_size = scale * std::log(h) * std::log(h);
-
+  std::cout << "h = " << h << " with num points = " << num_points << "\n";
+  double scale = 1.0 / 2.0;
+  // double scale = 1.0/600.0;
+  //  double mesh_size = scale * std::log(h) * std::log(h);
+  // Expect dist = K*h*log(h)
+  double mesh_size = scale*h*std::abs(std::log(h));
   std::cout << "The total number of points being used is " << numcenters
             << "\n";
   std::cout << "The mesh size is " << mesh_size << "\n";
@@ -58,7 +61,7 @@ int main() {
   // LLF's.
 
   // Build some centers; say 2601 of them.
-  std::vector<size_t> num_points_list{50, 75}; // 100, 125};
+  std::vector<size_t> num_points_list{50, 75,  100, 125};
   std::vector<double> results_list;
   for (auto num_points : num_points_list) {
     results_list.push_back(timeResults(num_points));
