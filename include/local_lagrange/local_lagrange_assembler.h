@@ -43,7 +43,8 @@ public:
     return local_index;
   }
 
-  LocalLagrange<Dimension> generateLocalLagrangeFunction(const unsigned int index) {
+  LocalLagrange<Dimension> generateLocalLagrangeFunction(
+      const unsigned int index) {
     // Let's query the data via kdtree
     const arma::rowvec local_point = centers_.row(index);
     const std::vector<arma::rowvec> local_centers_v =
@@ -57,38 +58,15 @@ public:
     }
 
     const size_t local_index = findLocalIndex(local_centers, index);
-    LocalLagrange<Dimension, Kernel> llf(local_centers, local_index, polynomial_powers_);
+    LocalLagrange<Dimension, Kernel> llf(local_centers, local_index,
+                                         polynomial_powers_);
 
     return llf;
   }
 
   unsigned int num_centers() const { return num_centers_; }
-  double scale_factor() const { return scale_factor_; }
-  double mesh_norm() const { return mesh_norm_; }
-  double ball_radius() const { return ball_radius_; }
-
-  void setScale_factor(double scale_factor) {
-    scale_factor_ = scale_factor;
-    updateBallRadius();
-  }
-  void setMesh_norm(double mesh_norm) {
-    mesh_norm_ = mesh_norm;
-    updateBallRadius();
-  }
-  void setCenters(const arma::mat& centers) {
-    // Assumes size of centers_x and centers_y are the same
-    centers_ = centers;
-    num_centers_ = centers_.n_rows;
-  }
-
-  void setNum_local_centers(const unsigned int num_local_centers) {
-    num_local_centers_ = num_local_centers;
-  }
 
 private:
-  void updateBallRadius() {
-    ball_radius_ = scale_factor_ * mesh_norm_ * abs(log(mesh_norm_));
-  }
   using Tuples = std::vector<Tuple<Dimension>>;
 
   unsigned int num_centers_;
