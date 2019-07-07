@@ -35,7 +35,7 @@ public:
         computeInterpolationMatrix<Dimension, Kernel>(local_centers, kernel_);
     arma::vec rhs(local_centers.n_rows + 3, arma::fill::zeros);
     rhs(local_index) = 1;
-    coefficients_ = arma::solve(interp_matrix, rhs);
+    coefficients_ = arma::solve(interp_matrix, rhs, arma::solve_opts::fast);
   }
 
   unsigned int index() const { return index_; }
