@@ -12,14 +12,14 @@
 
 namespace local_lagrange {
 
-template <size_t Dimension = 2, typename Kernel = ThinPlateSpline<Dimension>>
+template <size_t Dimension = 2, size_t Degree = 1, typename Kernel = ThinPlateSpline<Dimension>>
 class LocalLagrangeAssembler {
 public:
   LocalLagrangeAssembler(const arma::mat& centers, const double radius)
       : centers_(centers),
         radius_(radius),
-        kdtree_root_(BuildTree<Dimension>(centers_)),
-        polynomial_powers_(buildTuples<Dimension, 1>()) {}
+        kdtree_root_(BuildTree<Dimension>(centers_)), 
+        polynomial_powers_(buildTuples<Dimension, Degree>()) {} 
 
   unsigned int findLocalIndex(const arma::mat& local_centers,
                               unsigned int index) {

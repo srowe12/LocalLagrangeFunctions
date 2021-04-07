@@ -11,13 +11,14 @@
 
 namespace local_lagrange {
 
-template <size_t Dimension, typename Kernel>
+template <size_t Dimension, typename Kernel, size_t Degree = 1>
 arma::mat computeInterpolationMatrix(const arma::mat& centers,
                                      const Kernel& kernel) {
   const size_t num_centers = centers.n_rows;
 
-  ///@todo srowe: The 3 is not super right
-  arma::mat interp_matrix(num_centers + 3, num_centers + 3, arma::fill::zeros);
+  const size_t num_polynomials = computePolynomialBasis<Dimension>(Degree);
+
+  arma::mat interp_matrix(num_centers + num_polynomials, num_centers + num_polynomials, arma::fill::zeros);
 #pragma omp parallel for 
   for (size_t row = 0; row < num_centers; ++row) {
     for (size_t col = row + 1; col < num_centers; ++col) {
@@ -27,8 +28,7 @@ arma::mat computeInterpolationMatrix(const arma::mat& centers,
     }
   }
 
-  ///@todo srowe: Degree should be computable
-  buildPolynomialMatrix<Dimension, 1>(interp_matrix, centers);
+  buildPolynomialMatrix<Dimension, Degree>(interp_matrix, centers);
 
   return interp_matrix;
 }
