@@ -69,7 +69,6 @@ public:
     // form 1 + x + y
     const auto n_rows = coefficients_.n_rows;
     const auto num_polynomial_terms = coefficients_.n_rows - num_centers;
-    ///@todo srowe: Support nonlinear polynomial here
     double polynomial_term = polynomialApply<Dimension>(
         coefficients_.rows(n_rows - num_polynomial_terms, n_rows - num_polynomial_terms + 1), point, polynomial_powers_);
 
