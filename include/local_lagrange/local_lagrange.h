@@ -36,8 +36,7 @@ public:
                          unsigned int local_index) {
     const arma::mat interp_matrix =
         computeInterpolationMatrix<Dimension, Kernel>(local_centers, kernel_);
-    ///@todo srowe: Replace the 3 with the dimension of the polynomial 
-    arma::vec rhs(local_centers.n_rows + 3, arma::fill::zeros);
+    arma::vec rhs(interp_matrix.n_cols, arma::fill::zeros);
     rhs(local_index) = 1;
     coefficients_ = arma::solve(interp_matrix, rhs, arma::solve_opts::fast);
   }
@@ -69,9 +68,10 @@ public:
     // Polynomial is last three coefficients_ vector points; These are of the
     // form 1 + x + y
     const auto n_rows = coefficients_.n_rows;
+    const auto num_polynomial_terms = coefficients_.n_rows - num_centers;
     ///@todo srowe: Support nonlinear polynomial here
     double polynomial_term = polynomialApply<Dimension>(
-        coefficients_.rows(n_rows - 3, n_rows - 2), point, polynomial_powers_);
+        coefficients_.rows(n_rows - num_polynomial_terms, n_rows - num_polynomial_terms + 1), point, polynomial_powers_);
 
     ///@todo srowe: polynomial term is missing 0,0,0 power
     return result + coefficients_(n_rows - 1) + polynomial_term;
