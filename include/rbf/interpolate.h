@@ -37,6 +37,7 @@ public:
                 i, j, data_points, centers_));
       }
     }
+    ///@todo srowe: Don't we need to support conditionally positive definite kernels here?
 
     ///@todo srowe; If we're doing the sums above, we might as well just do the
     /// matrix multiplication as well

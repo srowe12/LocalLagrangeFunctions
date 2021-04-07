@@ -18,8 +18,8 @@ public:
   LocalLagrangeAssembler(const arma::mat& centers, const double radius)
       : centers_(centers),
         radius_(radius),
-        kdtree_root_(BuildTree<Dimension>(centers_)),
-        polynomial_powers_(buildTuples<Dimension, 1>()) {}
+        kdtree_root_(BuildTree<Dimension>(centers_)), 
+        polynomial_powers_(buildTuples<Dimension, 1>()) {} ///@todo srowe: Support polynomial degree here
 
   unsigned int findLocalIndex(const arma::mat& local_centers,
                               unsigned int index) {
