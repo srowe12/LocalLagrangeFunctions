@@ -70,13 +70,10 @@ private:
   using Tuples = std::vector<Tuple<Dimension>>;
 
   unsigned int num_centers_;
-  double scale_factor_;  // We use ball_radius =
-                         // scale_factor*mesh_norm*abs(log(mesh_norm));
   arma::mat centers_;    // N x d, with N points and d dimensions.
   unsigned int num_local_centers_;  // How many local centers should we find?
   double radius_;
   double mesh_norm_;
-  double ball_radius_;
   std::shared_ptr<Node<Dimension>> kdtree_root_;
   Tuples polynomial_powers_;
 };
