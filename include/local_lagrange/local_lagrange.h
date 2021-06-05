@@ -66,11 +66,13 @@ public:
     }
 
     // Polynomial is last three coefficients_ vector points; These are of the
-    // form 1 + x + y
+    // form x + y + 1
     const auto n_rows = coefficients_.n_rows;
     const auto num_polynomial_terms = coefficients_.n_rows - num_centers;
+    ///@todo srowe: Go from n_rows - num_polys to the second to last element
+    // The constant term is stored in coefficients_(n_rows - 1) and is added on 
     double polynomial_term = polynomialApply<Dimension>(
-        coefficients_.rows(n_rows - num_polynomial_terms, n_rows - num_polynomial_terms + 1), point, polynomial_powers_);
+        coefficients_.rows(n_rows - num_polynomial_terms, n_rows - 2), point, polynomial_powers_);
 
     ///@todo srowe: polynomial term is missing 0,0,0 power
     return result + coefficients_(n_rows - 1) + polynomial_term;
